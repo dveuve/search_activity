@@ -84,7 +84,7 @@
         <earliestTime>$field1.earliest$</earliestTime>
         <latestTime>$field1.latest$</latestTime>
         <drilldown>
-          <link>/app/search_activity/per_user_dashboard?form.user=$row.user$</link>
+          <link><![CDATA[/app/search_activity/per_user_dashboard?form.user=$row.user$&form.field1.earliest=$field1.earliest$&form.field1.latest=$field1.latest$]]></link>
         </drilldown>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
@@ -101,7 +101,7 @@
         <latestTime>$field1.latest$</latestTime>
         <fields>_time user "Search Type" total_run_time Result_Count Scan_Count NumExports "Search Span (Hours)" "Search Span (Days)"  "Search Comands" "WasShared"</fields>
         <drilldown>
-          <link>/app/search_activity/per_search_view?form.searchid=$row.searchid$</link>
+          <link><![CDATA[/app/search_activity/per_search_view?form.searchid=$row.searchid$&form.field1.earliest=$field1.earliest$&form.field1.latest=$field1.latest$]]></link>
         </drilldown>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>

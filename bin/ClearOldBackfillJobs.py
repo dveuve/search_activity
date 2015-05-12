@@ -5,6 +5,10 @@ from xml.dom import minidom
 import splunk.entity, splunk.Intersplunk
 settings = dict()
 records = splunk.Intersplunk.readResults(settings = settings, has_header = True)
+entity = splunk.entity.getEntity('/server','settings', namespace='search_activity', sessionKey=settings['sessionKey'], owner='-')
+mydict = dict() 
+mydict = entity
+myPort = mydict['mgmtHostPort']
 #entity = splunk.entity.getEntity('/saved/searches','test', namespace='search_activity', sessionKey=settings['sessionKey'], owner='nobody')
 entities = splunk.entity.getEntities(['saved','searches'], namespace='search_activity', sessionKey=settings['sessionKey'], owner=settings['owner'], count=200)
 
@@ -29,7 +33,7 @@ print "output"
 
 
 
-base_url = "https://127.0.0.1:8089"
+base_url = "https://127.0.0.1:" + myPort
 
 #file.write(request.get_full_url() + "\n")
 for i, c in entities.items() :

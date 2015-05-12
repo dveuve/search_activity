@@ -5,9 +5,11 @@ from xml.dom import minidom
 import splunk.entity, splunk.Intersplunk
 settings = dict()
 records = splunk.Intersplunk.readResults(settings = settings, has_header = True)
-#entity = splunk.entity.getEntity('/properties/macros','test', namespace='search_activity', sessionKey=settings['sessionKey'], owner='nobody')
-#print entity.get('definition')
-#print entity
+entity = splunk.entity.getEntity('/server','settings', namespace='search_activity', sessionKey=settings['sessionKey'], owner='-')
+mydict = dict() 
+mydict = entity
+myPort = mydict['mgmtHostPort']
+
 
 macroname = ""
 macrovalue = ""
@@ -43,7 +45,7 @@ if macroname == "" or macrovalue == "":
 #print macrovalue
 
 
-base_url = "https://127.0.0.1:8089"
+base_url = "https://127.0.0.1:" + myPort
 
 #print base_url + '/servicesNS/nobody/search_activity/properties/macros/test'
 

@@ -66,9 +66,9 @@
     <input type="multiselect" token="sh_clause">
       <label>Search Head</label>
       <choice value="*">Any</choice>
-      <search>
-        <query>| tstats local=t count from `SA_SearchHistory` groupby SearchHead</query>
-      </search>
+      <searchString>
+        | tstats local=t count from `SA_SearchHistory` groupby SearchHead
+      </searchString>
       <fieldForLabel>SearchHead</fieldForLabel>
       <fieldForValue>SearchHead</fieldForValue>
       <default>*</default>
@@ -79,11 +79,11 @@
   <row>
       <table>
         <title>Results</title>
-        <search>
-          <query>| tstats local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(searchtype) as searchtype values(total_run_time) as total_run_time values(result_count) as result_count values(scan_count) as scan_count values(event_count) as event_count values(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory`   where  *  $wasshared$  $total_run_time_gt$  $result_count_gt$  $scan_count_gt$  $searchtype$  $searchcommands$  $sh_clause$  $user$  $shouldinvestigate$  groupby searchid  | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name mail telephoneNumber  | lookup LDAPMgmtChain sAMAccountName as user OUTPUT ManagementChain| makemv delim="|" ManagementChain | eval ManagementChain=if(isnull(ManagementChain)," ",ManagementChain)</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(searchtype) as searchtype values(total_run_time) as total_run_time values(result_count) as result_count values(scan_count) as scan_count values(event_count) as event_count values(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory`   where  *  $wasshared$  $total_run_time_gt$  $result_count_gt$  $scan_count_gt$  $searchtype$  $searchcommands$  $sh_clause$  $user$  $shouldinvestigate$  groupby searchid  | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name mail telephoneNumber  | lookup LDAPMgmtChain sAMAccountName as user OUTPUT ManagementChain| makemv delim="|" ManagementChain | eval ManagementChain=if(isnull(ManagementChain)," ",ManagementChain)
+	</searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <drilldown>
           <link>/app/search_activity/per_user_dashboard?form.user=$row.user$</link>
         </drilldown>

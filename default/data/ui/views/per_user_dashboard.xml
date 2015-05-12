@@ -123,11 +123,11 @@
   <row>
       <chart>
         <title>Search Complexity Score</title>
-        <search>
-          <query>| tstats prestats=t local=t count from `SA_SearchHistory` where user=$user$ searchtype=adhoc groupby searchcommands , user| stats count by searchcommands, user| eval maturity=`eval_high_complexity_search_commands` | eval maturity=`eval_med_complexity_search_commands` | eval maturity=`eval_low_complexity_search_commands`  | stats sum(eval(if(searchcommands="search",count,null))) as search_num sum(maturity) as maturity | eval "Search Complexity Score"=if(maturity/search_num&gt;`max_search_complexity_rating`,`max_search_complexity_rating`,1+round(maturity/search_num,0)) | fields "Search Complexity Score"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats prestats=t local=t count from `SA_SearchHistory` where user=$user$ searchtype=adhoc groupby searchcommands , user| stats count by searchcommands, user| eval maturity=`eval_high_complexity_search_commands` | eval maturity=`eval_med_complexity_search_commands` | eval maturity=`eval_low_complexity_search_commands`  | stats sum(eval(if(searchcommands="search",count,null))) as search_num sum(maturity) as maturity | eval "Search Complexity Score"=if(maturity/search_num&gt;`max_search_complexity_rating`,`max_search_complexity_rating`,1+round(maturity/search_num,0)) | fields "Search Complexity Score"
+	</searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
@@ -154,11 +154,11 @@
       </chart>
       <chart>
         <title>Search Accuracy (slow searches)</title>
-        <search>
-          <query>| tstats  local=t avg(accuracy)  from `SA_SearchHistory` where user=$user$ total_run_time&gt;15 result_count&gt;0 searchtype=adhoc</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats  local=t avg(accuracy)  from `SA_SearchHistory` where user=$user$ total_run_time&gt;15 result_count&gt;0 searchtype=adhoc
+	</searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
@@ -185,11 +185,11 @@
       </chart>
       <chart>
         <title>Average Search Time (seconds)</title>
-        <search>
-          <query>| tstats  local=t avg(total_run_time) as runtime from `SA_SearchHistory` where  user=$user$ searchtype=adhoc | eval runtime=round(runtime,0)</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats  local=t avg(total_run_time) as runtime from `SA_SearchHistory` where  user=$user$ searchtype=adhoc | eval runtime=round(runtime,0)
+	</searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="linkView">search</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -217,11 +217,11 @@
       </chart>
       <chart>
         <title>Failed Search Percentage</title>
-        <search>
-          <query>| tstats local=t count from `SA_Events` where type=scheduler groupby user status | append [| tstats local=t count  from `SA_SearchHistory` groupby user search_status ]| stats sum(eval(if(status="skipped",count,0))) as SkippedScheduled sum(eval(if(status="success",count,0))) as SuccessfulScheduled sum(eval(if(search_status="failed",count,0))) as FailedAdHoc sum(eval(if(search_status="completed",count,0))) as SuccessfulAdHoc by  user | eval PercentFailed=round(100*(SkippedScheduled+FailedAdHoc)/(SkippedScheduled+FailedAdHoc+SuccessfulScheduled+SuccessfulAdHoc),2) | where user="$user$" | fields PercentFailed</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t count from `SA_Events` where type=scheduler groupby user status | append [| tstats local=t count  from `SA_SearchHistory` groupby user search_status ]| stats sum(eval(if(status="skipped",count,0))) as SkippedScheduled sum(eval(if(status="success",count,0))) as SuccessfulScheduled sum(eval(if(search_status="failed",count,0))) as FailedAdHoc sum(eval(if(search_status="completed",count,0))) as SuccessfulAdHoc by  user | eval PercentFailed=round(100*(SkippedScheduled+FailedAdHoc)/(SkippedScheduled+FailedAdHoc+SuccessfulScheduled+SuccessfulAdHoc),2) | where user="$user$" | fields PercentFailed
+	</searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>
@@ -248,11 +248,11 @@
       </chart>
       <chart>
         <title>% Searches Needing Investigation</title>
-        <search>
-          <query>| tstats local=t count from `SA_SearchHistory` where user=$user$ groupby ShouldInvestigate | stats sum(eval(if(ShouldInvestigate=1,count,0))) as ShouldInvestigate sum(eval(if(ShouldInvestigate=0,count,0))) as Count | eval Meter = round(ShouldInvestigate/Count*100,1)</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t count from `SA_SearchHistory` where user=$user$ groupby ShouldInvestigate | stats sum(eval(if(ShouldInvestigate=1,count,0))) as ShouldInvestigate sum(eval(if(ShouldInvestigate=0,count,0))) as Count | eval Meter = round(ShouldInvestigate/Count*100,1)
+	</searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="charting.chart">markerGauge</option>
         <option name="charting.axisY2.enabled">false</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -281,11 +281,11 @@
   <row>
       <table>
         <title>Comparison to Organization</title>
-        <search>
-          <query>| stats count as bogus | append [ | tstats prestats=t local=t count from `SA_SearchHistory` where searchtype=adhoc groupby searchcommands , user | stats count by searchcommands, user | eval maturity=`eval_high_complexity_search_commands` | eval maturity=`eval_med_complexity_search_commands` | eval maturity=`eval_low_complexity_search_commands` | stats sum(eval(if(searchcommands="search",count,null))) as search_num sum(maturity) as maturity by user | eval "search_complexity_score"=if(maturity/search_num&gt;`max_search_complexity_rating`,`max_search_complexity_rating`,1+round(maturity/search_num,0)) | fields user search_complexity_score | sort - search_complexity_score | streamstats count as complexity_order | eventstats count as NumUsers ] | append [ | tstats local=t avg(accuracy) as Accuracy from `SA_SearchHistory` where total_run_time&gt;15 result_count&gt;0 searchtype=adhoc groupby user | fields user Accuracy | sort - Accuracy | streamstats count as accuracy_order | eventstats count as NumUsers ] | append [ | tstats local=t avg(total_run_time) as runtime from `SA_SearchHistory` where searchtype=adhoc groupby user | eval runtime=round(runtime,0) | stats avg(runtime) as runtime by user | fields user runtime | sort - runtime | streamstats count as runtime_order | eventstats count as NumUsers ] | append [ | tstats local=t count from `SA_Events` where type=scheduler groupby user status | append [ | tstats local=t count from `SA_SearchHistory` groupby user search_status ] | stats sum(eval(if(status="skipped",count,0))) as SkippedScheduled sum(eval(if(status="success",count,0))) as SuccessfulScheduled sum(eval(if(search_status="failed",count,0))) as FailedAdHoc sum(eval(if(search_status="completed",count,0))) as SuccessfulAdHoc by user | eval PercentFailed=round(100*(SkippedScheduled+FailedAdHoc)/(SuccessfulScheduled+SuccessfulAdHoc)) | sort - PercentFailed | streamstats count as FailureOrder | eventstats max(FailureOrder) as NumUsersFailure ] | append [ | tstats local=t count sum(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory` where * (SearchHead=*) * * groupby user | sort - ShouldInvestigate | streamstats count as investigate_order | eventstats count as NumInvestigateUsers] | eval "Accuracy Order" = accuracy_order . " out of " . NumUsers | eval "Search Complexity Order" = complexity_order . " out of " . NumUsers | eval "Slow Search Runtime Order" = runtime_order . " out of " . NumUsers | eval "Search Failure Order" = FailureOrder . " out of " . NumUsersFailure | eval "Questionable Search Order" = investigate_order . " out of " . NumInvestigateUsers  | stats values("*Order") as "*Order" by user | fields user "Search Complexity Order" "Accuracy Order" "Slow Search Runtime Order" "Search Failure Order" "Questionable Search Order"| where user="$user$" | lookup LDAPSearch sAMAccountName as user OUTPUTNEW mail</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | stats count as bogus | append [ | tstats prestats=t local=t count from `SA_SearchHistory` where searchtype=adhoc groupby searchcommands , user | stats count by searchcommands, user | eval maturity=`eval_high_complexity_search_commands` | eval maturity=`eval_med_complexity_search_commands` | eval maturity=`eval_low_complexity_search_commands` | stats sum(eval(if(searchcommands="search",count,null))) as search_num sum(maturity) as maturity by user | eval "search_complexity_score"=if(maturity/search_num&gt;`max_search_complexity_rating`,`max_search_complexity_rating`,1+round(maturity/search_num,0)) | fields user search_complexity_score | sort - search_complexity_score | streamstats count as complexity_order | eventstats count as NumUsers ] | append [ | tstats local=t avg(accuracy) as Accuracy from `SA_SearchHistory` where total_run_time&gt;15 result_count&gt;0 searchtype=adhoc groupby user | fields user Accuracy | sort - Accuracy | streamstats count as accuracy_order | eventstats count as NumUsers ] | append [ | tstats local=t avg(total_run_time) as runtime from `SA_SearchHistory` where searchtype=adhoc groupby user | eval runtime=round(runtime,0) | stats avg(runtime) as runtime by user | fields user runtime | sort - runtime | streamstats count as runtime_order | eventstats count as NumUsers ] | append [ | tstats local=t count from `SA_Events` where type=scheduler groupby user status | append [ | tstats local=t count from `SA_SearchHistory` groupby user search_status ] | stats sum(eval(if(status="skipped",count,0))) as SkippedScheduled sum(eval(if(status="success",count,0))) as SuccessfulScheduled sum(eval(if(search_status="failed",count,0))) as FailedAdHoc sum(eval(if(search_status="completed",count,0))) as SuccessfulAdHoc by user | eval PercentFailed=round(100*(SkippedScheduled+FailedAdHoc)/(SuccessfulScheduled+SuccessfulAdHoc)) | sort - PercentFailed | streamstats count as FailureOrder | eventstats max(FailureOrder) as NumUsersFailure ] | append [ | tstats local=t count sum(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory` where * (SearchHead=*) * * groupby user | sort - ShouldInvestigate | streamstats count as investigate_order | eventstats count as NumInvestigateUsers] | eval "Accuracy Order" = accuracy_order . " out of " . NumUsers | eval "Search Complexity Order" = complexity_order . " out of " . NumUsers | eval "Slow Search Runtime Order" = runtime_order . " out of " . NumUsers | eval "Search Failure Order" = FailureOrder . " out of " . NumUsersFailure | eval "Questionable Search Order" = investigate_order . " out of " . NumInvestigateUsers  | stats values("*Order") as "*Order" by user | fields user "Search Complexity Order" "Accuracy Order" "Slow Search Runtime Order" "Search Failure Order" "Questionable Search Order"| where user="$user$" | lookup LDAPSearch sAMAccountName as user OUTPUTNEW mail
+	</searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>
@@ -332,11 +332,11 @@
       </table>
       <chart>
         <title>Activity By Search Head</title>
-        <search>
-          <query>| tstats prestats=t local=t count from `SA_SearchHistory` groupby searchtype, SearchHead | chart count over SearchHead by searchtype</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats prestats=t local=t count from `SA_SearchHistory` groupby searchtype, SearchHead | chart count over SearchHead by searchtype
+        </searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="charting.chart">column</option>
         <option name="charting.axisY2.enabled">false</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -430,11 +430,11 @@
   <row>
       <table>
         <title>Questionable Search Strings</title>
-        <search>
-          <query>| tstats local=t values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name max(total_run_time) as trt from `SA_SearchHistory` where user=$user$ ShouldInvestigate&gt;0 | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch) | cluster labelonly=t field=search | stats count as "# of Runs" avg(trt) as "Avg Runtime" sum(trt) as "Total Runtime" first(search) as "Representative Search String" by cluster_label | fields - cluster_label | sort - "Total Runtime"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name max(total_run_time) as trt from `SA_SearchHistory` where user=$user$ ShouldInvestigate&gt;0 | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch) | cluster labelonly=t field=search | stats count as "# of Runs" avg(trt) as "Avg Runtime" sum(trt) as "Total Runtime" first(search) as "Representative Search String" by cluster_label | fields - cluster_label | sort - "Total Runtime"
+        </searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="wrap">undefined</option>
         <option name="rowNumbers">undefined</option>
         <option name="drilldown">row</option>
@@ -445,11 +445,11 @@
   <row>
       <table>
         <title>Common Search Commands</title>
-        <search>
-          <query>| tstats  local=t count as "Number of Searches"  from `SA_SearchHistory` where  user=$user$  groupby searchcommands | sort - "Number of Searches"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchTime>
+          | tstats  local=t count as "Number of Searches"  from `SA_SearchHistory` where  user=$user$  groupby searchcommands | sort - "Number of Searches"
+        </searchTime>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>
@@ -458,11 +458,11 @@
       </table>
       <table>
         <title>Search Commands Associated with Expensive Searches</title>
-        <search>
-          <query>| tstats  local=t count as "Number of Searches" avg(total_run_time) as "Avg Run Time" stdev(total_run_time) as "StDev Run Time" from `SA_SearchHistory` where  user=$user$ groupby searchcommands | sort - "Avg Run Time" | rename searchcommands as "Search Command"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchTime>
+          | tstats  local=t count as "Number of Searches" avg(total_run_time) as "Avg Run Time" stdev(total_run_time) as "StDev Run Time" from `SA_SearchHistory` where  user=$user$ groupby searchcommands | sort - "Avg Run Time" | rename searchcommands as "Search Command"
+        </searchTime>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="list.drilldown">full</option>
         <option name="list.wrap">1</option>
         <option name="maxLines">5</option>
@@ -480,11 +480,11 @@
   <row>
       <table>
         <title>Aggregate Search Performance by Fuzzy Grouping (cluster)</title>
-        <search>
-          <query>| tstats  local=t values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(searchtype) as searchtype avg(total_run_time) as total_run_time avg(result_count) as result_count from `SA_SearchHistory` where  user=$user$  groupby searchid | rex mode=sed field=savedsearch_name "s/_+\d*$//" | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch) | cluster labelonly=t field=search | stats count as "# Similar Searches" median(total_run_time) as "Median Run Time" avg(result_count) as "Avg Result Count" values(searchtype) as searchtype first(search) as "Representative Search String" by cluster_label | eval search=if(len(search)&gt;220, substr(search,1,220) . "[.......]", search)  | sort - "# Similar Searches" | fields - cluster_label</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats  local=t values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(searchtype) as searchtype avg(total_run_time) as total_run_time avg(result_count) as result_count from `SA_SearchHistory` where  user=$user$  groupby searchid | rex mode=sed field=savedsearch_name "s/_+\d*$//" | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch) | cluster labelonly=t field=search | stats count as "# Similar Searches" median(total_run_time) as "Median Run Time" avg(result_count) as "Avg Result Count" values(searchtype) as searchtype first(search) as "Representative Search String" by cluster_label | eval search=if(len(search)&gt;220, substr(search,1,220) . "[.......]", search)  | sort - "# Similar Searches" | fields - cluster_label
+        </searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>
@@ -494,11 +494,11 @@
       </table>
       <table>
         <title>Expensive Searches</title>
-        <search>
-          <query>| tstats  local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name avg(total_run_time) as "Search Run Time" avg(result_count) as "Result Count" from `SA_SearchHistory` where  user=$user$  groupby searchid | rex mode=sed field=savedsearch_name "s/_+\d*$//" | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch) | sort - "Search Run Time" | fields - actualsearch savedsearch_name | eval search=if(len(search)&gt;220, substr(search,1,220) . "[.......]", search)  | fields _time "Search Run Time" "Result Count" search searchid</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats  local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name avg(total_run_time) as "Search Run Time" avg(result_count) as "Result Count" from `SA_SearchHistory` where  user=$user$  groupby searchid | rex mode=sed field=savedsearch_name "s/_+\d*$//" | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch) | sort - "Search Run Time" | fields - actualsearch savedsearch_name | eval search=if(len(search)&gt;220, substr(search,1,220) . "[.......]", search)  | fields _time "Search Run Time" "Result Count" search searchid
+        </searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>
@@ -661,11 +661,11 @@
   <row>
       <table>
         <title>Failed or Skipped Searches</title>
-        <search>
-          <query>| tstats local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(search_status) as status from `SA_SearchHistory` where search_status=failed user=$user$ groupby user searchid search_status  | rex mode=sed field=savedsearch_name "s/_+\d*$//" | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch)       | eval search=if(len(search)&gt;220, substr(search,1,220) . "[.......]", search) | fields - savedsearch_name actualsearch searchid | sort - _time</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(search_status) as status from `SA_SearchHistory` where search_status=failed user=$user$ groupby user searchid search_status  | rex mode=sed field=savedsearch_name "s/_+\d*$//" | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch)       | eval search=if(len(search)&gt;220, substr(search,1,220) . "[.......]", search) | fields - savedsearch_name actualsearch searchid | sort - _time
+        </searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>
@@ -676,11 +676,11 @@
   <row>
       <table>
         <title>Recent Searches (Last 7 Days) - $user$</title>
-        <search>
-          <query>| tstats local=t min(_time) as _time values(user) as user values(search_status) as status values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name from `SA_SearchHistory` where user=$user$ groupby searchid | rex mode=sed field=savedsearch_name "s/_+\d*$//" | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch)  | eval search=if(len(search)&gt;420, substr(search,1,420) . "[.......]", search)  | sort - _time | fields - actualsearch savedsearch_name</query>
-          <earliest>-7d@h</earliest>
-          <latest>now</latest>
-        </search>
+        <searchString>
+          | tstats local=t min(_time) as _time values(user) as user values(search_status) as status values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name from `SA_SearchHistory` where user=$user$ groupby searchid | rex mode=sed field=savedsearch_name "s/_+\d*$//" | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch)  | eval search=if(len(search)&gt;420, substr(search,1,420) . "[.......]", search)  | sort - _time | fields - actualsearch savedsearch_name
+	</searchString>
+          <earliestTime>-7d@h</earliestTime>
+          <latestTime>now</latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>

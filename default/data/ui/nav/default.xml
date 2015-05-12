@@ -27,6 +27,7 @@
 
   <collection label="Setup">
     <a href="/app/search_activity/setup">Setup</a>
+    <a href="/app/search_activity/support_request">Support Request</a>
     <collection label="Help">
       <view name="help" />
       <view name="installation" />
@@ -47,4 +48,3 @@
   </collection>
 
 </nav>
-

@@ -3,51 +3,47 @@
   <row>
       <table>
         <title>Users Logging In for the First Time with Many Failed Searches (&gt; 5 and &gt; 10%, less than 100 searches total)</title>
-        <search>
-          <query>| tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user search_status _time span=1d   | stats min(first) as first sum(eval(if(search_status="canceled" OR search_status="failed", count, 0))) as bad  sum(count) as total by user | where bad&gt;5 AND (bad/total &gt; 0.1) AND first &gt; relative_time(now(), "-7d") AND total &lt; 100 | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name mail department manager | lookup LDAPSearch dn as manager OUTPUTNEW name as ManagerName | fields - manager | convert ctime(first) | sort - bad | fields user name department mail ManagerName first bad total</query>
-          <earliest>0</earliest>
-          <latest></latest>
-        </search>
+        <searchString>
+          | tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user search_status _time span=1d   | stats min(first) as first sum(eval(if(search_status="canceled" OR search_status="failed", count, 0))) as bad  sum(count) as total by user | where bad&gt;5 AND (bad/total &gt; 0.1) AND first &gt; relative_time(now(), "-7d") AND total &lt; 100 | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name mail department manager | lookup LDAPSearch dn as manager OUTPUTNEW name as ManagerName | fields - manager | convert ctime(first) | sort - bad | fields user name department mail ManagerName first bad total
+	</searchString>
+          <earliestTime>0</earliestTime>
+          <latestTime></latestTime>
       </table>
   </row>
   <row>
       <table>
         <title>Users with More Failed or Canceled Searches than Normal in Last Three Days</title>
-        <search>
-          <query>| tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user search_status _time span=1d  | bucket _time span=1d | stats sum(eval(if(search_status="canceled" OR search_status="failed", count, 0))) as bad  sum(count) as total by user, _time | eventstats avg(total) as avgtotal avg(bad) as avgbad sum(total) as NumResults by user | where _time &gt; relative_time(_time, "-3d") | stats sum(bad) as bad sum(total) as total values(avgbad) as avgbad values(avgtotal) as avgtotal values(NumResults) as NumResults by user | eval TypicalRatio = avgbad/avgtotal  | eval RecentRatio = bad/total | where RecentRatio &gt; 1.5*TypicalRatio AND NumResults &gt; 300</query>
-          <earliest></earliest>
-          <latest></latest>
-        </search>
+        <searchString>
+          | tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user search_status _time span=1d  | bucket _time span=1d | stats sum(eval(if(search_status="canceled" OR search_status="failed", count, 0))) as bad  sum(count) as total by user, _time | eventstats avg(total) as avgtotal avg(bad) as avgbad sum(total) as NumResults by user | where _time &gt; relative_time(_time, "-3d") | stats sum(bad) as bad sum(total) as total values(avgbad) as avgbad values(avgtotal) as avgtotal values(NumResults) as NumResults by user | eval TypicalRatio = avgbad/avgtotal  | eval RecentRatio = bad/total | where RecentRatio &gt; 1.5*TypicalRatio AND NumResults &gt; 300
+	</searchString>
+          <earliestTime></earliestTime>
+          <latestTime></latestTime>
       </table>
   </row>
   <row>
       <table>
         <title>Users who Logged In and Then Left</title>
-        <search>
-          <query>| tstats local=t count as NumLogin min(_time) as EarliestLogin max(_time) as LastLogin values(result) as Results from `SA_Events` where type=login groupby user | join type=outer user [| tstats local=t count as NumSearches from `SA_SearchHistory` groupby user] | where NumSearches &lt; 5 OR isnull(NumSearches) AND NumLogin &lt; 30 | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name manager mail department | lookup LDAPSearch dn as manager OUTPUTNEW name as ManagerName | fields user name department mail ManagerName EarliestLogin LastLogin NumLogin NumSearches | eval NumSearches=if(isnull(NumSearches),0,NumSearches) | sort - LastLogin| convert ctime(EarliestLogin) ctime(LastLogin)</query>
-          <earliest></earliest>
-          <latest></latest>
-        </search>
+        <searchString>
+          | tstats local=t count as NumLogin min(_time) as EarliestLogin max(_time) as LastLogin values(result) as Results from `SA_Events` where type=login groupby user | join type=outer user [| tstats local=t count as NumSearches from `SA_SearchHistory` groupby user] | where NumSearches &lt; 5 OR isnull(NumSearches) AND NumLogin &lt; 30 | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name manager mail department | lookup LDAPSearch dn as manager OUTPUTNEW name as ManagerName | fields user name department mail ManagerName EarliestLogin LastLogin NumLogin NumSearches | eval NumSearches=if(isnull(NumSearches),0,NumSearches) | sort - LastLogin| convert ctime(EarliestLogin) ctime(LastLogin)
+	</searchString>
       </table>
   </row>
   <row>
       <table>
         <title>Users Whose First Logon (in indexed history) was In Last 7 Days</title>
-        <search>
-          <query>| tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user | lookup LDAPSearch sAMAccountName as user OUTPUTNEW mail name | where first &gt; relative_time(now(),"-7d")  | sort - first | convert ctime(first) ctime(last) | rename first as "First Logon Found" last as "Last Logon Found" count as "# Searches Run" | fields user name mail First* Last* #*</query>
-          <earliest></earliest>
-          <latest></latest>
-        </search>
+        <searchString>
+          | tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user | lookup LDAPSearch sAMAccountName as user OUTPUTNEW mail name | where first &gt; relative_time(now(),"-7d")  | sort - first | convert ctime(first) ctime(last) | rename first as "First Logon Found" last as "Last Logon Found" count as "# Searches Run" | fields user name mail First* Last* #*
+	</searchString>
       </table>
   </row>
   <row>
       <table>
         <title>Users Who Last Logged in More than 4 Months Ago and Still in LDAP</title>
-        <search>
-          <query>| tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user | lookup LDAPSearch sAMAccountName as user OUTPUTNEW mail name | where len(mail)&gt;0 AND last  &lt; relative_time(now(),"-4mon")  | sort - last | convert ctime(first) ctime(last) | rename first as "First Logon Found" last as "Last Logon Found" count as "# Searches Run" | fields user name mail First* Last* #*</query>
-          <earliest>0</earliest>
-          <latest></latest>
-        </search>
+        <searchString>
+          | tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user | lookup LDAPSearch sAMAccountName as user OUTPUTNEW mail name | where len(mail)&gt;0 AND last  &lt; relative_time(now(),"-4mon")  | sort - last | convert ctime(first) ctime(last) | rename first as "First Logon Found" last as "Last Logon Found" count as "# Searches Run" | fields user name mail First* Last* #*
+	</searchString>
+          <earliestTime>0</earliestTime>
+          <latestTime></latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>

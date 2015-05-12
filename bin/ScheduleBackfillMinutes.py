@@ -5,7 +5,10 @@ from xml.dom import minidom
 import splunk.entity, splunk.Intersplunk
 settings = dict()
 records = splunk.Intersplunk.readResults(settings = settings, has_header = True)
-
+entity = splunk.entity.getEntity('/server','settings', namespace='search_activity', sessionKey=settings['sessionKey'], owner='-')
+mydict = dict() 
+mydict = entity
+myPort = mydict['mgmtHostPort']
 
 d = dict()
 for s in sys.argv:
@@ -44,7 +47,7 @@ crontab = str(now.minute) + " " + str(now.hour) + " " + str(now.day) + " " + str
 #print macrovalue
 if d['type'] == "searchhistory":
 
-	base_url = "https://127.0.0.1:8089"
+	base_url = "https://127.0.0.1:" + myPort
 
 	#print base_url + '/servicesNS/nobody/search_activity/properties/macros/test'
 
@@ -60,7 +63,7 @@ if d['type'] == "searchhistory":
 
 elif d['type'] == "clearevents":
 
-	base_url = "https://127.0.0.1:8089"
+	base_url = "https://127.0.0.1:" + myPort
 
 
 	request = urllib2.Request(base_url + '/servicesNS/' + settings['owner'] + '/search_activity/saved/searches',
@@ -72,7 +75,7 @@ elif d['type'] == "clearevents":
 
 elif d['type'] == "clearsearch":
 
-	base_url = "https://127.0.0.1:8089"
+	base_url = "https://127.0.0.1:" + myPort
 
 
 	request = urllib2.Request(base_url + '/servicesNS/' + settings['owner'] + '/search_activity/saved/searches',
@@ -84,7 +87,7 @@ elif d['type'] == "clearsearch":
 
 elif d['type'] == "events":
 
-	base_url = "https://127.0.0.1:8089"
+	base_url = "https://127.0.0.1:" + myPort
 
 	#print base_url + '/servicesNS/nobody/search_activity/properties/macros/test'
 

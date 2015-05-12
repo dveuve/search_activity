@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Support Request | Splunk</title>
+    <link rel="shortcut icon" href="{{SPLUNKWEB_URL_PREFIX}}/static/img/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="/en-US/static/@237341.3/css/build/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="/en-US/static/@237341.3/css/build/pages/dashboard-simple-bootstrap.min.css" />
+    <!--[if IE 7]><link rel="stylesheet" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/sprites-ie7.css" /><![endif]-->
+</head>
+<body class="simplexml preload locale-en">
+<!-- 
+BEGIN LAYOUT
+This section contains the layout for the dashboard. Splunk uses proprietary
+styles in <div> tags, similar to Bootstrap's grid system. 
+-->
+<a class="navSkip" href="#navSkip" tabindex="1">Screen reader users, click here to skip the navigation bar</a>
+<div class="header splunk-header">
+        <div id="placeholder-splunk-bar">
+            <a href="{{SPLUNKWEB_URL_PREFIX}}/app/launcher/home" class="brand" title="splunk &gt; listen to your data">splunk<strong>&gt;</strong></a>
+        </div>
+            <div id="placeholder-app-bar"></div>
+</div>
+<a id="navSkip"></a>
+<div class="dashboard-body container-fluid main-section-body" data-role="main">
+    <div class="dashboard-header clearfix">
+        <h2>Support Request</h2>
+    </div>
+  <div>
+    <form action="https://www.davidveuve.com/SA_Support.cgi" method="post">
+    <table style="width:800px;">
+      <tr>
+        <td>Email Address:</td>
+        <td><input name="email" id="email" type="text" /></td>
+      </tr>
+      <tr>
+        <td>Issue Type: </td>
+        <td><select name="issuetype" id="issuetype">
+              <option value="notselected">-- Please Choose --</option>
+              <option value="question">General Question</option>
+              <option value="ldap">LDAP</option>
+              <option value="installdata">Installation - Data Not Showing Up</option>
+              <option value="postinstalldata">Post Installation - Data No Longer Showing Up</option>
+              <option value="er">Enhancement Request</option>
+              <option value="other">Other</option>
+            </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Subject:</td>
+        <td><input name="subject" id="subject" length="200" type="text" /></td>
+      </tr>
+      
+      <tr>
+        <td colspan="2">
+          Issue Description: <br /><textarea name="issue" id="issue" rows="8" cols="400" ></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <p><input type="checkbox" name="optin" value="optin" />&nbsp;Receive Product Updates / Surveys? <br />
+          No spam (after all, this is a free app). Just a very occasional email announcing features in major new releases, and perhaps a few surveys to understand value.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <p>Diagnostic Information Gathering:<br />
+            <input type="checkbox" onclick="return false" id="basicserver" name="basicserver" checked readonly /> General Server Info (Version, OS Version, etc.)<br />
+            <input type="checkbox" onclick="return false" id="datastore" name="datastore" checked readonly> Datastore Information<br />
+            <input type="checkbox" onclick="return false" id="macroconfig" name="macroconfig" checked readonly> Macro Configuration (Search Activity App only)<br />
+            <input type="checkbox" onclick="return false" id="scriptedinputs" name="scriptedinputs" checked readonly> Status of and Logs from Search Activity App scripted inputs<br />
+            <input type="checkbox" onclick="return false" id="sausage" name="sausage" checked readonly> Usage History for Search Activity App (e.g., views hit, etc.)<br />
+            <input type="checkbox" onclick="updateString()" id="anonactivity" name="anonactivity" checked> Anonymous Usage Characteristics<br />
+            <input type="checkbox" onclick="updateString()" id="volume" name="volume" checked> Volume Indexed<br />
+            <input type="checkbox" onclick="updateString()" id="numservers" name="numservers" checked> Number of Servers in Environment<br />
+              <input type="checkbox" onclick="updateString()" id="lifetime" name="lifetime" checked> Lifetime of Searches (e.g., avg search over last day, or last month)<br /><br />
+                <b>Important: All Information Submitted (excluding the email address, and any information you put into the text boxes) is anonymized. No server names, IPs, or etc. will be transmitted. Click <a id="searchlink" href="#">here</a> to see the searches being run.</b>
+          </p>
+          <input type="hidden" name="data" id="data" />
+          <input type="hidden" name="authcode" id="authcode" value="search_activity_app_auth_code_123456" />
+      
+          <p>Submit <input type="submit" value="Please Wait... Loading" id="submit" disabled /></p>
+              <p>Please note that this support is NOT provided by Splunk® -- this is provided on a best effort basis by the app creator (David Veuve). That said, we are always eager to help Splunk customers be successful, and learn new use cases for helping customers with adoption efforts. Please let us know of any unfulfilled needs from this app or your Splunk adoption efforts, and we will work hard to help make them happen.</p> 
+        </td>
+      </tr>    
+    </table>
+    </form>
+  </div>
+
+</div>
+<div class="footer"></div>
+
+<!-- 
+END LAYOUT
+-->
+
+<script src="{{SPLUNKWEB_URL_PREFIX}}/config?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/i18n.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/i18ncatalog?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/build/simplexml.min/config.js"></script>
+<script type="text/javascript">
+  
+require.config({
+    baseUrl: "{{SPLUNKWEB_URL_PREFIX}}/static/js",
+    waitSeconds: 0 // Disable require.js load timeout
+});
+
+//
+// LIBRARY REQUIREMENTS
+//
+// In the require function, we include the necessary libraries and modules for
+// the HTML dashboard. Then, we pass variable names for these libraries and
+// modules as function parameters, in order.
+// 
+// When you add libraries or modules, remember to retain this mapping order
+// between the library or module and its function parameter. You can do this by
+// adding to the end of these lists, as shown in the commented examples below.
+
+//updateString();
+  
+  Global_Mgmt_Port=-1
+function updateString(){
+  	if(Global_Mgmt_Port != -1){
+	    var mainSearch = splunkjs.mvc.Components.getInstance("pullbasesearch");
+   	 mainSearch.cancel()
+   	 var searchString = '| generatediag debug=1 mgmtport=' + Global_Mgmt_Port + ' anonactivity=' + document.getElementById('anonactivity').checked.toString() + ' volume=' + document.getElementById('volume').checked.toString() + ' numservers=' + document.getElementById('numservers').checked.toString() + ' lifetime=' + document.getElementById('lifetime').checked.toString()
+   	 myLink = "/app/search_activity/search?q=" + encodeURIComponent(searchString)
+   	 document.getElementById("searchlink").href=myLink
+   	 mainSearch.search.attributes.search = '| generatediag mgmtport=' + Global_Mgmt_Port + ' anonactivity=' + document.getElementById('anonactivity').checked.toString() + ' volume=' + document.getElementById('volume').checked.toString() + ' numservers=' + document.getElementById('numservers').checked.toString() + ' lifetime=' + document.getElementById('lifetime').checked.toString() + ' | where description="compressed"'
+   	 mainSearch.startSearch()
+   	 document.getElementById("submit").disabled = true;
+   	 document.getElementById("submit").value = "Please Wait... Loading";
+    }            
+}  
+  
+
+  
+require([
+    "splunkjs/mvc",
+    "splunkjs/mvc/utils",
+    "splunkjs/mvc/tokenutils",
+    "underscore",
+    "jquery",
+    "splunkjs/mvc/simplexml",
+    "splunkjs/mvc/headerview",
+    "splunkjs/mvc/footerview",
+    "splunkjs/mvc/simplexml/dashboardview",
+   // "splunkjs/mvc/simplexml/dashboard/panelref",
+    "splunkjs/mvc/simplexml/element/chart",
+    "splunkjs/mvc/simplexml/element/event",
+    "splunkjs/mvc/simplexml/element/html",
+    "splunkjs/mvc/simplexml/element/list",
+    "splunkjs/mvc/simplexml/element/map",
+    "splunkjs/mvc/simplexml/element/single",
+    "splunkjs/mvc/simplexml/element/table",
+    "splunkjs/mvc/simpleform/formutils",
+   // "splunkjs/mvc/simplexml/eventhandler",
+    "splunkjs/mvc/simpleform/input/dropdown",
+    "splunkjs/mvc/simpleform/input/radiogroup",
+    "splunkjs/mvc/simpleform/input/multiselect",
+    "splunkjs/mvc/simpleform/input/checkboxgroup",
+    "splunkjs/mvc/simpleform/input/text",
+    "splunkjs/mvc/simpleform/input/timerange",
+    "splunkjs/mvc/simpleform/input/submit",
+    "splunkjs/mvc/searchmanager",
+    "splunkjs/mvc/savedsearchmanager",
+    "splunkjs/mvc/postprocessmanager",
+    "splunkjs/mvc/simplexml/urltokenmodel"
+    // Add comma-separated libraries and modules manually here, for example:
+    // ..."splunkjs/mvc/simplexml/urltokenmodel",
+    // "splunkjs/mvc/checkboxview"
+    ],
+    function(
+        mvc,
+        utils,
+        TokenUtils,
+        _,
+        $,
+        DashboardController,
+        HeaderView,
+        FooterView,
+        Dashboard,
+     //   PanelRef,
+        ChartElement,
+        EventElement,
+        HtmlElement,
+        ListElement,
+        MapElement,
+        SingleElement,
+        TableElement,
+        FormUtils,
+     //   EventHandler,
+        DropdownInput,
+        RadioGroupInput,
+        MultiSelectInput,
+        CheckboxGroupInput,
+        TextInput,
+        TimeRangeInput,
+        SubmitButton,
+        SearchManager,
+        SavedSearchManager,
+        PostProcessManager,
+        UrlTokenModel
+
+        // Add comma-separated parameter names here, for example: 
+        // ...UrlTokenModel, 
+        // CheckboxView
+        ) {
+
+
+
+        var pageLoading = true;
+
+
+        // 
+        // TOKENS
+        //
+        
+        // Create token namespaces
+        var urlTokenModel = new UrlTokenModel();
+        mvc.Components.registerInstance('url', urlTokenModel);
+        var defaultTokenModel = mvc.Components.getInstance('default', {create: true});
+        var submittedTokenModel = mvc.Components.getInstance('submitted', {create: true});
+
+        urlTokenModel.on('url:navigate', function() {
+            defaultTokenModel.set(urlTokenModel.toJSON());
+            if (!_.isEmpty(urlTokenModel.toJSON()) && !_.all(urlTokenModel.toJSON(), _.isUndefined)) {
+                submitTokens();
+            } else {
+                submittedTokenModel.clear();
+            }
+        });
+
+        // Initialize tokens
+        defaultTokenModel.set(urlTokenModel.toJSON());
+
+        function submitTokens() {
+            // Copy the contents of the defaultTokenModel to the submittedTokenModel and urlTokenModel
+            FormUtils.submitForm({ replaceState: pageLoading });
+        }
+
+        function setToken(name, value) {
+            defaultTokenModel.set(name, value);
+            submittedTokenModel.set(name, value);
+        }
+
+        function unsetToken(name) {
+            defaultTokenModel.unset(name);
+            submittedTokenModel.unset(name);
+        }
+
+        
+        
+        //
+        // DV Stuff
+        //
+
+  
+  
+  
+  
+          var PullMgmtPort = new SearchManager({
+            "id": "PullMgmtPort",
+            "cancelOnUnload": true,
+            "latest_time": "now",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": '| rest splunk_server=local "/services/server/settings" | fields mgmtHostPort',
+            "app": "search_activity",
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+  
+
+        var mgmtPortSearch = splunkjs.mvc.Components.getInstance("PullMgmtPort");
+        var mgmtPortResults = mgmtPortSearch.data('results', { output_mode:'json', count:0 });
+
+        mgmtPortSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+
+
+
+            if(mgmtPortSearch.attributes.data.resultCount == 0) {
+				 console.log("Couldn't get the mgmt port... :(")
+  				document.getElementById("data").value="";
+  				document.getElementById("submit").disabled = false;
+			  	document.getElementById("submit").value = "Submit";
+                
+              return;
+            }       
+
+            mgmtPortResults.on("data", function() {
+                var data = mgmtPortResults.data().results;
+                console.log("Here are my results: ", data)
+                Global_Mgmt_Port = data[0].mgmtHostPort
+
+                var mainSearch = splunkjs.mvc.Components.getInstance("pullbasesearch");
+    			mainSearch.cancel()
+    			mainSearch.search.attributes.search = '| generatediag mgmtport=' + Global_Mgmt_Port + ' anonactivity=' + document.getElementById('anonactivity').checked.toString() + ' volume=' + document.getElementById('volume').checked.toString() + ' numservers=' + document.getElementById('numservers').checked.toString() + ' lifetime=' + document.getElementById('lifetime').checked.toString() + ' | where description="compressed"'
+  				console.log("Got my new managmenet port..", Global_Mgmt_Port)
+  				console.log("My new search string is:", mainSearch.search.attributes.search)
+  				mainSearch.startSearch()
+            });
+          });
+
+  
+  
+  
+  
+  
+          var pullbasesearch = new SearchManager({
+            "id": "pullbasesearch",
+            "cancelOnUnload": true,
+            "latest_time": "now",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": '| generatediag | where description="compressed"',
+            "app": "search_activity",
+            "auto_cancel": 90,
+            "preview": true,
+            "autostart": false,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+
+        var mainSearch = splunkjs.mvc.Components.getInstance("pullbasesearch");
+        var myResults = mainSearch.data('results', { output_mode:'json', count:0 });
+
+        mainSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+
+
+
+            if(mainSearch.attributes.data.resultCount == 0) {
+              return;
+            }       
+
+            myResults.on("data", function() {
+                var data = myResults.data().results;
+                console.log("Here are my results: ", data)
+  				document.getElementById("data").value=data[0].output;
+  				document.getElementById("submit").disabled = false;
+			  	document.getElementById("submit").value = "Submit";
+                
+            });
+          });
+
+
+  
+
+
+        //
+        // SPLUNK HEADER AND FOOTER
+        //
+
+        new HeaderView({
+            id: 'header',
+            section: 'dashboards',
+            el: $('.header'),
+            acceleratedAppNav: true,
+            useSessionStorageCache: true,
+            splunkbar: true,
+            appbar: true,
+            litebar: false,
+        }, {tokens: true}).render();
+
+        new FooterView({
+            id: 'footer',
+            el: $('.footer')
+        }, {tokens: true}).render();
+
+
+        //
+        // DASHBOARD EDITOR
+        //
+
+        new Dashboard({
+            id: 'dashboard',
+            el: $('.dashboard-body'),
+            showTitle: true,
+            editable: true
+        }, {tokens: true}).render();
+
+
+        //
+        // VIEWS: VISUALIZATION ELEMENTS
+        //
+
+
+        // Initialize time tokens to default
+        if (!defaultTokenModel.has('earliest') && !defaultTokenModel.has('latest')) {
+            defaultTokenModel.set({ earliest: '0', latest: '' });
+        }
+
+        submitTokens();
+
+
+
+        updateString();
+
+
+        //
+        // DASHBOARD READY
+        //
+
+        DashboardController.ready();
+        pageLoading = false;
+
+    }
+);
+</script>
+</body>
+</html>

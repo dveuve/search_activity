@@ -1,0 +1,66 @@
+<form>
+  <label>Most Popular Explicit Sourcetypes and Indexes</label>
+  <fieldset submitButton="false">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliestTime>0</earliestTime>
+        <latestTime></latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <searchTemplate>
+    <![CDATA[
+| tstats values(actualsearch) as search from `SA_SearchHistory` groupby searchid | rex field=search "sourcetype\!?=\s*(?<sourcetype>[^\s\)]*)" | rex mode=sed field=sourcetype "s/[ \"\\\]//g" | rex field=search "index\!?=\s*(?<index>[^\s\)]*)" | rex mode=sed field=index "s/[ \"\\\]//g" | multireport [ stats count by sourcetype ] [stats count by index] | sort - count
+	 ]]>
+  </searchTemplate>
+  <earliestTime>$field1.earliest$</earliestTime>
+ <latestTime>$field1.latest$</latestTime>
+  <row>
+    <html>
+      <p>This report will provide you with insight into what people are searching for, what fields they are using, etc. It is a great way to explore what data sources are being used in your environment. At present, all of the counts below are based on how often the index/sourcetype/fieldname occurs, but it could also be expanded to look at the total runtime associated with each data type if that's something you were interested in. </p>
+      <p>The major limitation here is that it is only looking at what people reference. For example, if they say index=xyz, or index!=xyz, or index=xyz sourcetype=abc | stats avg(field123), we would detect xyz, abc and field123 in the appropriate places. But if someone does index=* we won't know what is actually being searched.</p>
+    </html>    
+  </row>
+  <row>
+  <table>
+    <title>Most Popular Indexes</title>
+    <searchPostProcess>| search index=*</searchPostProcess>
+    <fields>index count</fields>
+    <drilldown>
+      <set token="mydrilldown">$row.index$</set>
+      <set token="type">index</set>
+    </drilldown>
+    </table>
+    <table>
+    <title>Most Popular Sourcetypes</title>
+          <searchPostProcess>| search sourcetype=*</searchPostProcess>
+      <fields>sourcetype count</fields>
+    <drilldown>
+      <set token="mydrilldown">$row.sourcetype$</set>
+      <set token="type">sourcetype</set>
+    </drilldown>
+  </table>
+  </row>
+  <row>
+    <table depends="mydrilldown">
+    <title>(Drilldown) Most Popular fields for $type$ $mydrilldown$</title>
+      <searchString>
+        <![CDATA[ 
+| tstats values(actualsearch) as search from search_activity.searchhistory where actualsearch=*$mydrilldown$* groupby searchid  | rex field=search "sourcetype\!?=\s*(?<sourcetype>[^\s\)]*)"  | rex mode=sed field=sourcetype "s/[ \"\\\]//g"  | rex field=search "index\!?=\s*(?<index>[^\s\)]*)"  | rex mode=sed field=index "s/[ \"\\\]//g" | search $type$="$mydrilldown$" | rex field=search "^(search\s*)?(?<firstcmd>.*?)(\||$)"  | rex field=search "\|\s*(fields|table) (?<fieldlist>.*?)(\||$)" | eval fieldlist  = replace(fieldlist , ",", "") | makemv fieldlist  delim=" " | rex field=search "\|\s*(stats|eventstats|streamstats) (?<statslist>.*?)(\||$)" | rex max_match=100 field=firstcmd "(?<firstfield>[\w\d_-]*)[!><]?=" | rex max_match=100 field=statslist "\((?<statsfield>[^\)\(]{2,})" | eval fields=mvappend(mvappend(firstfield, statsfield), fieldlist) | eval fields=mvfilter(fields!="earliest" AND fields!="latest" AND fields!="index" AND fields!="_time" AND fields!="hoursago") | stats values(fields) as fields by searchid | stats count by fields | sort - count
+]]>
+      </searchString>
+    </table>
+  </row>
+  <row>
+    <table depends="mydrilldown">
+    <title>(Drilldown) Most Popular Searches (clustered) for $type$ $mydrilldown$</title>
+      <searchString>
+        <![CDATA[ 
+| tstats values(actualsearch) as search from search_activity.searchhistory where actualsearch=*$mydrilldown$* groupby searchid  | rex field=search "sourcetype\!?=\s*(?<sourcetype>[^\s\)]*)"  | rex mode=sed field=sourcetype "s/[ \"\\\]//g"  | rex field=search "index\!?=\s*(?<index>[^\s\)]*)"  | rex mode=sed field=index "s/[ \"\\\]//g" | search $type$="$mydrilldown$" | cluster showcount=t field=search | table cluster_count search | sort - cluster_count
+]]>
+      </searchString>
+    </table>
+  </row>
+</form>
+

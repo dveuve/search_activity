@@ -1,0 +1,12 @@
+document.getElementById("ProvideQuestions").innerHTML = "<h2>Questions To Ask</h2><ul><li><a href=\"#\" onclick=\"SetToken('Visibility_ActivityBySearchHead');\">What is my activity per search head?</a></li></ul>"
+
+function SetToken(tokenname){
+
+
+	
+            
+			    var unsubmittedTokens = mvc.Components.getInstance('default');
+			    var submittedTokens = mvc.Components.getInstance('submitted');
+			     unsubmittedTokens.set(tokenname,"I have a token!");
+			    submittedTokens.set(unsubmittedTokens.toJSON());
+}

@@ -1,0 +1,48 @@
+<form  script="check_data_availability.js">
+  <label>App Adoption Usage</label>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+    <input type="multiselect" token="sh_clause">
+      <label>Search Head</label>
+      <choice value="*">All</choice>
+      <populatingSearch earliest="$earliest$" latest="$latest$" fieldForLabel="SearchHead" fieldForValue="SearchHead">| tstats local=t count from `SA_SearchHistory` groupby SearchHead</populatingSearch>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>SearchHead=</valuePrefix>
+      <delimiter> OR </delimiter>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="user_criteria" searchWhenChanged="true">
+      <label>Select Leader (Based on Org Chart)</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <populatingSearch earliest="$earliest$" latest="$latest$" fieldForLabel="MyName" fieldForValue="tstats_search_criteria">| inputlookup LDAPMgmtChain | makemv delim="|" ManagementChain_sAMAccountName | stats values(sAMAccountName) as user by ManagementChain_sAMAccountName | eval tstats_search_criteria="(user=" . mvjoin(user," OR user=") . ")" | lookup LDAPSearch sAMAccountName as ManagementChain_sAMAccountName OUTPUTNEW name | eval MyName=name . " (" . ManagementChain_sAMAccountName . ")" | sort MyName</populatingSearch>
+    </input>
+    <input type="dropdown" token="tagged_user_criteria" searchWhenChanged="true">
+      <label>Tagged Users</label>
+      <choice value="*">All Users</choice>
+      <searchString>
+        |inputlookup TaggedUsers | stats values(user) as user by category | eval search="(user=" . mvjoin(user, " OR user=") . ")" | stats values(category) as category by search | eval category=mvjoin(category," / ")
+	</searchString>
+      <fieldForLabel>category</fieldForLabel>
+      <fieldForValue>search</fieldForValue>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+      <table>
+        <title>Overall App Usage</title>
+        <searchString>
+          | tstats local=t  count  values(user) as user dc(user) as usercount from `SA_Events` where type=weblog  groupby myapp  _time span=1d  | stats sum(count) as "# of Hits Overall" sparkline(sum(count)) as "Usage Trend" avg(usercount) as "# of Users Active Per Day" dc(user) as "# of Users"  by myapp | sort - "# of Hits Overall" | rename myapp as "App Name" | fieldformat "# of Users Active Per Day" = round('# of Users Active Per Day',1)
+	</searchString>
+          <earliestTime>-30d@d</earliestTime>
+          <latestTime>now</latestTime>
+      </table>
+  </row>
+</form>

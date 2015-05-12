@@ -4,19 +4,19 @@
     <input type="time" token="field1">
       <label></label>
       <default>
-        <earliest>-30d@d</earliest>
-        <latest>now</latest>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
       </default>
     </input>
   </fieldset>
   <row>
       <chart>
         <title>Real-time Search Concurrency Over Time</title>
-        <search>
-          <query>| tstats local=t   values(exec_time) as exec_time values(total_run_time) as total_run_time from `SA_SearchHistory` where searchtype=realtime groupby searchid | eval _time = exec_time  | append [|gentimes start=08/01/2014:0:0:0 end=09/24/2014:0:0:0 increment=1h | eval total_run_time=0 | eval _time = starttime | eval exec_time = starttime] | concurrency duration=total_run_time start=exec_time| timechart span=2h max(concurrency) as max_concurrency median(eval(if(concurrency&gt;0,concurrency,null))) as median_concurrency| foreach *concurrency [eval &lt;&lt;FIELD&gt;&gt;=&lt;&lt;FIELD&gt;&gt; - 1] | timechart bins=50 values(*) as *</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t   values(exec_time) as exec_time values(total_run_time) as total_run_time from `SA_SearchHistory` where searchtype=realtime groupby searchid | eval _time = exec_time  | append [|gentimes start=08/01/2014:0:0:0 end=09/24/2014:0:0:0 increment=1h | eval total_run_time=0 | eval _time = starttime | eval exec_time = starttime] | concurrency duration=total_run_time start=exec_time| timechart span=2h max(concurrency) as max_concurrency median(eval(if(concurrency&gt;0,concurrency,null))) as median_concurrency| foreach *concurrency [eval &lt;&lt;FIELD&gt;&gt;=&lt;&lt;FIELD&gt;&gt; - 1] | timechart bins=50 values(*) as *
+        </searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">visible</option>

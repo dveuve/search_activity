@@ -1,22 +1,130 @@
-<form>
+<form script="tsidx_troubleshooting.js">
   <label>Troubleshooting TSIDX Population</label>
   <fieldset submitButton="false">
     <input type="time" token="field1" searchWhenChanged="true">
-      <label></label>
+      <label/>
       <default>
-        <earliest>-15m</earliest>
-        <latest>now</latest>
+        <earliestTime>-15m</earliestTime>
+        <latestTime>now</latestTime>
       </default>
+    </input>
+    <input type="radio" token="IncludePartials" searchWhenChanged="true">
+      <label>Include Incomplete Runs in Overview</label>
+      <choice value="*">Yes</choice>
+      <choice value="type=Events OR (status=* search_time_earliest=*)">No</choice>
+      <default>type=Events OR (status=* b_earliest=*)</default>
+    </input>
+    <input type="radio" token="backfilltypes" searchWhenChanged="true">
+      <label>Backfill Types</label>
+      <choice value="*">Both</choice>
+      <choice value="(type=SearchHistory OR source=SA-SearchHistory-ParseData OR CheckDataStats-search.py OR backfill_search_*)">Search</choice>
+      <choice value="(type=Events OR source=SA-Events-ParseData OR CheckDataStats-events.py OR backfill_events_*)">Events</choice>
+      <default>*</default>
     </input>
   </fieldset>
   <row>
+      <html>
+      <table style="width:400px">
+        <tr>
+          <td/>
+          <td>Search History</td>
+          <td>Events</td>
+        </tr>
+        <tr>
+          <td>Configured Backfill (seconds)</td>
+          <td id="backfill_search_window"/>
+          <td id="backfill_events_window"/>
+        </tr>
+        <tr>
+          <td>Remaining Backfill (seconds)</td>
+          <td id="backfill_search_internal"/>
+          <td id="backfill_events_internal"/>
+        </tr>
+        <tr>
+          <td>Running Jobs</td>
+          <td id="search_running_jobs"/>
+          <td id="events_running_jobs"/>
+        </tr>
+        <tr>
+          <td>Recently Completed Jobs</td>
+          <td id="search_past_jobs"/>
+          <td id="events_past_jobs"/>
+        </tr>
+      </table>
+        
+    </html>
+      <chart>
+        <title>Events in TSIDX (all time)</title>
+        <searchString>| tstats local=t count as Searches from `SA_SearchHistory` groupby _time span=1d  | join type=outer _time [| tstats local=t count as Events from `SA_Events` groupby _time span=1d]</searchString>
+        <earliestTime>0</earliestTime>
+        <latestTime/>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+  </row>
+  <row>
+      <html>
+      <div id="AnalysisPlaceholder"> </div>
+    </html>
+  </row>
+  <row>
+      <event depends="$id$">
+        <title>Summary Drilldown -- shows the runtime logs from the event you most recently expanded ($id$)</title>
+        <searchString>source="SA-*-ParseData" id=$id$ sourcetype="sa" $backfilltypes$</searchString>
+        <earliestTime>$field1.earliest$</earliestTime>
+        <latestTime>$field1.latest$</latestTime>
+        <option name="count">10</option>
+        <option name="list.drilldown">full</option>
+        <option name="list.wrap">1</option>
+        <option name="maxLines">5</option>
+        <option name="raw.drilldown">full</option>
+        <option name="rowNumbers">0</option>
+        <option name="table.drilldown">all</option>
+        <option name="table.wrap">1</option>
+        <option name="type">list</option>
+        <fields>[]</fields>
+      </event>
+  </row>
+  <row>
+      <event depends="$searchid$">
+        <title>Drilldown Status -- shows the audit logs from the run you most recently expanded ($searchid$)</title>
+        <searchString>index=_audit OR index=_internal  $searchid$</searchString>
+        <earliestTime>$field1.earliest$</earliestTime>
+        <latestTime>$field1.latest$</latestTime>
+        <option name="count">10</option>
+        <option name="list.drilldown">full</option>
+        <option name="list.wrap">1</option>
+        <option name="maxLines">5</option>
+        <option name="raw.drilldown">full</option>
+        <option name="rowNumbers">0</option>
+        <option name="table.drilldown">all</option>
+        <option name="table.wrap">1</option>
+        <option name="type">list</option>
+        <fields>[]</fields>
+      </event>
+  </row>
+  <row>
       <event>
         <title>Logs Created by Script</title>
-        <search>
-          <query>source="SA-*-ParseData" sourcetype="sa"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>source="SA-*-ParseData" sourcetype="sa" $backfilltypes$</searchString>
+        <earliestTime>$field1.earliest$</earliestTime>
+        <latestTime>$field1.latest$</latestTime>
         <option name="count">10</option>
         <option name="list.drilldown">full</option>
         <option name="list.wrap">1</option>
@@ -32,11 +140,9 @@
   <row>
       <event>
         <title>Internal Logs From Population Script</title>
-        <search>
-          <query>index=_internal sourcetype=splunkd CheckDataStats</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>index=_internal sourcetype=splunkd CheckDataStats $backfilltypes$</searchString>
+        <earliestTime>$field1.earliest$</earliestTime>
+        <latestTime>$field1.latest$</latestTime>
         <option name="count">10</option>
         <option name="list.drilldown">full</option>
         <option name="list.wrap">1</option>
@@ -51,11 +157,9 @@
   </row>
   <row>
       <table>
-        <search>
-          <query>index=_internal sourcetype=splunkd_access (backfill_search_window OR backfill_search_internal OR clearoldbackfilljobs OR updatemacro) | table _time clientip user uri status</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>index=_internal sourcetype=splunkd_access $backfilltypes$ (backfill_search_window OR backfill_search_internal OR clearoldbackfilljobs OR updatemacro) | table _time clientip user uri status</searchString>
+        <earliestTime>$field1.earliest$</earliestTime>
+        <latestTime>$field1.latest$</latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>

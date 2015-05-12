@@ -4,19 +4,19 @@
     <input type="time" token="field1">
       <label></label>
       <default>
-        <earliest>-30d@d</earliest>
-        <latest>now</latest>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
       </default>
     </input>
   </fieldset>
   <row>
       <table>
         <title>Clustered Real-time Search Activity</title>
-        <search>
-          <query>| tstats local=t max(_time) as _time max(total_run_time) as trt max(scan_count) as scan_count values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(user) as user values(result_count) from `SA_SearchHistory` where searchtype=realtime groupby searchid | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch) | cluster labelonly=t field=search  | stats values(user) as "User(s)" count as "# of Runs" avg(trt) as "Avg Runtime" sum(trt) as "Total Runtime" avg(scan_count) as "Avg Scan Count"  first(search) as "Representative Search String" by cluster_label | fields - cluster_label  | sort - "Total Runtime" | foreach *Runtime Avg* [fieldformat &lt;&lt;FIELD&gt;&gt;=round(&lt;&lt;FIELD&gt;&gt;,2)]</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t max(_time) as _time max(total_run_time) as trt max(scan_count) as scan_count values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(user) as user values(result_count) from `SA_SearchHistory` where searchtype=realtime groupby searchid | eval search = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch) | cluster labelonly=t field=search  | stats values(user) as "User(s)" count as "# of Runs" avg(trt) as "Avg Runtime" sum(trt) as "Total Runtime" avg(scan_count) as "Avg Scan Count"  first(search) as "Representative Search String" by cluster_label | fields - cluster_label  | sort - "Total Runtime" | foreach *Runtime Avg* [fieldformat &lt;&lt;FIELD&gt;&gt;=round(&lt;&lt;FIELD&gt;&gt;,2)]
+        </searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="dataOverlayMode">none</option>

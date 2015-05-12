@@ -21,11 +21,11 @@
   <row>
       <chart>
         <title>User Activity</title>
-        <search>
-          <query>| tstats local=t prestats=t count from `SA_SearchHistory` where (searchtype=adhoc* OR searchtype=dashboard* OR searchtype=realtime* ) user=$user$ groupby searchtype _time span=1h | timechart span=1h count by searchtype | join type=outer _time [| tstats local=t prestats=t count from `SA_Events` where type=login OR type=weblog user=$user$ groupby type _time span=1h| timechart span=1h count by type | rename weblog as "Dashboard View"] |  rename adhoc as "Adhoc Search" dashboard as "Dashboard Search" realtime as "Real-time Search" scheduled as "Scheduled Search" summarization as "Summarization Search" login as "Splunk Login"</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t prestats=t count from `SA_SearchHistory` where (searchtype=adhoc* OR searchtype=dashboard* OR searchtype=realtime* ) user=$user$ groupby searchtype _time span=1h | timechart span=1h count by searchtype | join type=outer _time [| tstats local=t prestats=t count from `SA_Events` where type=login OR type=weblog user=$user$ groupby type _time span=1h| timechart span=1h count by type | rename weblog as "Dashboard View"] |  rename adhoc as "Adhoc Search" dashboard as "Dashboard Search" realtime as "Real-time Search" scheduled as "Scheduled Search" summarization as "Summarization Search" login as "Splunk Login"
+        </searchString>
+          <earliestTime>$field1.earliest$</earliestTime>
+          <latestTime>$field1.latest$</latestTime>
         <option name="charting.chart">column</option>
         <option name="charting.axisY2.enabled">false</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -58,11 +58,11 @@
   <row>
       <table>
         <title>Activities</title>
-        <search>
-          <query>| tstats local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(searchtype) as searchtype values(total_run_time) as total_run_time values(result_count) as result_count values(scan_count) as scan_count values(event_count) as event_count values(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory` where (searchtype=adhoc* OR searchtype=dashboard* OR searchtype=realtime* ) user=$user$ groupby searchid | eval Message = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch)  | append [| tstats local=t values(user) as user from `SA_Events` where user=$user$ type=weblog groupby _time span=1s myview myapp| eval Message = user . " visited the dashboard '" . myview . "' in the '" . myapp . "' app." | fields - myview myapp ] | append [| tstats local=t count from `SA_Events` where user=$user$ type=login  groupby user _time span=1m | eval Message = user . " successfully or unsuccessfully (bug, pending resolution in this app) attempted to log in to Splunk " . count . " times." | fields - count ]  | fields _time searchid  total* scan* event* result* Should* searchtype Message | sort  _time</query>
-          <earliest>$selection.earliest$</earliest>
-          <latest>$selection.latest$</latest>
-        </search>
+        <searchString>
+          | tstats local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(searchtype) as searchtype values(total_run_time) as total_run_time values(result_count) as result_count values(scan_count) as scan_count values(event_count) as event_count values(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory` where (searchtype=adhoc* OR searchtype=dashboard* OR searchtype=realtime* ) user=$user$ groupby searchid | eval Message = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch)  | append [| tstats local=t values(user) as user from `SA_Events` where user=$user$ type=weblog groupby _time span=1s myview myapp| eval Message = user . " visited the dashboard '" . myview . "' in the '" . myapp . "' app." | fields - myview myapp ] | append [| tstats local=t count from `SA_Events` where user=$user$ type=login  groupby user _time span=1m | eval Message = user . " successfully or unsuccessfully (bug, pending resolution in this app) attempted to log in to Splunk " . count . " times." | fields - count ]  | fields _time searchid  total* scan* event* result* Should* searchtype Message | sort  _time
+        </searchString>
+          <earliestTime>$selection.earliest$</earliestTime>
+          <latestTime>$selection.latest$</latestTime>
         <option name="wrap">undefined</option>
         <option name="rowNumbers">undefined</option>
         <option name="drilldown">row</option>
