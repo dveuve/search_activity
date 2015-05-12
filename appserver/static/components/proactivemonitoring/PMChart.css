@@ -1,0 +1,97 @@
+.pm-x-min-label {
+	text-align: left;
+	vertical-align: top;
+	padding-left: 0px;
+}
+
+.pm-x-max-label {
+	text-align: right;
+	vertical-align: top;
+	padding-right: 0px;
+}
+
+.pm-y-max-label {
+	text-align: right;
+	vertical-align: top;
+	padding-top: 0px;
+}
+
+.pm-y-min-label {
+	text-align: right;
+	vertical-align: bottom;
+	padding-bottom: 0px;
+}
+
+.pm-dark-style .pm-chart-axis-label {
+	color: #FFFFFF;
+}
+
+.pm-light-style .pm-chart-axis-label {
+	color: #888888;
+}
+
+.pm-light-style .pm-legend {
+	color: #888888;
+}
+
+.pm-dark-style .pm-legend {
+	color: #E4E4E4;
+}
+
+.pm-legend {
+	font-weight: normal;
+	font-size: 10px;
+	font-family: Lato, sans-serif;
+}
+
+.pm-legend-global {
+	float: left;
+	clear: both;
+	height: 5px;
+	width: 25px;
+}
+
+.pm-dark-style .pm-legend-global-inner {
+	background: #909090;
+}
+
+.pm-dark-style .pm-legend-global-outer {
+	background: #7A7A7A;
+}
+
+.pm-dark-style .pm-legend-specific {
+	background: #FFFFFF;
+}
+
+.pm-light-style .pm-legend-specific {
+	background: #333333;
+}
+
+.pm-light-style .pm-legend-global-inner {
+	background: #D4D3D4;
+}
+
+.pm-light-style .pm-legend-global-outer {
+	background: #ECECEC;
+}
+
+
+.pm-chart-axis-label {
+	font-weight: normal;
+	font-size: 10px;
+	font-family: Lato, sans-serif;
+}
+
+.pm-chart-plot-wrapper {
+	border-top: 1px solid #444444;
+	border-bottom: 1px solid #444444;
+}
+
+.pm-search-message-container {
+	position: relative;
+	top: -90px;
+}
+
+.pm-chart-layout .splunk-message-container.compact {
+	padding-bottom: 0px;
+}

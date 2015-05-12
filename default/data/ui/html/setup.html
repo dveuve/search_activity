@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Setup | Search Activity | Splunk</title>
+    <link rel="shortcut icon" href="{{SPLUNKWEB_URL_PREFIX}}/static/img/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/pages/dashboard-simple-bootstrap.min.css" />
+    <!--[if IE 7]><link rel="stylesheet" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/sprites-ie7.css" /><![endif]-->
+    <style type="text/css">
+         .Setup_Table  {
+            width:100%;
+            
+         }
+         .Setup_Table td {
+            
+            border: 1px solid black;
+         }
+         .validated {
+            color: green;
+         }
+         .validationfailed {
+            color: red;
+         }
+         .dv input {
+            margin-left:10px;
+         }
+
+         .panel-body {
+            padding-left:15px;
+         }
+
+         .dvforcemargin {
+            margin-left:10px;
+         }
+
+         #BasicLDAPContainer {
+            display: block;
+         }
+
+         .statuscontainer {
+            display: none;
+         }
+
+         .stage-nav li {
+            display: inline;
+            margin-right: 20px;
+            font-size: 1.25em;
+         }
+
+         .ErrorPanel {
+            display: none;
+            background-color: #F99;
+            color: #600;
+            border: 1px #e60000 solid;
+         }
+
+         #dv-stage-container {
+            display:none;
+         }
+
+         .dv-loader-description div, p {
+            display: inline;
+         }
+
+         .dv-loader-progress li{
+            font-size: 1.5em;
+            margin-top: 15px;
+
+         }
+         .dv-loader-progress ul {
+            
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            margin-left: 30px;
+         }
+
+
+    </style>
+
+</head>
+<body class="simplexml preload locale-en">
+
+<!-- 
+BEGIN LAYOUT
+This section contains the layout for the dashboard. Splunk uses proprietary
+styles in <div> tags, similar to Bootstrap's grid system. 
+-->
+<a class="navSkip" href="#navSkip" tabindex="1">Screen reader users, click here to skip the navigation bar</a>
+<div class="header">
+    <div id="placeholder-splunk-bar">
+        <a href="{{SPLUNKWEB_URL_PREFIX}}/app/launcher/home" class="brand" title="splunk &gt; listen to your data">splunk<strong>&gt;</strong></a>
+    </div>
+    <div id="placeholder-app-bar"></div>
+</div>
+<a id="navSkip"></a>
+<div class="dashboard-body container-fluid main-section-body dv" data-role="main">
+    <div class="dashboard-header clearfix">
+        <h2>Setup</h2>
+        <p class="description"></p>
+    </div>
+    <div class="dashboard-row dashboard-row1">
+        <div class="dashboard-cell" style="width: 100%;">
+            <div class="dashboard-panel clearfix">                
+                <div class="panel-element-row">
+                    <div class="dashboard-element " id="element1" style="width: 100%">
+                        <div class="dv-stage-loader" id="dv-stage-loader">
+                            <div class="dv-loader-progress"  style="display:inline;">
+                                <h3>Status Items (Click to View)</h3>
+                                <ul>
+                                    <li><a href="javascript:;" onclick="SwitchSection('BasicLDAPContainer')">Basic LDAP <img src="/static/app/search_activity/loader.gif" id="BasicLDAPYesNo_Title" title="Loading" /></a></li>
+                                    <li><a href="javascript:;" onclick="SwitchSection('MgmtLDAPContainer')">LDAP Management <img src="/static/app/search_activity/loader.gif" id="MgmtLDAPYesNo_Title" title="Loading" /></a></li>
+                                   <!-- <li><a href="javascript:;" onclick="SwitchSection('MacroContainer')">Raw Data <img src="/static/app/search_activity/loader.gif" id="MacroYesNo_Title" title="Loading" /></a></li>-->
+                                    <li><a href="javascript:;" onclick="SwitchSection('FieldExtractionsContainer')">App Setup <img src="/static/app/search_activity/loader.gif" id="FXYesNo_Title" title="Loading" /></a></li>
+                                    <li><a href="javascript:;" onclick="SwitchSection('TSIDXStatusContainer')">Datastore <img src="/static/app/search_activity/loader.gif" id="TSIDXYesNo_Title" title="Loading" /></a></li>
+                                </ul>
+                            </div>
+                            <div class="dv-loader-description" style="display:inline;"><br /><br />
+                                <p style="display:inline;">The app for Search Activity ultimately depends on having a populated data store, and is substantially enhanced by integrating with LDAP. The data store (local TSIDX, if you're a Splunk expert) allows for extremely fast search in a highly controlled manner, but does introduce some hassle for backfilling your organization's data. This setup page works to make that backfill, and the general app setup easy.</p> 
+                            </div>
+                        </div>
+                        <div class="dv-stage-container" id="dv-stage-container">
+                            <div class="stage-nav">
+                                <ul>
+                                    <li><a href="javascript:;" id="link_BasicLDAP" onclick="SwitchSection('BasicLDAPContainer')">Basic LDAP <img src="/static/app/search_activity/loader.gif" id="BasicLDAPYesNo" title="Loading" /></a></li>
+                                    <li><a href="javascript:;" id="link_MgmtLDAP" onclick="SwitchSection('MgmtLDAPContainer')">LDAP Management <img src="/static/app/search_activity/loader.gif" id="MgmtLDAPYesNo" title="Loading" /></a></li>
+                               <!--     <li><a href="javascript:;" id="link_Macro" onclick="SwitchSection('MacroContainer')">Raw Data <img src="/static/app/search_activity/loader.gif" id="MacroYesNo" title="Loading" /></a></li> -->
+                                    <li><a href="javascript:;" id="link_FX" onclick="SwitchSection('FieldExtractionsContainer')">App Setup <img src="/static/app/search_activity/loader.gif" id="FXYesNo" title="Loading" /></a></li>
+                                    <li><a href="javascript:;" id="link_TSIDX" onclick="SwitchSection('TSIDXStatusContainer')">Datastore <img src="/static/app/search_activity/loader.gif" id="TSIDXYesNo" title="Loading" /></a></li>
+                                </ul>
+                            </div>
+                            <div class="statuscontainer" id="BasicLDAPContainer">
+                                <div class="panel-head">
+                                    <h3 style="font-weight: bold">Basic LDAP Data</h3>
+                                </div>
+                                <div  class="panel-body">
+                                    <div id="BasicLDAPErrors" class="ErrorPanel"></div>
+                                    <h3>Lookup Data</h3>
+                                    <div id="LDAPOptions">
+                                        <p>You have three options for configuring LDAP Setup. </p>
+                                        <form name="ldap" id="ldapform"> 
+                                            <div>
+                                                <input type="radio" name="ldapoptions" onclick="ldapToggle()" value="noldap" id="ldapoptions-noldap" />No LDAP
+                                            </div> 
+                                            <div>
+                                                <input type="radio" name="ldapoptions" onclick="javascript:ldapToggle()"  value="sa-ldap" id="ldapoptions-saldap" />SA-LDAPSearch 
+                                                <div style="display:none;" id="saldap-domain-p">SA LDAP Domain:
+
+                                                    <div class="fieldset">
+                                                        <div class="input input-dropdown" id="ldapdomains">
+                                                            <label>Domains</label>
+                                                        </div>
+                                                        <div>Automatic Search Scheduled (providing regular results?): <div id="ldapsearch_scheduled" style="display:inline;"></div><input type="button" value="Enable Scheduled Search" id="enable-scheduled-basic-ldap" style="display:none;" onclick="EnableSearch('BasicLDAP')" /></div>
+                                                    </div>
+                                                    <div>
+                                                        <input type="button" id="updateldapmacro" value="Update Domain" onclick="UpdateLDAP()" />
+                                                        <input id="updateldaprun" type="button" onclick="RegenerateLDAP()" value="Re-run LDAPSearch" />
+                                                    </div>
+                                                </div> 
+                                            </div> 
+                                            <div>
+                                                <input type="radio" name="ldapoptions" value="staticlookup" onchange="javascript:ldapToggle()" id="ldapoptions-existing" />Existing LDAP Lookup 
+                                                
+                                            <div style="display:none;padding-left:35px;" id="ldapquery-example-p">Based on ldap search: 
+                                                    <div id="ldapqueryexample"></div>
+                                                </div> 
+                                            </div> 
+                                            <br /> &nbsp;
+                                            <input type="button" onclick="UpdateLDAPConfig()" value="Save Config Choice"/>
+                                                
+                                        </form>
+                                    
+                                            <br />&nbsp;
+                                    </div>
+                                    
+                                    <h3>LDAP Data</h3>
+
+                                    <div id="LDAPData"><p> <img src="/static/app/search_activity/loader.gif" title="Loading" /></p></div>
+                                </div>
+                            </div>
+                            <div class="statuscontainer" id="MgmtLDAPContainer">
+                                <div class="panel-head">
+                                    <h3 style="font-weight: bold">LDAP Management Data</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="MgmtLDAPErrors" class="ErrorPanel"></div>
+                                    <div id="LDAPMgmtData"><p> </p></div>
+                                    <div id="LDAPMgmtOptions" style="display:block;">
+                                        <p>The primary requirement for setting up the LDAP Management Data is that the basic LDAP information be set. </p>
+                                        <table class="dvforcemargin">
+                                            <tr>
+                                                <td>Basic LDAP Info</td>
+                                                <td id="mgmt_basicldap"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Management Information Defined in LDAP</td>
+                                                <td id="mgmt_mgmtinfo"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Lookup Generation Scheduled</td>
+                                                <td> <div id="mgmt_scheduled"><img src="/static/app/search_activity/loader.gif" title="Loading" /></div><input type="button" value="Enable Scheduled Search" id="enable-scheduled-mgmt-ldap" style="display:none;" onclick="EnableSearch('MgmtLDAP')" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>One off: Generate Lookup</td>
+                                                <td><input type="button" onclick="RegenerateLDAPMgmt()" value="Generate Now" id="mgmt_generate" /></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                    <!--        <div class="statuscontainer" id="MacroContainer">
+                     
+                                <div class="panel-head">
+                                    <h3>Raw Data Defined</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="MacroErrors" class="ErrorPanel"></div>
+                                    
+                                    <div id="RawDataOptions" style="display:block;">
+                                        <p>The biggest reason why raw data may not exist is if the macros aren't properly set.</p>
+                                        <table class="Setup_Table dvforcemargin">
+                                            <tr>
+                                                <td>Macro Name</td>
+                                                <td>Macro Value</td>
+                                                <td>Traditional Default</td>
+                                                <td>Validation</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Audit Index</td>
+                                                <td><input type="text" value="checking" name="auditindex" id="auditindex" onclick="document.getElementById('update_auditindex').style.display='inline';"  /> <input type="button" value="Update" id="update_auditindex" onclick="UpdateMacro('auditindex');"  style="display:none;" /></td>
+                                                <td>_audit</td>
+                                                <td id="validation_auditindex"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Audit Sourcetype</td>
+                                                <td><input type="text" value="checking" name="auditsourcetype" id="auditsourcetype" onclick="document.getElementById('update_auditsourcetype').style.display='inline';"  /> <input type="button" value="Update" id="update_auditsourcetype" onclick="UpdateMacro('auditsourcetype');"  style="display:none;" /></td>
+                                                <td>audittrail</td>
+                                                <td id="validation_auditsourcetype"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Internal Index</td>
+                                                <td><input type="text" value="checking" name="internal_index" id="internal_index" onclick="document.getElementById('update_internal_index').style.display='inline';"  /> <input type="button" value="Update" id="update_internal_index" onclick="UpdateMacro('internal_index');"  style="display:none;" /></td>
+                                                <td>_internal</td>
+                                                <td id="validation_internal_index"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Metrics Sourcetype</td>
+                                                <td><input type="text" value="checking" name="metrics_sourcetype" id="metrics_sourcetype" onclick="document.getElementById('update_metrics_sourcetype').style.display='inline';"  /> <input type="button" value="Update" id="update_metrics_sourcetype" onclick="UpdateMacro('metrics_sourcetype');"  style="display:none;" /></td>
+                                                <td>splunkd</td>
+                                                <td id="validation_metrics_sourcetype"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Scheduler Sourcetype</td>
+                                                <td><input type="text" value="checking" name="scheduler_sourcetype" id="scheduler_sourcetype" onclick="document.getElementById('update_scheduler_sourcetype').style.display='inline';"  /> <input type="button" value="Update" id="update_scheduler_sourcetype" onclick="UpdateMacro('scheduler_sourcetype');"  style="display:none;" /></td>
+                                                <td>scheduler</td>
+                                                <td id="validation_scheduler_sourcetype"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Web Access Sourcetype</td>
+                                                <td><input type="text" value="checking" name="web_access_sourcetype" id="web_access_sourcetype" onclick="document.getElementById('update_web_access_sourcetype').style.display='inline';"  /> <input type="button" value="Update" id="update_web_access_sourcetype" onclick="UpdateMacro('web_access_sourcetype');"  style="display:none;" /></td>
+                                                <td>splunk_web_access</td>
+                                                <td id="validation_web_access_sourcetype"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                            </tr>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="statuscontainer" id="FieldExtractionsContainer">
+                                <div class="panel-head">
+
+                                    <h3 style="font-weight: bold">App Setup</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="FXErrors" class="ErrorPanel"></div>
+                                    <div>
+
+                                        <h3>Field Extractions Configured</h4>
+                                        <p style="display:inline;">It is essential to have certain field extractions configured for the sourcetypes that you're bringing in. For the vast majority of users, there is no isae here and it should work smoothly, but if you are bringing in audit data in a sourcetype other than splunk_audit or audittrail (the latter being default), then you will need to add the field extractions to your specific sourcetype.</p>
+                                        <div style="display:inline;" id="fx_gotthem"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></div>
+                                    </div>
+                                    <div>
+
+                                        <h3>App Permissions</h4>
+                                        <p style="display:inline;">This app contains sensitive information around user behavior, and should be restricted from the general user population. It is highly recommended to change from the default setting such that only admins (or whatever role makes the most sense for your organization) have access. This will check if all users have read access (via the * permission). You may still wish to review these permissions, though. Check Result:</p>
+                                        <div style="display:inline;" id="fx_permission"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></div>
+                                        <p style="display:block;">Customize <a href="/manager/permissions/search/apps/local/search_activity?uri=%2FservicesNS%2Fnobody%2Fsystem%2Fapps%2Flocal%2Fsearch_activity">here</a>.</p>
+                                    </div>
+                                    <div>
+
+                                        <h3>Email Notification Configuration</h4>
+                                        <p style="display:block; font-weight: bold">Important: In order for pretty emails to be sent out, the <a href="https://apps.splunk.com/app/1794/">SendResults app</a> needs to be installed.</p>
+                                        <p style="display:block;">This app has (beta) functionality that will send a friendly email to new users welcoming them to the system, and providing quickstart resources. It is recommended that you configure an email address to CC on this email, so that you are notified when they are emailed and so that they can see who to email for help.</p>
+                                        <p style="display:block;">Currently Configured: <span style="font-weight:bold;" id="admin_email_address">Loading...</span><br />You can update this value by modifying the macro "admin_email_address."</p>
+                                        <p>Example email (configurable in SendWelcomeEmail macro):</p>
+                                        <iframe style="width:850px;height:800px;" id="MyContent">
+                                            <html>
+                                                <head>
+                                                    <style id="mywelcomestyle">
+                                                    </style>
+                                                </head>
+                                                <body id="ExampleWelcomeEmail">
+                                                </body>
+                                            </html>
+                                        </iframe>
+
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="statuscontainer" id="TSIDXStatusContainer">
+                                <div class="panel-head">
+                                    <h3 style="font-weight: bold">Datastore Generation</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="TSIDXErrors" class="ErrorPanel"></div>
+                                    <div id="TSIDXOptions" style="display:block;">
+                                        <p>If all the above raw data indicators are correct, then it is straightforward to populate the dashboards. The best approach is to ensure that the generation searchs are scheduled.</p>
+
+                                        <table class="Setup_Table dvforcemargin">
+                                            <tr>
+                                                <td>Item</td>
+                                                <td>Search History</td>
+                                                <td>Events</td>
+                                                <td>Description</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Any Data Present?</td>
+                                                <td id="tsidx_SH_any_data"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                                <td id="tsidx_E_any_data"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                                <td>&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Recent Data Present?</td>
+                                                <td id="tsidx_SH_recent_data"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                                <td id="tsidx_E_recent_data"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></td>
+                                                <td>&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Populating Script Enabled</td>
+                                                <td><div id="tsidx_SH_scheduled"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></div><input type="button" value="Enable Scheduled Search" id="enable-scheduled-sh" style="display:none;" onclick="EnableSearch('SH')" /></td>
+                                                <td><div id="tsidx_E_scheduled"> <img src="/static/app/search_activity/loader.gif" title="Loading" /></div><input type="button" value="Enable Scheduled Search" id="enable-scheduled-e" style="display:none;" onclick="EnableSearch('E')" /></td>
+                                                <td>&nbsp;</td>
+                                            </tr><!--
+                                            <tr>
+                                                <td>Generate Backfill (One Off)</td>
+                                                <td><input id="backfillshbuttononeweek" onclick="BackfillOneWeekSH()" type="button" value="Run Now" /></td>
+                                                <td><input id="backfillebuttononeweek" onclick="BackfillOneWeekE()" type="button" value="Run Now" /></td>
+                                                <td>&nbsp;</td>
+                                            </tr>-->
+                                        </table>
+
+                                    </div>
+                                    <br />&nbsp;
+                                    <br />&nbsp;
+                                    <br />&nbsp;
+                                </div>
+                                <div class="panel-head">
+                                    <h3>Backfill</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <p>Click below to generate report on TSIDX coverage</p>
+                                    <input type="button" value="Generate Report" onclick="GenerateBackfillReport()" />
+                                    <div id="SHBackfillReportChart"></div>
+                                    <br /><br />
+                                    <div id="BackfillTSIDX"><p style="display: block">By clicking the below "Set Backfill" button, data generation will switch from going over current events to going over the backfill period. You will not have visibility into any new events until the backfill completes.</p><p><strong>You should not backfill if you have any existing data</strong> as you will get duplicate events, and this app will not be accurate. To delete the TSIDX files, browse to $SPLUNK_HOME/var/lib/splunk/tsidxstats. If there is any data in the app, you will find two folders -- search_activity.searchhistory and search_activity.events.</p>
+                                    
+                                    <p style="display: block">Time To Backfill: <select id="TimeBetweenJobs"><option value="31622400">One Year</option><option value="23911200">Nine Months</option><option value="15899328">Six Months</option><option value="7949664">Three Months</option><option value="5356800">Two Months</option><option value="2678400">One Month</option><option value="0">No Backfill</option></select></p>
+                                    <input id="RunSHBackfillReportButton" type="button" onclick="CreateSHBackfillJobs()" value="Set Search History Backfill" />
+                                    <input id="RunEBackfillReportButton" type="button" onclick="CreateEBackfillJobs()" value="Set Events Backfill" />
+                                    <input type="button" onclick="if(confirm('Are you sure that you want to disable backfill?\nEnabling backfill later will require that you remove\nyour existing TSIDX files to avoid duplication,\nnot to mention wait to get value from the app.\n\nPress OK to disable backfill or Cancel to make another choice.','No Backfill','Make Another Choice')){document.getElementById('TimeBetweenJobs').value = 0; CreateSHBackfillJobs(); CreateEBackfillJobs();} " value="No Backfill" /></div>
+                                    <!--<div class="encapsulation">
+                                    
+                                    </div>-->
+                                    <br />&nbsp;
+                                    <br />&nbsp;
+                                    <br />&nbsp;
+                                </div>
+                                <div class="panel-head">
+                                    <h3>TSIDX Size</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <p>The below report shows how much data is being used by the existing TSIDX files. <strong>Note that if these numbers are non-zero, you should not backfill.</strong></p>
+                                    <div class="dashboard-element table" id="element6" style="width: 1000px !important">
+                                     
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer"></div>
+
+<!-- 
+END LAYOUT
+-->
+
+<script src="{{SPLUNKWEB_URL_PREFIX}}/config?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/contrib/require.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/i18n.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/i18ncatalog?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/profiles/shared.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/contrib/require_dev_config.js"></script>
+<script type="text/javascript">
+//
+window.DocStatus = {};
+window.DocStatus.BasicLDAP = {}
+window.DocStatus.MgmtLDAP = {}
+//window.DocStatus.Macro = {}
+window.DocStatus.FX = {}
+window.DocStatus.FX.Errors = []
+window.DocStatus.FX.GotThem = 4
+window.DocStatus.TSIDX = {}
+window.DocStatus.OverallStatus = "unchecked"
+window.DocStatus.TSIDX.SHscheduled = 4
+window.DocStatus.BasicLDAP.scheduled = 4
+window.DocStatus.BasicLDAP.basicldap = 4
+window.DocStatus.BasicLDAP.Errors = []
+window.DocStatus.MgmtLDAP.Errors = []
+window.DocStatus.MgmtLDAP.scheduled = 4
+window.DocStatus.MgmtLDAP.mgmtinfo = 4;
+window.DocStatus.MgmtLDAP.basicldap = 4;
+//window.DocStatus.Macro.auditindex = 4
+//window.DocStatus.Macro.auditsourcetype = 4
+//window.DocStatus.Macro.internal_index = 4
+//window.DocStatus.Macro.metrics_sourcetype = 4
+//window.DocStatus.Macro.scheduler_sourcetype = 4
+//window.DocStatus.Macro.web_access_sourcetype = 4
+//window.DocStatus.Macro.Errors = []
+window.DocStatus.TSIDX.SHcount = 4
+window.DocStatus.TSIDX.Ecount = 4
+window.DocStatus.TSIDX.RecentSHcount = 4
+window.DocStatus.TSIDX.RecentEcount = 4
+window.DocStatus.TSIDX.Escheduled  = 4
+window.DocStatus.TSIDX.SHscheduled  = 4
+window.DocStatus.TSIDX.BSI = 4
+window.DocStatus.TSIDX.BEI = 4
+window.DocStatus.TSIDX.BSW = 4
+window.DocStatus.TSIDX.BEW = 4   
+window.DocStatus.TSIDX.Errors = []
+
+
+function RecalculateOverallStatus(){
+    //BasicLDAP
+    LDAP = window.DocStatus.BasicLDAP
+    LDAPMin = 4
+    LDAPMax = 4
+    if(LDAP.Config == "unconfigured"){
+        LDAPMin = 0
+        LDAPMax = 0
+        if(LDAP.Errors.indexOf("No LDAP Configuration Choice Made") == -1){
+            LDAP.Errors.push("No LDAP Configuration Choice Made")
+        }
+
+    }
+    if(LDAP.Config == "noldap"){
+        LDAPMin = 1
+        LDAPMax = 1
+    }
+    if(LDAP.Config == "sa-ldap"){
+        LDAPMin = Math.min(LDAP.scheduled, LDAP.basicldap)
+        LDAPMax = Math.max(LDAP.scheduled, LDAP.basicldap)
+    }
+    if(LDAP.Config == "staticlookup"){
+        LDAPMin = Math.min(LDAP.basicldap)
+        LDAPMax = Math.max(LDAP.basicldap)
+    }
+
+    if(LDAP.Config == "notdefined"){
+        LDAPMin = Math.min(LDAP.basicldap)
+        LDAPMax = Math.max(LDAP.basicldap)
+    }
+
+    if(LDAPMax <3){
+        if(LDAPMin == 1){ // ok
+            document.getElementById("BasicLDAPYesNo").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("BasicLDAPYesNo_Title").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("BasicLDAPErrors").style.display = "none;"
+            
+        }
+        if(LDAPMin == 0){ // error
+            document.getElementById("BasicLDAPYesNo").src = "/static/app/search_activity/err_ico.gif";
+            document.getElementById("BasicLDAPYesNo_Title").src = "/static/app/search_activity/err_ico.gif";
+            if(LDAP.Errors.length>0){
+                document.getElementById("BasicLDAPErrors").innerHTML = "<ul><li>" + LDAP.Errors.join("</li><li>") + "</li></ul>"
+                document.getElementById("BasicLDAPErrors").style.display="block";
+            }else{
+                document.getElementById("BasicLDAPErrors").style.display = "none;"
+            }
+        }
+    }
+
+
+    //MgmtLDAP
+    MgmtLDAP = window.DocStatus.MgmtLDAP
+    MgmtLDAPMin = Math.min(MgmtLDAP.scheduled, MgmtLDAP.mgmtinfo, MgmtLDAP.basicldap)
+    MgmtLDAPMax = Math.max(MgmtLDAP.scheduled, MgmtLDAP.mgmtinfo, MgmtLDAP.basicldap)
+    if(LDAP.Config=="noldap"){
+        MgmtLDAPMin = 1
+        MgmtLDAPMax = 1
+            
+    }
+    if(MgmtLDAPMax <3){
+        if(MgmtLDAPMin == 1){ // ok
+            document.getElementById("MgmtLDAPYesNo").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("MgmtLDAPYesNo_Title").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("MgmtLDAPErrors").style.display = "none;"
+            
+        }
+        if(MgmtLDAPMin == 0){ // error
+            document.getElementById("MgmtLDAPYesNo").src = "/static/app/search_activity/err_ico.gif";
+            document.getElementById("MgmtLDAPYesNo_Title").src = "/static/app/search_activity/err_ico.gif";
+            if(MgmtLDAP.Errors.length>0){
+                document.getElementById("MgmtLDAPErrors").innerHTML = "<ul><li>" + MgmtLDAP.Errors.join("</li><li>") + "</li></ul>"
+                document.getElementById("MgmtLDAPErrors").style.display="block";
+            }else{
+                document.getElementById("MgmtLDAPErrors").style.display = "none;"
+            }
+        }
+    }
+    
+
+/*
+    //Macro
+    Macro = window.DocStatus.Macro
+
+    MacroMin = Math.min(Macro.auditindex, Macro.auditsourcetype, Macro.internal_index, Macro.metrics_sourcetype, Macro.scheduler_sourcetype, Macro.web_access_sourcetype)
+    MacroMax = Math.max(Macro.auditindex, Macro.auditsourcetype, Macro.internal_index, Macro.metrics_sourcetype, Macro.scheduler_sourcetype, Macro.web_access_sourcetype)
+    if(MacroMax <3){
+        if(MacroMin == 1){ // ok
+            document.getElementById("MacroYesNo").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("MacroYesNo_Title").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("MacroErrors").style.display = "none;"
+            
+        }
+        if(MacroMin == 0){ // error
+            document.getElementById("MacroYesNo").src = "/static/app/search_activity/err_ico.gif";
+            document.getElementById("MacroYesNo_Title").src = "/static/app/search_activity/err_ico.gif";
+            if(Macro.Errors.length>0){
+                document.getElementById("MacroErrors").innerHTML = "<ul><li>" + Macro.Errors.join("</li><li>") + "</li></ul>"
+                document.getElementById("MacroErrors").style.display="block";
+            }else{
+                document.getElementById("MacroErrors").style.display = "none;"
+            }
+        }
+    }
+*/
+    
+    //TSIDX
+    TSIDX = window.DocStatus.TSIDX
+
+    TSIDXMin = Math.min(TSIDX.SHcount, TSIDX.Ecount, TSIDX.RecentSHcount, TSIDX.RecentEcount, TSIDX.Escheduled, TSIDX.SHscheduled, TSIDX.BSI, TSIDX.BEI, TSIDX.BSW, TSIDX.BEW)
+    TSIDXMax = Math.max(TSIDX.SHcount, TSIDX.Ecount, TSIDX.RecentSHcount, TSIDX.RecentEcount, TSIDX.Escheduled, TSIDX.SHscheduled, TSIDX.BSI, TSIDX.BEI, TSIDX.BSW, TSIDX.BEW)
+    if(TSIDX.BEI == 2 || TSIDX.BSI == 2){
+       // TSIDXMin = Math.min( TSIDX.Escheduled, TSIDX.SHscheduled, TSIDX.BSI, TSIDX.BEI, TSIDX.BSW, TSIDX.BEW)
+       // TSIDXMax = Math.max( TSIDX.Escheduled, TSIDX.SHscheduled, TSIDX.BSI, TSIDX.BEI, TSIDX.BSW, TSIDX.BEW)
+            
+    }
+    if(TSIDXMax <3){
+        if(TSIDXMin == 1){ // ok
+            document.getElementById("TSIDXYesNo").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("TSIDXYesNo_Title").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("TSIDXErrors").style.display = "none;"
+            
+        }
+        if(TSIDXMin == 0 && Math.min(TSIDX.Escheduled, TSIDX.SHscheduled, TSIDX.BSW, TSIDX.BEW) == 1){ // warning
+            document.getElementById("TSIDXYesNo").src = "/static/app/search_activity/warn_ico.gif";
+            document.getElementById("TSIDXYesNo_Title").src = "/static/app/search_activity/warn_ico.gif";
+            TSIDXMin = 1
+            TSIDXMax = 1
+            if(TSIDX.Errors.length>0){
+                document.getElementById("TSIDXErrors").innerHTML = "<ul><li>" + TSIDX.Errors.join("</li><li>") + "</li></ul>"
+                document.getElementById("TSIDXErrors").style.display="block";
+            }else{
+                document.getElementById("TSIDXErrors").style.display = "none;"
+            }
+        }  
+        else if(TSIDXMin == 0){ // error
+            document.getElementById("TSIDXYesNo").src = "/static/app/search_activity/err_ico.gif";
+            document.getElementById("TSIDXYesNo_Title").src = "/static/app/search_activity/err_ico.gif";
+            if(TSIDX.Errors.length>0){
+                document.getElementById("TSIDXErrors").innerHTML = "<ul><li>" + TSIDX.Errors.join("</li><li>") + "</li></ul>"
+                document.getElementById("TSIDXErrors").style.display="block";
+            }else{
+                document.getElementById("TSIDXErrors").style.display = "none;"
+            }
+        }
+    }
+    
+    //FX
+    FX = window.DocStatus.FX
+
+    FXMin = Math.min(FX.GotThem, FX.permissions)
+    FXMax = Math.max(FX.GotThem, FX.permissions)
+    if(FXMax <3){
+        if(FXMin == 1){ // ok
+            document.getElementById("FXYesNo").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("FXYesNo_Title").src = "/static/app/search_activity/ok_ico.gif";
+            document.getElementById("FXErrors").style.display = "none;"
+            
+        }
+      /*  if(FXMin == 1){ // warning
+            document.getElementById("FXYesNo").src = "/static/app/search_activity/warn_ico.gif";
+            document.getElementById("FXYesNo_Title").src = "/static/app/search_activity/warn_ico.gif";
+            if(FX.Errors.length>0){
+                document.getElementById("FXErrors").innerHTML = "<ul><li>" + FX.Errors.join("</li><li>") + "</li></ul>"
+                document.getElementById("FXErrors").style.display="block";
+            }else{
+                document.getElementById("FXErrors").style.display = "none;"
+            }
+        }  */
+        if(FXMin == 0){ // error
+            document.getElementById("FXYesNo").src = "/static/app/search_activity/err_ico.gif";
+            document.getElementById("FXYesNo_Title").src = "/static/app/search_activity/err_ico.gif";
+            if(FX.Errors.length>0){
+                document.getElementById("FXErrors").innerHTML = "<ul><li>" + FX.Errors.join("</li><li>") + "</li></ul>"
+                document.getElementById("FXErrors").style.display="block";
+            }else{
+                document.getElementById("FXErrors").style.display = "none;"
+            }
+        }
+    }
+
+    console.log("Factors for Min Max:", FXMax, FXMin, TSIDXMax, TSIDXMin, MgmtLDAPMax, MgmtLDAPMin, LDAPMax, LDAPMin, window.DocStatus)
+    OverallMin = Math.min(FXMin, TSIDXMin, MgmtLDAPMin, LDAPMin)
+    OverallMax = Math.max(FXMax, TSIDXMax, MgmtLDAPMax, LDAPMax, LDAPMin)
+    if((window.DocStatus.OverallStatus = "unconfigured") && (OverallMin==1) && (OverallMax == 1)){
+        UpdateConfigStatus("configured")
+        window.DocStatus.OverallStatus = "configured"
+    }
+    if((window.DocStatus.OverallStatus = "configured") && (OverallMin==0) && (OverallMax <2 )){
+        UpdateConfigStatus("unconfigured")
+        window.DocStatus.OverallStatus = "unconfigured"
+    }
+    
+
+
+
+}
+
+
+
+
+
+
+function SwitchSection(section){
+    console.log("Changing style to: ", section)
+    document.getElementById("dv-stage-loader").style.display = "none";
+    document.getElementById("dv-stage-container").style.display = "block";
+    document.getElementById("BasicLDAPContainer").style.display = "none";
+    document.getElementById("MgmtLDAPContainer").style.display = "none";
+    //document.getElementById("MacroContainer").style.display = "none";
+    document.getElementById("FieldExtractionsContainer").style.display = "none";
+    document.getElementById("TSIDXStatusContainer").style.display = "none";
+    document.getElementById("link_BasicLDAP").style.textDecoration = "none"
+    document.getElementById("link_MgmtLDAP").style.textDecoration = "none"
+    //document.getElementById("link_Macro").style.textDecoration = "none"
+    document.getElementById("link_FX").style.textDecoration = "none"
+    document.getElementById("link_TSIDX").style.textDecoration = "none"
+
+    document.getElementById(section).style.display = "block";
+    if(section == "BasicLDAPContainer"){
+        document.getElementById("link_BasicLDAP").style.textDecoration = "underline"
+    }
+
+    if(section == "MgmtLDAPContainer"){
+        document.getElementById("link_MgmtLDAP").style.textDecoration = "underline"
+    }
+/*
+    if(section == "MacroContainer"){
+        document.getElementById("link_Macro").style.textDecoration = "underline"
+    }
+*/
+    if(section == "FieldExtractionsContainer"){
+        document.getElementById("link_FX").style.textDecoration = "underline"
+    }
+
+    if(section == "TSIDXStatusContainer"){
+        document.getElementById("link_TSIDX").style.textDecoration = "underline"
+    }
+
+}
+
+function EnableSearch(searchidentifier){
+    console.log("Got a request to enable ", searchidentifier)
+    if(searchidentifier == "BasicLDAP"){
+        var updatesearch = splunkjs.mvc.Components.getInstance("EnableBasicLDAPSearch");
+        updatesearch.startSearch()
+    }
+    if(searchidentifier == "MgmtLDAP"){
+        var updatesearch = splunkjs.mvc.Components.getInstance("EnableMgmtLDAPSearch");
+        updatesearch.startSearch()
+    }
+    if(searchidentifier == "E"){
+        var updatesearch = splunkjs.mvc.Components.getInstance("EnableTSIDXESearch");
+        updatesearch.startSearch()
+    }
+    if(searchidentifier == "SH"){
+        var updatesearch = splunkjs.mvc.Components.getInstance("EnableTSIDXSHSearch");
+        updatesearch.startSearch()
+    }
+
+
+}
+
+function UpdateLDAPConfig(){
+    var value="unconfigured"
+    if(document.getElementById("ldapoptions-noldap").checked == true){
+    value = "noldap"
+    console.log("Blanking Out Lookup")
+    var blanklookup = splunkjs.mvc.Components.getInstance("BlankLookup");
+    blanklookup.startSearch()
+    console.log("After the fact...", blanklookup)
+    window.alert("Refresh page to get updated status.")
+    }
+    if(document.getElementById("ldapoptions-saldap").checked == true){
+    value = "sa-ldap"
+    }
+    if(document.getElementById("ldapoptions-existing").checked == true){
+    value = "staticlookup"
+    }
+
+    var updatestring  = '| updatemacro macroname="SA_Config_LDAP" macrovalue="' + value + '"'
+
+    var updatesearch = splunkjs.mvc.Components.getInstance("UpdateLDAPMacro");
+    updatesearch.settings.attributes.search = updatestring
+
+    updatesearch.startSearch()
+    console.log("After the fact...", updatesearch)
+    /*setTimeout(function()
+            {
+                window.DocStatus.BasicLDAP.Errors = []
+                var ReRunCheckForLDAPSearchExisting = splunkjs.mvc.Components.getInstance("CheckForLDAPSearchExisting");
+                ReRunCheckForLDAPSearchExisting.startSearch();
+                var ReRunCheckForTSCollectLookup = splunkjs.mvc.Components.getInstance("CheckForTSCollectLookup");
+                ReRunCheckForTSCollectLookup.startSearch();
+                var ReRunConfigCheckLDAP = splunkjs.mvc.Components.getInstance("ConfigCheckLDAP");
+                ReRunConfigCheckLDAP.startSearch();
+                var ReRunPullScheduleSearchInfo = splunkjs.mvc.Components.getInstance("PullScheduleSearchInfo");
+                ReRunPullScheduleSearchInfo.startSearch();
+                var ReRunsearch1 = splunkjs.mvc.Components.getInstance("search1");
+                ReRunsearch1.startSearch();
+                var ReRunldapdomainssearch = splunkjs.mvc.Components.getInstance("ldapdomainssearch");
+                ReRunldapdomainssearch.startSearch();
+            }
+    , 8000);*/
+
+}
+
+
+function UpdateConfigStatus(newvalue){
+    
+
+    var updatestring  = '| updatemacro macroname="SA_Config_System" macrovalue="' + newvalue + '"'
+
+    var updatesearch = splunkjs.mvc.Components.getInstance("UpdateSetupStatusMacro");
+    updatesearch.settings.attributes.search = updatestring
+
+    updatesearch.startSearch()
+    console.log("After the fact...", updatesearch)
+
+}
+
+
+
+function UpdateMacro(id){
+    console.log("Going to update " + id + " with " + document.getElementById(id).value);
+    var updatesearch = splunkjs.mvc.Components.getInstance("UpdateMacro");
+    updatesearch.settings.attributes.search = ' | updatemacro macroname="' + id + '" macrovalue="' + document.getElementById(id).value + '"'
+
+    updatesearch.startSearch()
+    console.log("After the fact...", updatesearch)
+    document.getElementById("update_" + id).style.display = "none" 
+
+}
+function BackfillOneWeekE(){
+    console.log("Going to backfill events for one week " );
+    document.getElementById("backfillebuttononeweek").disabled = true;
+    var backfill = splunkjs.mvc.Components.getInstance("BackfillOneWeekE");
+    
+    backfill.startSearch()
+    console.log("After the fact...", backfill)
+    
+
+}
+function RegenerateLDAP(){
+    
+    document.getElementById("updateldaprun").disabled = true;
+    var generate = splunkjs.mvc.Components.getInstance("GenerateLDAPSearch");
+    
+    generate.startSearch()
+    console.log("After the fact...", generate)
+}
+
+function RegenerateLDAPMgmt(){
+    
+    document.getElementById("mgmt_generate").disabled = true;
+    var generate = splunkjs.mvc.Components.getInstance("GenerateLDAPMgmtSearch");
+    
+    generate.startSearch()
+    console.log("After the fact...", generate)
+}
+
+function BackfillOneWeekSH(){
+    console.log("Going to backfill search history for one week " );
+    document.getElementById("backfillshbuttononeweek").disabled = true;
+    var backfill = splunkjs.mvc.Components.getInstance("BackfillOneWeekSH");
+    
+    backfill.startSearch()
+    console.log("After the fact...", backfill)
+    
+
+}
+
+
+
+function GenerateBackfillReport(){
+    console.log("Going to look at search history TSIDX Coverage for the last year " );
+    //document.getElementById("RunSHBackfillReportButton").disabled = true;
+    var backfill = splunkjs.mvc.Components.getInstance("RunSHBackfillReport");
+    backfill.startSearch()
+    var backfillreport = splunkjs.mvc.Components.getInstance("SHBackfillReportChart");
+    backfillreport.render()
+
+
+    console.log("After the fact...", backfill)
+    
+
+}
+
+
+function CreateSHBackfillJobs(){
+    console.log("Going to set the search history TSIDX Coverage for " + document.getElementById("TimeBetweenJobs").value/3600/24 + " days");
+    document.getElementById("RunSHBackfillReportButton").disabled = true;
+    var backfill = splunkjs.mvc.Components.getInstance("CreateSHBackfillJobs");
+    
+    var TimeBetween = document.getElementById("TimeBetweenJobs").value
+
+    backfill.settings.attributes.search = backfill.settings.attributes.search.replace("INSERTTIME", TimeBetween)
+
+    backfill.startSearch()
+
+    console.log("After the fact...", backfill)
+}
+
+
+function CreateEBackfillJobs(){
+    console.log("Going to set the events TSIDX Coverage for " + document.getElementById("TimeBetweenJobs").value/3600/24 + " days");
+    document.getElementById("RunEBackfillReportButton").disabled = true;
+    var backfill = splunkjs.mvc.Components.getInstance("CreateEBackfillJobs");
+    
+    var TimeBetween = document.getElementById("TimeBetweenJobs").value
+
+    backfill.settings.attributes.search = backfill.settings.attributes.search.replace("INSERTTIME", TimeBetween)
+
+    backfill.startSearch()
+
+    console.log("After the fact...", backfill)
+}
+
+
+function UpdateLDAP(){
+    var domainlist = splunkjs.mvc.Components.getInstance("ldapdomainsinput");
+    console.log("Updating LDAP Domain with " + domainlist.settings.attributes.value);
+
+    if(domainlist.settings.attributes.value.length > 1){
+
+        var updatesearch = splunkjs.mvc.Components.getInstance("UpdateMacro");
+        updatesearch.settings.attributes.search = ' | updatemacro macroname="SA-LDAPSearch-Domain" macrovalue="' + domainlist.settings.attributes.value + '"'
+
+        updatesearch.startSearch()
+        console.log("After the fact...", updatesearch)
+    
+    }else{
+        console.log("Error updating -- no valid domain selected... also I should get better error handling...")
+    }
+    
+
+
+}
+
+
+function ldapToggle(){
+    if(document.getElementsByName("ldapoptions")[0].checked == true){
+        document.getElementById("saldap-domain-p").style.display ="none"
+        document.getElementById("ldapquery-example-p").style.display ="none"
+    }
+    if(document.getElementsByName("ldapoptions")[1].checked == true){
+        document.getElementById("saldap-domain-p").style.display ="block"
+        document.getElementById("ldapquery-example-p").style.display ="none"
+    }
+    if(document.getElementsByName("ldapoptions")[2].checked == true){
+        document.getElementById("saldap-domain-p").style.display ="none"
+        document.getElementById("ldapquery-example-p").style.display ="block"
+    }
+    return true;
+}
+
+
+
+require.config({
+    baseUrl: "{{SPLUNKWEB_URL_PREFIX}}/static/js"
+});
+
+//
+// LIBRARY REQUIREMENTS
+//
+// In the require function, we include the necessary libraries and modules for
+// the HTML dashboard. Then, we pass variable names for these libraries and
+// modules as function parameters, in order.
+// 
+// When you add libraries or modules, remember to retain this mapping order
+// between the library or module and its function parameter. You can do this by
+// adding to the end of these lists, as shown in the commented examples below.
+
+require([
+    "splunkjs/mvc",
+    "splunkjs/mvc/utils",
+    "splunkjs/mvc/tokenutils",
+    "underscore",
+    "jquery",
+    "splunkjs/mvc/simplexml",
+    "splunkjs/mvc/headerview",
+    "splunkjs/mvc/footerview",
+    //"splunkjs/mvc/simplexml/dashboardview",
+    "splunkjs/mvc/simplexml/dashboard",
+    "splunkjs/mvc/simplexml/element/chart",
+    "splunkjs/mvc/simplexml/element/event",
+    "splunkjs/mvc/simplexml/element/html",
+    "splunkjs/mvc/simplexml/element/list",
+    "splunkjs/mvc/simplexml/element/map",
+    "splunkjs/mvc/simplexml/element/single",
+    "splunkjs/mvc/simplexml/element/table",
+    //"splunkjs/mvc/simpleform/formutils",
+    "splunkjs/mvc/simpleform/input/dropdown",
+    "splunkjs/mvc/simpleform/input/radiogroup",
+    //"splunkjs/mvc/simpleform/input/multiselect",
+    //"splunkjs/mvc/simpleform/input/checkboxgroup",
+    "splunkjs/mvc/simpleform/input/text",
+    "splunkjs/mvc/simpleform/input/timerange",
+    "splunkjs/mvc/simpleform/input/submit",
+    "splunkjs/mvc/searchmanager",
+    "splunkjs/mvc/savedsearchmanager",
+    "splunkjs/mvc/postprocessmanager",
+    "splunkjs/mvc/simplexml/urltokenmodel"
+    // Add comma-separated libraries and modules manually here, for example:
+    // ..."splunkjs/mvc/simplexml/urltokenmodel",
+    // "splunkjs/mvc/checkboxview"
+    ],
+    function(
+        mvc,
+        utils,
+        TokenUtils,
+        _,
+        $,
+        DashboardController,
+        HeaderView,
+        FooterView,
+        Dashboard,
+        ChartElement,
+        EventElement,
+        HtmlElement,
+        ListElement,
+        MapElement,
+        SingleElement,
+        TableElement,
+        //FormUtils,
+        DropdownInput,
+        RadioGroupInput,
+        //MultiSelectInput,
+        //CheckboxGroupInput,
+        TextInput,
+        TimeRangeInput,
+        SubmitButton,
+        SearchManager,
+        SavedSearchManager,
+        PostProcessManager,
+        UrlTokenModel
+
+        // Add comma-separated parameter names here, for example: 
+        // ...UrlTokenModel, 
+        // CheckboxView
+        ) {
+
+
+
+        var pageLoading = true;
+
+
+        // 
+        // TOKENS
+        //
+        
+        // Create token namespaces
+        var urlTokenModel = new UrlTokenModel();
+        mvc.Components.registerInstance('url', urlTokenModel);
+        var defaultTokenModel = mvc.Components.getInstance('default', {create: true});
+        var submittedTokenModel = mvc.Components.getInstance('submitted', {create: true});
+
+        urlTokenModel.on('url:navigate', function() {
+            defaultTokenModel.set(urlTokenModel.toJSON());
+            if (!_.isEmpty(urlTokenModel.toJSON()) && !_.all(urlTokenModel.toJSON(), _.isUndefined)) {
+                submitTokens();
+            } else {
+                submittedTokenModel.clear();
+            }
+        });
+
+
+        // Initialize tokens
+        defaultTokenModel.set(urlTokenModel.toJSON());
+
+        var defaultUpdate = {};
+
+        var submitTokens = function() {
+            submitTokensSoon(pageLoading);
+        };
+
+        var submitTokensSoon = _.debounce(function(replaceState) {
+            submittedTokenModel.set(defaultTokenModel.toJSON());
+            urlTokenModel.saveOnlyWithPrefix('form\\.', defaultTokenModel.toJSON(), {
+                replaceState: replaceState
+            });
+        });
+
+/*
+        // Initialize tokens
+        defaultTokenModel.set(urlTokenModel.toJSON());
+
+        function submitTokens() {
+            // Copy the contents of the defaultTokenModel to the submittedTokenModel and urlTokenModel
+            FormUtils.submitForm({ replaceState: pageLoading });
+        }
+
+        function setToken(name, value) {
+            defaultTokenModel.set(name, value);
+            submittedTokenModel.set(name, value);
+        }
+
+        function unsetToken(name) {
+            defaultTokenModel.unset(name);
+            submittedTokenModel.unset(name);
+        }
+*/
+        //
+        // SEARCH MANAGERS
+        //
+
+
+
+
+
+
+        var RunSHBackfillReport = new SearchManager({
+            "id": "RunSHBackfillReport",
+            "cancelOnUnload": true,
+            "latest_time": "@d",
+            "status_buckets": 0,
+            "earliest_time": "-1y@d",
+            "search": ' | metasearch `auditindex` `auditsourcetype` | bucket _time span=1d | dedup _time  | eval RawDataPresent=1 | append [| tstats local=t count as TSIDXCount from `SA_SearchHistory` groupby _time span=1d | eval TSIDXDataPresent=if(TSIDXCount>0,1,0) | fields - TSIDXCount] | timechart span=1d sum(*) AS *  | eval BothPresent=if(RawDataPresent=1 AND TSIDXDataPresent=1,1,0) | eval TSIDXDataPresent = if(BothPresent=1,0,TSIDXDataPresent) | eval RawDataPresent=if(BothPresent=1,0,RawDataPresent)',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+
+
+
+        var CheckForLDAPSearchExisting = new SearchManager({
+            "id": "CheckForLDAPSearchExisting",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | inputlookup LDAPSearch',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+        var EnableBasicLDAPSearch = new SearchManager({
+            "id": "EnableBasicLDAPSearch",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | enablesearch searchname="Generate LDAPSearch Lookup"',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        var EnableMgmtLDAPSearch = new SearchManager({
+            "id": "EnableMgmtLDAPSearch",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | enablesearch searchname="Generate LDAPMgmtChain Lookup"',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+        var EnableTSIDXSHSearch = new SearchManager({
+            "id": "EnableTSIDXSHSearch",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | enablesearch searchname="Fill Search History TSCollect"',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+        var EnableTSIDXESearch = new SearchManager({
+            "id": "EnableTSIDXESearch",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | enablesearch searchname="Fill Events TSCollect"',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        var BlankLookup = new SearchManager({
+            "id": "BlankLookup",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | stats count as sAMAccountName | fields description title cn dn sn name displayName givenName whenChanged sAMAccountName mail manager c l o st telephoneNumber department company directReports physicalDeliveryOfficeName | where sAMAccountName!=0 | outputlookup LDAPSearch  | fields sAMAccountName ManagementChain managerdisplayname ManagementChain_sAMAccountName | outputlookup LDAPMgmtChain',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+        var CheckAppPermissions = new SearchManager({
+            "id": "CheckAppPermissions",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | rest "/servicesNS/nobody/system/apps/local/search_activity" | eval EveryoneAccess = if(\'eai:acl.perms.read\' = "*","Yes","No") | stats count(eval(EveryoneAccess="Yes")) as IsAvailable',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+        var ConfigCheckLDAP = new SearchManager({
+            "id": "ConfigCheckLDAP",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | rest "/servicesNS/admin/search_activity/properties/macros/SA_Config_LDAP/definition" ',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+        var CheckAdminEmailMacro = new SearchManager({
+            "id": "CheckAdminEmailMacro",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | rest "/servicesNS/admin/search_activity/properties/macros/admin_email_address/definition" ',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+        var WelcomeEmailMacro = new SearchManager({
+            "id": "WelcomeEmailMacro",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": '| rest "/servicesNS/admin/search_activity/properties/macros/SendWelcomeEmail/definition" | rex field=value "msgstyle=\\"(?<style>.*?)\\"" | rex field=value "body=\\"(?<value>.*)\\""',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        var CheckInputScripts = new SearchManager({
+            "id": "CheckInputScripts",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": '| rest "/servicesNS/admin/search_activity/properties/inputs" | search title="*CheckData*" | sort title | rex field=id "https?://.*?(?<path>/.*)" | rex field=title "-(?<name>(events|search))" | map search="|rest \\"$path$/disabled\\" | eval name=\\"$name$\\""',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: false, tokenNamespace: "submitted"});
+
+
+
+
+        var ConfigCheckSystem = new SearchManager({
+            "id": "ConfigCheckSystem",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | rest "/servicesNS/admin/search_activity/properties/macros/SA_Config_System/definition" ',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+        var PullScheduleSearchInfo = new SearchManager({
+            "id": "PullScheduleSearchInfo",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | rest "/servicesNS/nobody/search_activity/saved/searches" | where \'eai:acl.app\'="search_activity" | fields cron_schedule disabled title eai:acl.sharing',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+        var GenerateLDAPSearch = new SavedSearchManager({
+            "id": "GenerateLDAPSearch",
+            "searchname": "Generate LDAPSearch Lookup",
+            "app": utils.getCurrentApp(),
+            "cache": true,
+            "preview": true,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+        var GenerateLDAPMgmtSearch = new SavedSearchManager({
+            "id": "GenerateLDAPMgmtSearch",
+            "searchname": "Generate LDAPMgmtChain Lookup",
+            "app": utils.getCurrentApp(),
+            "cache": true,
+            "preview": true,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+        var TSIDXSHBackfillReport = new SearchManager({
+            "id": "TSIDXSHBackfillReport",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | metasearch `auditindex` `auditsourcetype` | timechart span=1w count | join type=outer [| tstats local=t count from `SA_SearchHistory` groupby _time span=1d | timechart span=1w sum(count) as TSIDXCount ]',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+        var TSIDXEBackfillReport = new SearchManager({
+            "id": "TSIDXEBackfillReport",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | metasearch `internal_index` `metrics_sourcetype` | timechart span=1w count | join type=outer [| tstats local=t count from `SA_Events` groupby _time span=1d | timechart span=1w sum(count) as TSIDXCount ]',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        var TSIDXDataCheck = new SearchManager({
+            "id": "TSIDXDataCheck",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | tstats local=t count from `SA_SearchHistory` | rename count as SHCount | appendcols [| tstats local=t count from `SA_Events` | rename count as EventsCount]',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+        var RecentTSIDXDataCheck = new SearchManager({
+            "id": "RecentTSIDXDataCheck",
+            "cancelOnUnload": true,
+            "earliest_time": "@d",
+            "latest_time": "now",
+            "status_buckets": 0,
+            "search": ' | tstats local=t count from `SA_SearchHistory` | rename count as SHCount | appendcols [| tstats local=t count from `SA_Events` | rename count as EventsCount]',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+        var UpdateMacro = new SearchManager({
+            "id": "UpdateMacro",
+            "cancelOnUnload": true,
+            "latest_time": "now",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | generatehello macroname="test" macrovalue="Beta"',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: false});
+
+        var UpdateLDAPMacro = new SearchManager({
+            "id": "UpdateLDAPMacro",
+            "cancelOnUnload": true,
+            "latest_time": "now",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | generatehello macroname="test" macrovalue="Beta"',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: false});
+
+        var UpdateSetupStatusMacro = new SearchManager({
+            "id": "UpdateSetupStatusMacro",
+            "cancelOnUnload": true,
+            "latest_time": "now",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | This is fake and will be overwritten',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: false});
+
+
+        var BackfillOneWeekSH = new SearchManager({
+            "id": "BackfillOneWeekSH",
+            "cancelOnUnload": true,
+            "earliest_time": "@d",
+            "latest_time": "@h",
+            "status_buckets": 0,
+            "search": '[| tstats local=t count from `SA_SearchHistory` groupby _time span=1h | where count > 0 | eval myfield = "(_time > " . _time . " AND _time < " . relative_time(_time, "+1h") . ")" | stats values(myfield) as search | eval search=" NOT (" . mvjoin(search, " OR ") . ")"| append [|stats count | eval search="*"] | return search] `FillSearchHistory_Search` `FillSearchHistory_TSCollect`',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: false});
+
+        
+        var CheckFieldExtractions = new SearchManager({
+            "id": "CheckFieldExtractions",
+            "cancelOnUnload": true,
+            "earliest_time": "-7d@d",
+            "latest_time": "@h",
+            "status_buckets": 0,
+            "search": '| rest "/servicesNS/admin/search_activity/properties/macros/auditsourcetype/definition" | rex field=value "sourcetype=(?<mysourcetype>[^ ]*)" | map search="| rest \"/servicesNS/admin/search_activity/properties/props/$mysourcetype$\" | search id=*actualsearch OR id=*searchtype OR id=*searchspan* OR id=*searchid* OR id=*search_id_rest | eval mysourcetype=\"$mysourcetype$\"" | stats count values(mysourcetype) as mysourcetype',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: false});
+
+        
+ 
+        var BackfillOneWeekE = new SearchManager({
+            "id": "BackfillOneWeekE",
+            "cancelOnUnload": true,
+            "earliest_time": "@d",
+            "latest_time": "@h",
+            "status_buckets": 0,
+            "search": '[| tstats local=t count from `SA_Events` groupby _time span=1h | where count > 0 | eval myfield = "(_time > " . _time . " AND _time < " . relative_time(_time, "+1h") . ")" | stats values(myfield) as search | eval search=" NOT (" . mvjoin(search, " OR ") . ")"| append [|stats count | eval search="*"] | return search] `FillEvents_Search` `FillEvents_TSCollect`',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false,
+            "autostart": false
+        }, {tokens: false});
+
+        
+
+        var search6 = new SearchManager({
+            "id": "search6",
+            "status_buckets": 0,
+            "search": '| rest "/services/server/settings" | map search="|listsanamespaces SPLUNK_HOME=\\"$SPLUNK_HOME$\\"" | eval "Size (MB)" = size/1024/1024 | fields namespace "Size (MB)"',
+            "latest_time": "now",
+            "cancelOnUnload": true,
+            "earliest_time": "-60m@m",
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: false, tokenNamespace: "submitted"});
+/*
+        var MacroCheck = new SearchManager({
+            "id": "MacroCheck",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "-1d",
+            "search": ' | rest "/servicesNS/admin/search_activity/properties/macros/auditindex/definition" | eval name="auditindex" | append [| rest "/servicesNS/admin/search_activity/properties/macros/auditsourcetype/definition" | eval name="auditsourcetype"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/internal_index/definition" | eval name="internal_index"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/metrics_sourcetype/definition" | eval name="metrics_sourcetype"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/scheduler_sourcetype/definition" | eval name="scheduler_sourcetype"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/web_access_sourcetype/definition" | eval name="web_access_sourcetype"] | eventstats values(eval(if(name="auditindex",value,null))) as auditindex values(eval(if(name="internal_index",value,null))) as internal_index  | eval mysearch = case(name="auditsourcetype",auditindex . " " . value, name="metrics_sourcetype", internal_index . " " . value, name="scheduler_sourcetype", internal_index . " " . value, name="web_access_sourcetype", internal_index . " " . value, name="auditindex", auditindex . " action=search info=granted search=* Audit" , name="internal_index", internal_index . " group=search_concurrency OR source=*web_access.log OR source=*scheduler.log", 1=1, "ERROR!!!") | eval index = case(name="auditsourcetype",auditindex , name="metrics_sourcetype", internal_index , name="scheduler_sourcetype", internal_index , name="web_access_sourcetype", internal_index , name="auditindex", auditindex  , name="internal_index", internal_index , 1=1, "ERROR!!!") | eval index=substr(index, -1 * (len(index) - 6)) | eval sourcetype = case(name="auditsourcetype",value , name="metrics_sourcetype", value , name="scheduler_sourcetype", value , name="web_access_sourcetype", value , name="auditindex", "sourcetype=*"  , name="internal_index", "sourcetype=*" , 1=1, "ERROR!!!") | eval sourcetype=substr(sourcetype, -1 * (len(sourcetype) - 11))  | eval name="\\"" . name . "\\"" | map search="search index=$index$ sourcetype=$sourcetype$ | head 150 | stats count | eval value=$value$ | eval test4=$name$ | eval name= substr(substr(test4,2,1000), 1, (len(test4) - 2)) | eval Validation=if(count=150,\\"Validation Success\\",\\"Validation Failed!\\") | fields name value Validation "',
+           // "search": ' | rest "/servicesNS/admin/search_activity/properties/macros/auditindex/definition" | eval name="auditindex" | append [| rest "/servicesNS/admin/search_activity/properties/macros/auditsourcetype/definition" | eval name="auditsourcetype"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/internal_index/definition" | eval name="internal_index"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/metrics_sourcetype/definition" | eval name="metrics_sourcetype"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/scheduler_sourcetype/definition" | eval name="scheduler_sourcetype"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/web_access_sourcetype/definition" | eval name="web_access_sourcetype"] ',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: false});
+*/
+
+        var CreateSHBackfillJobs = new SearchManager({
+            "id": "CreateSHBackfillJobs",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "-1d",
+            "search": ' | updatemacro macroname="backfill_search_window" macrovalue="INSERTTIME" | append [|updatemacro macroname="backfill_search_internal" macrovalue="-1"]',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "autostart": false,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: false});
+
+
+        var CreateEBackfillJobs = new SearchManager({
+            "id": "CreateEBackfillJobs",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "-1d",
+            "search": '  | updatemacro macroname="backfill_events_window" macrovalue="INSERTTIME" | append [|updatemacro macroname="backfill_events_internal" macrovalue="-1"]',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "autostart": false,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: false});
+
+
+
+
+        var CheckBackfillStatus = new SearchManager({
+            "id": "CheckBackfillStatus",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | rest "/servicesNS/admin/search_activity/properties/macros/backfill_search_window/definition" | eval name="backfill_search_window" | append [| rest "/servicesNS/admin/search_activity/properties/macros/backfill_search_internal/definition" | eval name="backfill_search_internal" ] | append[| rest "/servicesNS/admin/search_activity/properties/macros/backfill_events_window/definition" | eval name="backfill_events_window"] | append [| rest "/servicesNS/admin/search_activity/properties/macros/backfill_events_internal/definition" | eval name="backfill_events_internal" ]',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        var search1 = new SearchManager({
+            "id": "search1",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | rest "/servicesNS/admin/search_activity/properties/macros/SA-LDAPSearch-Generate-LDAPSearch/definition"',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        //
+        // SPLUNK HEADER AND FOOTER
+        //
+
+        new HeaderView({
+            id: 'header',
+            section: 'dashboards',
+            el: $('.header'),
+            acceleratedAppNav: true,
+            useSessionStorageCache: true
+        }, {tokens: true}).render();
+
+        new FooterView({
+            id: 'footer',
+            el: $('.footer')
+        }, {tokens: true}).render();
+
+
+        //
+        // DASHBOARD EDITOR
+        //
+
+        new Dashboard({
+            id: 'dashboard',
+            el: $('.dashboard-body')
+        }, {tokens: true}).render();
+
+
+        //
+        // VIEWS: VISUALIZATION ELEMENTS
+        //
+
+
+        // Check for existing LDAP Records
+
+        /*
+        var field1 = new DropdownInput({
+            "id": "field1",
+            "choices": [],
+            "searchWhenChanged": true,
+            "labelField": "title",
+            "selectFirstChoice": false,
+            "valueField": "title",
+            "managerid": "search2",
+            "showClearButton": true,
+            "el": $('#ldapdomains')
+        }, {tokens: true}).render();
+
+        field1.on("change", function(newValue) {
+            FormUtils.handleValueChange(field1);
+        });
+
+        // Populating search for field 'field1'
+        var search2 = new SearchManager({
+            "id": "search2",
+            "earliest_time": "$earliest$",
+            "latest_time": "$latest$",
+            "status_buckets": 0,
+            "cancelOnUnload": true,
+            "search": "| rest \"/servicesNS/nobody/SA-ldapsearch/properties/ldap\" | table title | where title!=\"default\"",
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true});
+
+
+
+        }, {tokens: true}).render();
+*/
+        var SHBackfillReport = new ChartElement({
+            "id": "SHBackfillReportChart",
+            "type": "column",
+            "managerid": "RunSHBackfillReport",
+            "el": $('#SHBackfillReportChart')
+
+        }, {tokens: false});
+
+         var ldapdomainsinput = new DropdownInput({
+            "id": "ldapdomainsinput",
+            "choices": [],
+            "searchWhenChanged": true,
+            "labelField": "title",
+            "selectFirstChoice": false,
+            "valueField": "title",
+            "value": "$form.ldapdomain$",
+            "managerid": "ldapdomainssearch",
+            "showClearButton": true,
+            "el": $('#ldapdomains')
+        }, {tokens: true}).render();
+
+        ldapdomainsinput.on("change", function(newValue) {
+            FormUtils.handleValueChange(ldapdomainsinput);
+        });
+
+        // Populating search for field 'ldapdomainsinput'
+        var ldapdomainssearch = new SearchManager({
+            "id": "ldapdomainssearch",
+            "earliest_time": "@d",
+            "latest_time": "now",
+            "status_buckets": 0,
+            "cancelOnUnload": true,
+            "search": "| rest \"/servicesNS/nobody/SA-ldapsearch/properties/ldap\" | table title | where title!=\"default\"",
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true});
+
+
+
+        var mainSearch = splunkjs.mvc.Components.getInstance("search1");
+        var myResults = mainSearch.data('results', { output_mode:'json', count:0 });
+
+        mainSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            document.getElementById('ldapqueryexample').innerHTML = "";
+            console.log("Got Results from LDAP Search");
+
+            if(mainSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling ldapsearch example code. No results found.")
+              return;
+            }       
+
+            myResults.on("data", function() {
+                var data = myResults.data().results;
+                console.log("Here are my results: ", data, data[0].value)          
+                document.getElementById("ldapqueryexample").innerHTML = data[0].value;  
+                
+            });
+          });
+
+
+        var PullScheduleSearchInfoSearch = splunkjs.mvc.Components.getInstance("PullScheduleSearchInfo");
+        var PullScheduleSearchInfoSearchResults = PullScheduleSearchInfoSearch.data('results', { output_mode:'json', count:0 });
+
+        PullScheduleSearchInfoSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            console.log("Got Results from PullScheduleSearchInfoSearch Search");
+
+            if(PullScheduleSearchInfoSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling PullScheduleSearchInfoSearch. No results found.")
+              return;
+            }       
+
+            PullScheduleSearchInfoSearchResults.on("data", function() {
+                var data = PullScheduleSearchInfoSearchResults.data().results;
+                console.log("Here are my results: ", data)          
+                for (var i = data.length - 1; i >= 0; i--) {
+                    if(data[i].title == "Fill Events TSCollect"){
+                        if(data[i].disabled == 0 && data[i].cron_schedule.length>1){
+                            document.getElementById("tsidx_E_scheduler").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                            window.DocStatus.TSIDX.Escheduled = 1;
+                        }else{
+                            document.getElementById("tsidx_E_scheduler").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                            window.DocStatus.TSIDX.Escheduled = 0;
+                            window.DocStatus.TSIDX.Errors.push("The 'Fill Search History TSCollect' scheduled search is either disabled, or not scheduled.")
+                            document.getElementById("enable-scheduled-e").style.display = "inline"
+                        }
+                    }
+                    if(data[i].title == "Fill Search History TSCollect"){
+                        if(data[i].disabled == 0 && data[i].cron_schedule.length>1){
+                            document.getElementById("tsidx_SH_scheduled").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                            window.DocStatus.TSIDX.SHscheduled = 1;
+                        }else{
+                            document.getElementById("tsidx_SH_scheduled").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                            window.DocStatus.TSIDX.SHscheduled = 0;
+                            window.DocStatus.TSIDX.Errors.push("The 'Fill Events TSCollect' scheduled search is either disabled, or not scheduled.")
+                            document.getElementById("enable-scheduled-sh").style.display = "inline"
+                        }
+                    }
+                    if(data[i].title == "Generate LDAPSearch Lookup"){
+                        if(data[i].disabled == 0 && data[i].cron_schedule.length>1){
+                            document.getElementById("ldapsearch_scheduled").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                            window.DocStatus.BasicLDAP.scheduled = 1;
+                        }else{
+                            document.getElementById("ldapsearch_scheduled").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                            window.DocStatus.BasicLDAP.scheduled = 0;
+                            window.DocStatus.BasicLDAP.Errors.push("The 'Generate LDAPSearch Lookup' scheduled search is either disabled, or not scheduled.")
+                            document.getElementById("enable-scheduled-basic-ldap").style.display = "inline"
+                        }
+                    }
+                    if(data[i].title == "Generate LDAPMgmtChain Lookup"){
+                        if(data[i].disabled == 0 && data[i].cron_schedule.length>1){
+                            document.getElementById("mgmt_scheduled").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                            window.DocStatus.MgmtLDAP.scheduled = 1;
+                        }else{
+                            document.getElementById("mgmt_scheduled").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                            window.DocStatus.MgmtLDAP.scheduled = 0;
+                            window.DocStatus.MgmtLDAP.Errors.push("The 'Generate LDAPMgmtChain Lookup' scheduled search is either disabled, or not scheduled.")
+                            document.getElementById("enable-scheduled-mgmt-ldap").style.display = "inline"
+                        }
+                    }
+                    RecalculateOverallStatus();
+                };
+                
+                
+            });
+          });
+
+
+        var LDAPSearchExisting = splunkjs.mvc.Components.getInstance("CheckForLDAPSearchExisting");
+        var LDAPSearchExistingResults = LDAPSearchExisting.data('results', { output_mode:'json', count:0 });
+
+        LDAPSearchExisting.on('search:done', function(properties) {
+            // clear div elements of previous result
+            document.getElementById('LDAPData').innerHTML = "";
+            console.log("Found LDAP Results..", LDAPSearchExisting.attributes.data.resultCount, window.DocStatus.BasicLDAP.basicldap );
+
+            if(LDAPSearchExisting.attributes.data.resultCount == 0 || parseInt(LDAPSearchExisting.attributes.data.resultCount) < 2 ) {
+                console.log("entered no ldap results loop.. " );
+                document.getElementById("LDAPOptions").style.display = "block"
+                document.getElementById("mgmt_mgmtinfo").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                document.getElementById("mgmt_basicldap").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                window.DocStatus.MgmtLDAP.mgmtinfo = 0;
+                window.DocStatus.MgmtLDAP.basicldap = 0;
+                window.DocStatus.BasicLDAP.basicldap = 0;
+                window.DocStatus.BasicLDAP.Errors.push("No LDAP Information was found. Please fix the problem or set 'No LDAP' below.")
+                window.DocStatus.MgmtLDAP.Errors.push("No LDAP Information was found, so no management information could be found.")
+                RecalculateOverallStatus()
+
+              console.log("Error pulling ldapsearch example code. No results found.")
+              console.log("End LDAP piece... early. ", window.DocStatus.BasicLDAP.basicldap );
+              return;
+            }else{       
+
+            LDAPSearchExistingResults.on("data", function() {
+                var data = LDAPSearchExistingResults.data().results;
+                console.log("Here are my results: ", data, data[0].count)    
+
+                window.DocStatus.BasicLDAP.basicldap = 1;
+
+        
+                document.getElementById("LDAPData").innerHTML='<p>LDAP Information Properly Configured!</p><div id="ldapresultstable"></div>'
+                    
+                document.getElementById("mgmt_basicldap").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                window.DocStatus.MgmtLDAP.basicldap = 1;
+                NumOverall = 0
+                NumManagement = 0
+                for (var i = data.length - 1; i >= 0; i--) {
+                    NumOverall++
+                    if (data[i].manager != undefined) {
+                        NumManagement++
+
+                    };
+                };
+
+                console.log("Management check, everyone. We have " + NumManagement + " managers out of " + NumOverall + " total.")
+                
+                if(NumManagement/NumOverall > 0.5){
+                    document.getElementById("mgmt_mgmtinfo").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                    window.DocStatus.MgmtLDAP.mgmtinfo = 1;
+
+                }else{
+                    document.getElementById("mgmt_mgmtinfo").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                    window.DocStatus.MgmtLDAP.mgmtinfo = 0;
+                    window.DocStatus.MgmtLDAP.Errors.push("No (or not enough) managers were found in the LDAPSearch lookup. Most Active Directory LDAP environments will utilize the manager attribute to define who each employee's manager is. This is the basis of some of the organization hierarchy information in this app. This error will appear if we see it in less than 50% of events.")
+                }
+
+                RecalculateOverallStatus()
+                console.log("End LDAP piece...", window.DocStatus.BasicLDAP.basicldap );
+
+
+        var ldapresultstable = new TableElement({
+            "id": "ldapresultstable",
+            "dataOverlayMode": "none",
+            "drilldown": "cell",
+            "rowNumbers": "false",
+            "wrap": "true",
+            "rows": 5,
+            "managerid": "CheckForLDAPSearchExisting",
+            "el": $('#ldapresultstable')
+        }, {tokens: true}).render();
+        
+                return;
+                
+            });
+            }
+          });
+
+
+
+
+        var CheckFieldExtractionsSearch = splunkjs.mvc.Components.getInstance("CheckFieldExtractions");
+        var CheckFieldExtractionsSearchResults = CheckFieldExtractionsSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my CheckFieldExtractionsSearch Object", CheckFieldExtractionsSearch)
+        CheckFieldExtractionsSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from CheckFieldExtractionsSearch");
+
+            if(CheckFieldExtractionsSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling CheckFieldExtractionsSearch. No results found.")
+              return;
+            }       
+
+            CheckFieldExtractionsSearchResults.on("data", function() {
+                var data = CheckFieldExtractionsSearchResults.data().results;
+                console.log("Here are my CheckFieldExtractionsSearchResults: ", data)      
+                
+                if(data[0].count == 9){
+                    document.getElementById("fx_gotthem").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                   window.DocStatus.FX.GotThem = 1;
+                }else{
+                    document.getElementById("fx_gotthem").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                    window.DocStatus.FX.GotThem = 0;
+                    window.DocStatus.FX.Errors.push("We only saw " + data[0].count + " field extractions configured for your sourcetype (" + data[0].mysourcetype + "). We were expecting 9. Check to make sure that you have all nine defined for your sourcetype, in props.conf (or in the fields section of manager, though that's harder).")
+                }
+                RecalculateOverallStatus()
+            });
+          });
+
+
+        var CheckBackfillStatusSearch = splunkjs.mvc.Components.getInstance("CheckBackfillStatus");
+        var CheckBackfillStatusSearchResults = CheckBackfillStatusSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my CheckBackfillStatusSearch Object", CheckBackfillStatusSearch)
+        CheckBackfillStatusSearch.on('search:done', function(properties) {
+            
+            
+            console.log("Got Results from CheckBackfillStatusSearch");
+
+            if(CheckBackfillStatusSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling CheckBackfillStatusSearch. No results found.")
+              return;
+            }       
+
+            CheckBackfillStatusSearchResults.on("data", function() {
+                var data = CheckBackfillStatusSearchResults.data().results;
+                console.log("Here are my CheckBackfillStatusSearchResults: ", data)      
+                for (var i = data.length - 1; i >= 0; i--) {
+                    if(data[i].name == "backfill_search_internal"){
+                        if(data[i].value >2){ //Still Backfilling
+                            
+                            window.DocStatus.TSIDX.BSI = 2;
+                            window.DocStatus.TSIDX.Errors.push("Warning - Search History is Still Backfilling")
+                        }else{
+                            window.DocStatus.TSIDX.BSI = 1;
+                        
+                        }
+                    }
+                    if(data[i].name == "backfill_events_internal"){
+                        if(data[i].value >2){ //Still Backfilling
+                            
+                            window.DocStatus.TSIDX.BEI = 2;
+                            window.DocStatus.TSIDX.Errors.push("Warning - Event History is Still Backfilling")
+                        }else{
+                            window.DocStatus.TSIDX.BEI = 1;
+                        
+                        }
+                    }
+                    if(data[i].name == "backfill_search_window"){
+                        if(data[i].value == -1){ //Still Backfilling
+                            
+                            window.DocStatus.TSIDX.BSW = 0;
+                            window.DocStatus.TSIDX.Errors.push("Search History Backfill Not Configured. Please configure below (either a window of time, or no backfill).")
+                        }else{
+                            window.DocStatus.TSIDX.BSW = 1;
+                        
+                        }
+                    }
+                    if(data[i].name == "backfill_events_window"){
+                        if(data[i].value == -1){ //Still Backfilling
+                            
+                            window.DocStatus.TSIDX.BEW = 0;
+                            window.DocStatus.TSIDX.Errors.push("Events Backfill Not Configured. Please configure below (either a window of time, or no backfill).")
+                        }else{
+                            window.DocStatus.TSIDX.BEW = 1;
+                        
+                        }
+                    }
+
+                }
+                RecalculateOverallStatus()
+            });
+          });
+
+
+        var CheckInputScriptsSearch = splunkjs.mvc.Components.getInstance("CheckInputScripts");
+        var CheckInputScriptsSearchResults = CheckInputScriptsSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my CheckInputScriptsSearch Object", CheckInputScriptsSearch)
+        CheckInputScriptsSearch.on('search:done', function(properties) {
+            
+            
+            console.log("Got Results from CheckInputScriptsSearch");
+
+            if(CheckInputScriptsSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling CheckInputScriptsSearch. No results found.")
+              return;
+            }       
+
+            CheckInputScriptsSearchResults.on("data", function() {
+                var data = CheckInputScriptsSearchResults.data().results;
+                console.log("Here are my CheckInputScriptsSearchResults: ", data)      
+                for (var i = data.length - 1; i >= 0; i--) {
+                    if(data[i].name == "events"){
+                        if(data[i].value == "false"){ //all is good
+                            document.getElementById("tsidx_E_scheduled").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                            window.DocStatus.TSIDX.Escheduled = 1;
+                        }else{
+                              document.getElementById("tsidx_E_scheduled").innerHTML = "<span class=\"validation\">Validation Not Implemented</span>";  
+                            window.DocStatus.TSIDX.Escheduled = 1;
+                            //document.getElementById("tsidx_E_scheduled").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                            //window.DocStatus.TSIDX.Escheduled = 0;
+                            //window.DocStatus.TSIDX.Errors.push("The Scripted Input for Events is not enabled! Please fix it <a href=\"/manager/search_activity/data/inputs/script\">here</a>. Look for CheckDataStats-events.py.")
+
+                        }
+                    }
+                    if(data[i].name == "search"){
+                        if(data[i].value == "false"){ //all is good
+                            document.getElementById("tsidx_SH_scheduled").innerHTML = "<span class=\"validated\">Validation Success</span>";
+                            window.DocStatus.TSIDX.SHscheduled = 1;
+                        }else{
+                            document.getElementById("tsidx_SH_scheduled").innerHTML = "<span class=\"validation\">Validation Not Implemented</span>";  
+                            window.DocStatus.TSIDX.SHscheduled = 1;
+                          //  document.getElementById("tsidx_SH_scheduled").innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                          //  window.DocStatus.TSIDX.SHscheduled = 0;
+                          //  window.DocStatus.TSIDX.Errors.push("The Scripted Input for Search History is not enabled! Please fix it <a href=\"/manager/search_activity/data/inputs/script\">here</a>. Look for CheckDataStats-events.py.")
+
+                        }
+                    }
+                }
+                RecalculateOverallStatus()
+            });
+          });
+
+
+
+
+        var ConfigCheckSystemSearch = splunkjs.mvc.Components.getInstance("ConfigCheckSystem");
+        var ConfigCheckSystemSearchResults = ConfigCheckSystemSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my ConfigCheckSystemSearch Object", ConfigCheckSystemSearch)
+        ConfigCheckSystemSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from ConfigCheckSystemSearch");
+
+            if(ConfigCheckSystemSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling ConfigCheckSystemSearch. No results found.")
+              return;
+            }       
+
+            ConfigCheckSystemSearchResults.on("data", function() {
+                var data = ConfigCheckSystemSearchResults.data().results;
+                console.log("Here are my ConfigCheckSystemSearchResults: ", data)      
+                window.DocStatus.OverallStatus = data[0].value;
+                
+            });
+          });
+
+        var CheckAdminEmailMacroSearch = splunkjs.mvc.Components.getInstance("CheckAdminEmailMacro");
+        var CheckAdminEmailMacroSearchResults = CheckAdminEmailMacroSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my CheckAdminEmailMacroSearch Object", CheckAdminEmailMacroSearch)
+        CheckAdminEmailMacroSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from CheckAdminEmailMacroSearch");
+
+            if(CheckAdminEmailMacroSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling CheckAdminEmailMacroSearch. No results found.")
+
+                document.getElementById("admin_email_address").innerHTML = "ERROR: No Email Defined!";
+              return;
+            }       
+
+            CheckAdminEmailMacroSearchResults.on("data", function() {
+                var data = CheckAdminEmailMacroSearchResults.data().results;
+                console.log("Here are my CheckAdminEmailMacroSearchResults: ", data)      
+                document.getElementById("admin_email_address").value = data[0].value;
+                
+            });
+          });
+
+        var WelcomeEmailMacroSearch = splunkjs.mvc.Components.getInstance("WelcomeEmailMacro");
+        var WelcomeEmailMacroSearchResults = WelcomeEmailMacroSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my WelcomeEmailMacroSearch Object", WelcomeEmailMacroSearch)
+        WelcomeEmailMacroSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from WelcomeEmailMacroSearch");
+
+            if(WelcomeEmailMacroSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling WelcomeEmailMacroSearch. No results found.")
+              return;
+            }       
+
+            WelcomeEmailMacroSearchResults.on("data", function() {
+                var data = WelcomeEmailMacroSearchResults.data().results;
+                console.log("Here are my WelcomeEmailMacroSearchResults: ", data)      
+                var target=document.getElementById("MyContent").contentDocument
+                target.open()
+                target.write("<html><head><style>" + data[0].style + "</style></head><body>" + data[0].value + "</body></html>")
+                //document.getElementById("MyContent").contentWindow.document.getElementById("ExampleWelcomeEmail").innerHTML = data[0].value;
+                //document.getElementById("MyContent").contentWindow.document.getElementById("mywelcomestyle").innerHTML = data[0].style;
+                target.close()
+                
+            });
+          });
+
+
+
+        var ConfigCheckLDAPSearch = splunkjs.mvc.Components.getInstance("ConfigCheckLDAP");
+        var ConfigCheckLDAPSearchResults = ConfigCheckLDAPSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my ConfigCheckLDAPSearch Object", ConfigCheckLDAPSearch)
+        ConfigCheckLDAPSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from ConfigCheckLDAPSearch");
+
+            if(ConfigCheckLDAPSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling ConfigCheckLDAPSearch. No results found.")
+              return;
+            }       
+
+            ConfigCheckLDAPSearchResults.on("data", function() {
+                var data = ConfigCheckLDAPSearchResults.data().results;
+                console.log("Here are my ConfigCheckLDAPSearchResults: ", data)      
+                window.DocStatus.BasicLDAP.Config = data[0].value;
+                if(data[0].value == "noldap"){
+                    document.getElementById("ldapoptions-noldap").checked = true
+                }
+                if(data[0].value == "sa-ldap"){
+                    document.getElementById("ldapoptions-saldap").checked = true
+                }
+                if(data[0].value == "staticlookup"){
+                    document.getElementById("ldapoptions-existing").checked = true
+                }
+                ldapToggle()
+                RecalculateOverallStatus()
+            });
+          });
+
+
+
+/*
+        var MacroCheckSearch = splunkjs.mvc.Components.getInstance("MacroCheck");
+        var MacroCheckSearchResults = MacroCheckSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my MacroCheckSearch Object", MacroCheckSearch)
+        MacroCheckSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from MacroCheckSearch");
+
+            if(MacroCheckSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling MacroCheckSearch. No results found.")
+              return;
+            }       
+
+            MacroCheckSearchResults.on("data", function() {
+                var data = MacroCheckSearchResults.data().results;
+                console.log("Here are my MacroCheckSearchResults: ", data)      
+                window.DocStatus.Macro.Errors = []    
+                for (i = 0; i < data.length; i++){
+                    if(document.getElementById(data[i].name).value == "checking"){
+                        document.getElementById(data[i].name).value = data[i].value;     
+                    }
+                    if(data[i].Validation = "Validation Success"){
+                        document.getElementById("validation_" + data[i].name).innerHTML = "<span class=\"validated\">Validation Success</span>"
+                        window.DocStatus.Macro[data[i].name] = 1;
+                    }else{
+                        document.getElementById("validation_" + data[i].name).innerHTML = "<span class=\"validationfailed\">Validation Failed</span>";
+                        window.DocStatus.Macro[data[i].name] = 0;
+                        window.DocStatus.Macro.Errors.push("No data was found for the macro " + data[i].name + " (" + data[i].value + "). You should switch to search and verify that this is configured correctly.")
+                    }
+                }
+                RecalculateOverallStatus()
+            });
+          });
+
+
+        var UpdateMacroSearch = splunkjs.mvc.Components.getInstance("UpdateMacro");
+        var UpdateMacroSearchResults = MacroCheckSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my UpdateMacroSearch Object", UpdateMacroSearch)
+        UpdateMacroSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from UpdateMacroSearch");
+
+            if(UpdateMacroSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling UpdateMacroSearch. No results found.")
+              return;
+            }       
+            var MacroCheckSearch = splunkjs.mvc.Components.getInstance("MacroCheck");
+            MacroCheckSearch.startSearch()
+
+          });
+*/
+
+        var CheckAppPermissionsSearch = splunkjs.mvc.Components.getInstance("CheckAppPermissions");
+        var CheckAppPermissionsSearchResults = CheckAppPermissionsSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my CheckAppPermissionsSearch Object", CheckAppPermissionsSearch)
+        CheckAppPermissionsSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from CheckAppPermissionsSearch");
+
+            if(CheckAppPermissionsSearch.attributes.data.resultCount == 0) { 
+              console.log("Error pulling CheckAppPermissionsSearch. No results found.")
+              return;
+            }       
+
+            CheckAppPermissionsSearchResults.on("data", function() {
+                var data = CheckAppPermissionsSearchResults.data().results;
+                console.log("Here are my CheckAppPermissionsSearchResults: ", data)          
+                if(data[0].IsAvailable == 1){
+                    window.DocStatus.FX.Errors.push("App is available to all users -- should be restricted to administrators.");
+                    window.DocStatus.FX.permissions = 0
+                    document.getElementById("fx_permission").innerHTML = "<img src=\"/static/app/search_activity/err_ico.gif\" />"
+                }else{
+                    window.DocStatus.FX.permissions = 1;
+                    document.getElementById("fx_permission").innerHTML = "<img src=\"/static/app/search_activity/ok_ico.gif\" />"
+                }
+                RecalculateOverallStatus()
+
+                
+            });
+          });
+
+
+
+         setTimeout(function(properties) {
+            var TSIDXDataCheckSearch = splunkjs.mvc.Components.getInstance("TSIDXDataCheck");
+            console.log("Checking the status of the TSIDXDataCheckSearch:", TSIDXDataCheckSearch.search.attributes.data.dispatchState)
+            if(TSIDXDataCheckSearch.search.attributes.data.dispatchState == "FAILED"){
+              console.log("Error pulling TSIDXDataCheckSearch. Error.")
+                    window.DocStatus.TSIDX.SHcount = 0;
+                    window.DocStatus.TSIDX.Ecount = 0;
+                    window.DocStatus.TSIDX.Errors.push("No TSIDX was found for Search History or Events. This likely means that the initial backfill is not configured. Please specify your backfill period below, and come back. Depending on your environment, you may see data populated below (and on the actual dashboards) in a few minutes, or it may take an hour or more (very high volume environments). If you've gone through this, please check for errors on the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                document.getElementById("tsidx_SH_any_data").innerHTML = 0;  
+                document.getElementById("tsidx_E_any_data").innerHTML = 0;
+                RecalculateOverallStatus()
+            }
+        }, 5000);
+
+
+ 
+
+        var TSIDXDataCheckSearch = splunkjs.mvc.Components.getInstance("TSIDXDataCheck");
+        var TSIDXDataCheckSearchResults = TSIDXDataCheckSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my TSIDXDataCheckSearch Object", TSIDXDataCheckSearch)
+        TSIDXDataCheckSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from TSIDXDataCheckSearch");
+
+            if(TSIDXDataCheckSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling TSIDXDataCheckSearch. No results found.")
+                    window.DocStatus.TSIDX.SHcount = 0;
+                    window.DocStatus.TSIDX.Ecount = 0;
+                    window.DocStatus.TSIDX.Errors.push("No data was found in the long term search for the Search History storage. This likely indicates that either the backfill script is not scheduled to run, or some sort of error while running it. If the script shows Validation Success below, you should check the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                    window.DocStatus.TSIDX.Errors.push("No data was found in the long term search for the Events storage. This likely indicates that either the backfill script is not scheduled to run, or some sort of error while running it. If the script shows Validation Success below, you should check the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                document.getElementById("tsidx_SH_any_data").innerHTML = 0;  
+                document.getElementById("tsidx_E_any_data").innerHTML = 0;  
+              return;
+            }       
+
+            TSIDXDataCheckSearchResults.on("data", function() {
+                var data = TSIDXDataCheckSearchResults.data().results;
+                console.log("Here are my TSIDXDataCheckSearchResults: ", data)          
+                document.getElementById("tsidx_SH_any_data").innerHTML = data[0].SHCount;  
+                document.getElementById("tsidx_E_any_data").innerHTML = data[0].EventsCount;  
+                if(data[0].SHCount > 0){
+                    window.DocStatus.TSIDX.SHcount = 1;
+                }else{
+                    window.DocStatus.TSIDX.SHcount = 0;
+                    window.DocStatus.TSIDX.Errors.push("No data was found in the long term search for the Search History storage. This likely indicates that either the backfill script is not scheduled to run, or some sort of error while running it. If the script shows Validation Success below, you should check the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                }
+                if(data[0].EventsCount > 0){
+                    window.DocStatus.TSIDX.Ecount = 1;
+                }else{
+                    window.DocStatus.TSIDX.Ecount = 0;
+                    window.DocStatus.TSIDX.Errors.push("No data was found in the long term search for the Events storage. This likely indicates that either the backfill script is not scheduled to run, or some sort of error while running it. If the script shows Validation Success below, you should check the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                }
+                RecalculateOverallStatus()
+
+                
+            });
+          });
+
+
+         setTimeout(function(properties) {
+            var RecentTSIDXDataCheckSearch = splunkjs.mvc.Components.getInstance("RecentTSIDXDataCheck");
+            console.log("Checking the status of the RecentTSIDXDataCheckSearch:", RecentTSIDXDataCheckSearch.search.attributes.data.dispatchState)
+            if(RecentTSIDXDataCheckSearch.search.attributes.data.dispatchState == "FAILED"){
+              console.log("Error pulling RecentTSIDXDataCheckSearch. Error.")
+                    window.DocStatus.TSIDX.RecentSHcount = 0;
+                    window.DocStatus.TSIDX.RecentEcount = 0;
+                document.getElementById("tsidx_SH_recent_data").innerHTML = 0;
+                document.getElementById("tsidx_E_recent_data").innerHTML = 0;  
+                RecalculateOverallStatus()
+            }
+        }, 5000);
+
+
+        var RecentTSIDXDataCheckSearch = splunkjs.mvc.Components.getInstance("RecentTSIDXDataCheck");
+        var RecentTSIDXDataCheckSearchResults = RecentTSIDXDataCheckSearch.data('results', { output_mode:'json', count:0 });
+        console.log("Here's my RecentTSIDXDataCheckSearch Object", RecentTSIDXDataCheckSearch)
+
+        RecentTSIDXDataCheckSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            
+            console.log("Got Results from RecentTSIDXDataCheckSearch");
+
+            if(RecentTSIDXDataCheckSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling RecentTSIDXDataCheckSearch. No results found.")
+                    window.DocStatus.TSIDX.RecentSHcount = 0;
+                    window.DocStatus.TSIDX.Errors.push("No data was found in the short term search for the Search History storage. This likely indicates that either the backfill script is not scheduled to run, or some sort of error while running it. If the script shows Validation Success below, you should check the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                    window.DocStatus.TSIDX.RecentEcount = 0;
+                    window.DocStatus.TSIDX.Errors.push("No data was found in the short term search for the Events storage. This likely indicates that either the backfill script is not scheduled to run, or some sort of error while running it. If the script shows Validation Success below, you should check the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                document.getElementById("tsidx_SH_recent_data").innerHTML = 0;
+                document.getElementById("tsidx_E_recent_data").innerHTML = 0;  
+              return;
+            }       
+
+            RecentTSIDXDataCheckSearchResults.on("data", function() {
+                var data = RecentTSIDXDataCheckSearchResults.data().results;
+                console.log("Here are my RecentTSIDXDataCheckSearchResults: ", data)          
+                document.getElementById("tsidx_SH_recent_data").innerHTML = data[0].SHCount;  
+                document.getElementById("tsidx_E_recent_data").innerHTML = data[0].EventsCount;  
+
+                if(data[0].SHCount > 0){
+                    window.DocStatus.TSIDX.RecentSHcount = 1;
+                    
+                }else{
+                    window.DocStatus.TSIDX.RecentSHcount = 0;
+                    window.DocStatus.TSIDX.Errors.push("No data was found in the short term search for the Search History storage. This likely indicates that either the backfill script is not scheduled to run, or some sort of error while running it. If the script shows Validation Success below, you should check the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                }
+                if(data[0].EventsCount > 0){
+                    window.DocStatus.TSIDX.RecentEcount = 1;
+                    
+                }else{
+                    window.DocStatus.TSIDX.RecentEcount = 0;
+                    window.DocStatus.TSIDX.Errors.push("No data was found in the short term search for the Events storage. This likely indicates that either the backfill script is not scheduled to run, or some sort of error while running it. If the script shows Validation Success below, you should check the <a href='/app/search_activity/troubleshooting_tsidx_population'>Troubleshooting TSIDX Population</a> dashboard.")
+                }
+                RecalculateOverallStatus()
+
+                
+            });
+          });
+
+   var element6 = new ChartElement({
+            "id": "element6",
+            "charting.chart": "bar",
+            "managerid": "search6",
+            "width": "1000px",
+            "height": "400px",
+            "el": $('#element6')
+        }, {tokens: true}).render();
+        
+
+/*
+        var mainSearch = splunkjs.mvc.Components.getInstance("search1");
+        var myResults = mainSearch.data('results', { output_mode:'json', count:0 });
+
+        mainSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+            document.getElementById('ldapqueryexample').innerHTML = "";
+            console.log("Got Results from LDAP Search");
+
+            if(mainSearch.attributes.data.resultCount == 0) {
+              console.log("Error pulling ldapsearch example code. No results found.")
+              return;
+            }       
+
+            myResults.on("data", function() {
+                var data = myResults.data().results;
+                console.log("Here are my results: ", data, data[0].value)          
+                document.getElementById("ldapqueryexample").innerHTML = data[0].value;  
+                
+            });
+          });*/
+
+
+
+        // Initialize time tokens to default
+        if (!defaultTokenModel.has('earliest') && !defaultTokenModel.has('latest')) {
+            defaultTokenModel.set({ earliest: '0', latest: '' });
+        }
+
+        submitTokens();
+
+
+        //
+        // DASHBOARD READY
+        //
+
+        DashboardController.ready();
+        pageLoading = false;
+
+    }
+);
+</script>
+</body>
+</html>

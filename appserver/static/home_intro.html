@@ -1,0 +1,185 @@
+<style type="text/css">
+.Home a {
+    font-size: 16px;
+    font-family: Arial,Helvetica,sans-serif;
+    color: #1A7996;
+    text-decoration: none;
+}
+
+.Home p {
+  color: #666666;
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 14px;
+}
+
+.Home .intro {
+  max-width:1000px;
+}
+
+.Home h1 {
+    color:       #3F3F3F;
+    font-size:   20px;
+    font-weight: 100;
+    font-family: "Helvetica nenu", Helvetica, Arial, sans-serif;
+    line-height: normal;
+    
+    /* Adjust spacing around panel titles. Spacing above and on the left of panel titles should be 27px to panel edge. Spacing below panel titles (between bottom of title and top of content) should be 20px. */
+    margin:      0px 50px 19px 0px;
+}
+
+.link-row:hover{
+  border: 3px solid #EAEAEA;
+  
+  -moz-border-top-right-radius: 15px;
+  border-top-right-radius: 15px;
+  -moz-border-bottom-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  -moz-border-top-left-radius: 15px;
+  border-top-left-radius: 15px;
+  -moz-border-bottom-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.link-row{
+  padding: 12px;
+  border: 3px solid rgba(255,255,255,0.1);
+  max-width:650px;
+}
+
+.link-row a{
+  cursor:pointer;
+}
+
+.link-icon{
+  display: inline-block;
+}
+
+.link-description{
+  display: inline-block;
+}
+
+.icon{
+  font-size: 30pt;
+  opacity: 0.4;
+  margin-right: 10px;
+  width: 28px;
+  display: inline-block;
+}
+
+#benefitlist li {
+  font-size: 1.2em;
+  font-family:Arial,Helvetica,sans-serif;
+  
+}
+
+</style>
+
+<div class="Home splunk-components" style="padding: 30px; 30px;">
+
+<div class="row">
+  <div class="span12">
+    <h1>Search Activity</h1>
+    <p class="intro">The Search Activity app is a community supported application for understanding Splunk usage and adoption within an organization. There are a few primary use cases that will run throughout the views provided for this app. They are:</p>
+      <ol id="benefitlist">
+        <li>Understanding Your Biggest Users - Who are the most frequent searchers or the heaviest consumers of resources</li>
+        <li>Understanding Any User - Pick an user and understand what types of searches they run, do they share or export search results, and more.</li>
+        <li>Understanding Usage within the Organization - While not explicitly required, this app will benefit most when integrated with LDAP information so that you can understand usage in the context of the organization. Where do your users lie, and how do they impact the organization?</li>
+        <li>Tracking New and Important Users - From sending them resources when they first engage, to tagging key user communities so that you can understand the adoption of a specific cohort within the organization, it is important to support your newest and most critical user communities.</li>
+      </ol>
+    <p>
+    Overall, this app should provide you a great amount of context and visibility around your user community. If you are an advanced user, you can also benefit by asking your own novel questions to the dataset. There are nearly infinite different possible queries and interesting avenues you could explore, so take one of the existing searches, reference the <a href="/app/search_activity/usage/help">help</a> page for a description of the available data points, and start going. If you're not an advanced user, or if you're unable to answer the questions you're looking for, please don't hesitate to ask for help via <a href="http://answers.splunk.com/">Splunk Answers</a>, which will be frequently monitored.</p>  
+    <p>Please explore below, and <a href="http://answers.splunk.com/">let us know</a> if you have any questions. Thank you!</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-gauge-radial"></i> -->
+    <span class="link-description">
+    <a href="/app/search_activity/setup">Setup</a>
+    <p>There is a setup process required for this app, but it's a pretty straightforward one. Please see this setup page for guidance on the configuration of the app.</p>
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-flag"></i> -->
+    <span class="link-description">
+      <a href="/app/search_activity/search_activity">Search Activity Overview</a>
+      <p>Understand overall who your top users are, and high level statistics about the nature of the search load being faced by your system. </p>
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-settings"></i> -->
+    <span class="link-description">
+      <a href="/app/search_activity/per_user_dashboard">Per User</a>
+      <p>Look into the experience and usage characteristics of a particular user.</p>
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-question"></i> -->
+    <span class="link-description">
+      <a href="/app/search_activity/organizational_hierarchy">Organizational Hierarchy (Beta)</a>
+      <p>View Splunk Utilization Metrics in the context of your organization's LDAP Hierarchy</p>
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-question"></i> -->
+    <span class="link-description">
+      <a href="/app/search_activity/organizational_adoption">Organizational Adoption</a>
+      <p>Track organizational metrics to understand how users fit into the overall org structure.</p>
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-question"></i> -->
+    <span class="link-description">
+      <a href="/app/search_activity/usage_by_leader">Usage by Leader</a>
+      <p>See how Splunk is being used by users reporting into a manager. Great for preparing to talk to a business leader about her team is benefiting from Splunk.</p>
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-question"></i> -->
+    <span class="link-description">
+      <a href="/app/search_activity/tagged_users_overview">Tagged Users</a>
+      <p>Just met with a new group of users? Tag them, and then view their adoption progress as a group.</p>
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-question"></i> -->
+    <span class="link-description">
+      <a href="/app/search_activity/help">Help</a>
+      <p>Documentation, documentation, documentation!</p>
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12 link-row">
+    <!-- <i class="icon icon-speech-bubble"></i> -->
+    <span class="link-description">
+      <a href='http://splunk-base.splunk.com/search/?q=+search_activity+&Submit=Search'>Community</a>
+      <p>Explore Splunk Answers for relevant questions and answers</p>
+    </span>
+  </div>
+</div>
+
+</div>

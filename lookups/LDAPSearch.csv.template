@@ -1,0 +1,2 @@
+c,cn,description,displayName,dn,givenName,l,mail,manager,name,o,sAMAccountName,sn,st,telephoneNumber,title,whenChanged
+,non-existent-placeholder-account,"This Account Is A Placeholder",,"CN=non-existent-placeholder-account,CN=Users,DC=non-existent-placeholder-domain,DC=com",,,,,non-existent-placeholder-account,,non-existent-placeholder-account,,,"555-555-2255",,"2014/08/07 09:05:02 PDT"

@@ -1,0 +1,50 @@
+<nav search_view="search" color="#3765a6">
+
+  <a href="/app/search_activity/home">Home</a>
+
+  <collection label="System">
+    <!--        <view name="search_overview" />-->
+    <view name="search_activity" />
+        <view name="per_user_dashboard" />
+    <view name="per_user_timeline" />
+        <view name="per_search_view" />
+
+    <view name="add_to_tagged_users" />
+  </collection>
+  <collection label="Guided Searches">
+    <view name="user_search" />
+    <view name="search_search" />
+  </collection>
+  <collection label="Organizational">
+        <a href="/app/search_activity/organizational_hierarchy">Organizational Hierarchy (Beta)</a>
+    <view name="organizational_adoption" />
+
+  </collection>
+<view name="alerting" />
+  <collection label="Other Reports">
+   <view source="unclassified" match="sa_report"/>
+  </collection>
+
+  <collection label="Setup">
+    <a href="/app/search_activity/setup">Setup</a>
+    <collection label="Help">
+      <view name="help" />
+      <view name="installation" />
+      <view name="featurelist" />
+      <view name="schema" />
+    </collection>
+    <a href="https://www.wunderlist.com/list/127423757">Roadmap</a>
+    <view name="troubleshooting_tsidx_population" />
+  </collection>
+
+  <collection label="Search">
+    <view name="search" />
+    <view name="data_models" />
+    <view name="reports" />
+    <view name="alerts" />
+    <view name="dashboards" />
+    <view name="home" default="true" />
+  </collection>
+
+</nav>
+

@@ -1,0 +1,63 @@
+<dashboard>
+  <label>Installation</label>
+  <description/>
+  <row>
+    <html>
+      <h1>Search Activity Help: Installation</h1>
+
+      <h2>Help Contents</h2>
+      <ul>
+        <li><a href="/app/search_activity/help">Help Home</a></li>
+        <li>Installation</li>
+        <li><a href="/app/search_activity/featurelist">Feature List</a></li>
+        <li><a href="/app/search_activity/schema">Schema</a></li>
+    </ul>
+
+      <h2>Requirements</h2>
+      <p>There are a few qualifications for where you should install the app:
+        <ul>
+          <li>Do not install on a Search Head Cluster. This app leverages local TSIDX that are not supported under clustering.</li>
+          <li>Be cautious installing on a user search head. This app creates a TSIDX with audit data -- it is <b>not</b> possible to apply permissions to a TSIDX file (a great new feature with data models!), so a user who realizes that it is there could pull audit data. This is probably not terribly likely as it wouldn't be obvious if you apply the required app configuration permissions, but that is only security by obscurity. Security / Privacy conscious environments should isolate the app on an admin search head and/or use audit rules to check for users search the namespace in tstats. <ul><li>Additionally, 2.0 is the first public release, and there may be issues.</li></ul></li>
+          <li>Install on a search head with 1-15 GB of disk space available. Most small environments will happily fit into 1 GB of disk space for several months. Larger environments (typically with hundreds of users and tens of thousands of searches per day) will consume upwards of 1-2 GB disk space per month stored in TSIDX files. The largest environment tested (150,000+ searches per day, approximately 50 GB of audit data per month) consumes approximately 2.5 GB disk space for one month of data. This disk space is used on the search head and not on the indexers.</li>
+          <li>Currently tested on Splunk® 6.2. Should be backwards compatible to Splunk 6.1 without issue, and Splunk 6.0 (except two multi-select panels for search types).</li>
+        </ul>
+      </p>
+
+      <h2>Installing</h2>      
+      <p>
+        Installing the Search Activity App is more complex than the typical app, but you will be guided by a setup wizard. There are four sections to set up in the app:
+        <ul>
+          <li>LDAP</li>
+          <li>LDAP Management</li>
+          <li>App Configuration</li>
+          <li>Datastore / Backfill</li>
+        </ul>
+      </p>
+
+
+      <h2>LDAP</h2>
+      <p>While not required, it is highly recommended that you leverage LDAP to enrich the data in the app for Search Activity. Much of the most interesting functionality, in particular the Org Chart tree view is predicated on LDAP information. Fortunatley, getting LDAP information into Splunk is easy! You have three options for configuring this section:</p>
+      <p><b>SA-ldapsearch Lookup</b>: This is usually the best option. Splunk has a search addon (called either SA-ldapsearch or Splunk Support for Active Directory) for directly querying LDAP, which is widely used and fully supported. Find it <a href="https://apps.splunk.com/app/1151/">here</a>. You install the app, and follow the configuration settings listed in the docs (<a href="http://docs.splunk.com/Documentation/ActiveDirectory/1.2.2/DeployAD/ConfiguretheSA-ldapsearchsupportingaddon">here</a>). Once configured, you can enable the scheduled search to periodically poll LDAP and update LDAPSearch.csv (linked to from the setup page).</p>
+      <p><b>Existing LDAP Lookup</b>: This option presumes that you have an existing LDAP dump created by the method described in the previous option. This should be a CSV stored at $SPLUNK_HOME/etc/apps/search_activity/lookups/LDAPSearch.csv. This method makes the most sense if your production Splunk environment doesn't have the right version of Java for SA-ldapsearch or if you have a policy that prevents you from storing base64 encoded (or just plain text) credentials for an LDAP user on the Splunk server, as required by SA-ldapsearch. This is also the most QA'd option as that is how the development and staging environments are configured. </p>
+      <p><b>No LDAP</b>: If you have no desire to integrate with LDAP, select this option. You can always come back and change it -- all LDAP components are run at search time. <b>Note</b>: you must select No LDAP if you don't wish to use LDAP. Leaving this section unconfigured will prevent you from using the app.</p>
+
+      <br />
+      <h2>LDAP Management</h2>
+      <p>This piece is very straightforward. If you elect to use LDAP (as you should), you must ensure that the scheduled search creating the LDAPMgmtChain is enabled. This section will also check to ensure that LDAPSearch.csv is populated.</p>
+      <br />
+      <h2>App Configuration</h2>
+      <p>There are three sections to this page, though one is optional.</p>
+      <p><b>Field Extractions</b>: This is a check that should always succeed, verifying that we see data where we expect to. If this fails, check the sourcetype of your audit data, and make sure that fields such as actualsearch are configured.</p>
+      <p><b>App Permissions</b>: Because this app shows sensitive data, it is required to restrict access to administrators. A link is provided to configure this -- any non-default configuration will pass, so if you do want to open to all users, you can just select all the individual groups. You can always also override the SA_Config_System macro to "configured" but note that this will reset each time you visit the setup page.</p>
+      <p><b>Admin Email Address</b>: This app contains beta functionality to email users, welcoming them to the system. Configuring an admin email address will cause admins to be CC'd, allowing them to easily see new users in addition to users seeing a point of contact.</p>
+      <br />
+      <h2>Datastore / Backfill</h2>
+      <p>Finally, with all of the above configured, you must make sure data flows into the app. There are two scripted inputs (CheckDataStats-search.py and CheckDataStats-events.py) that leverage the admin credentials (via passAuth) to run the tscollect process. These scripts also handle backfill of data into the accelerated data store (TSIDX). To configure the app initially, you can select the time period that you would like to backfill (e.g., one month, six months, one year, etc.) and then click both the Set Search History Backfill and Set Events Backfill buttons. If you wish to have no backfill (not generally recommended) you can select No Backfill.</p>
+      <p>Once configured, the scripted input should start running within ten minutes, and you will see jobs kicked off in the job activity tracker for the admin user. Note that backfill searches can take a long time to run, depending on the environment, and can use several GB of disk space. You may want to reduce the number of days that will be backfilled at a time by modifying the appropriate parameter at the top of the CheckDataStats-search.py file. (There is more logic in the search backfill -- the events backfill should not experience long run times or other related issues.)</p>
+      <p><b>If you have renamed the admin user account</b> please either update the default/inputs.conf to specify a different user, or better yet copy the default/inputs.conf to local/inputs.conf and modify just the passAuth line there with an admin username.</p>
+      <br /><br />
+      <h2>Summary</h2>
+      <p>Once you have gotten either Green Checkmarks or Yellow Warnings for all the parameters in the setup page, the SA_Config_System macro will be set to "configured" and you should start seeing data in the main page as backfill is completed. If you experience any issues, please don't hesitate to go to <a href="http://answers.splunk.com/">Splunk Answers</a> and search for your issue, or ask a new question. Make sure to tag Search Activity, and you should get a fast response.</p>
+    </html>
+  </row>
+</dashboard>

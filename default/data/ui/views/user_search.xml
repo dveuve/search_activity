@@ -1,0 +1,113 @@
+<form script="check_data_availability.js">
+  <label>Find Users</label>
+  <description/>
+  <fieldset submitButton="true">
+    <input type="time" token="field1">
+      <label/>
+      <default>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+    <input type="dropdown" token="wasshared" searchWhenChanged="true">
+      <label>Was Shared</label>
+      <choice value="yes OR wasshared=no">Either</choice>
+      <choice value="yes">Yes</choice>
+      <choice value="no">No</choice>
+      <prefix>WasShared=</prefix>
+      <default>yes OR wasshared=no</default>
+    </input>
+    <input type="text" token="total_run_time_gt">
+      <label>Total Run Time &gt;=</label>
+      <default>0</default>
+      <prefix>total_run_time&gt;=</prefix>
+    </input>
+    <input type="text" token="result_count_gt">
+      <label>Result Count &gt;=</label>
+      <default>0</default>
+      <prefix>result_count&gt;=</prefix>
+    </input>
+    <input type="text" token="scan_count_gt">
+      <label>Scan Count &gt;=</label>
+      <default>0</default>
+      <prefix>scan_count&gt;=</prefix>
+    </input>
+    <input type="multiselect" token="searchtype">
+      <label>Search Type(s)</label>
+      <choice value="adhoc">Adhoc</choice>
+      <choice value="scheduled">Scheduled</choice>
+      <choice value="summarization">Summarization</choice>
+      <choice value="realtime">Realtime</choice>
+      <choice value="dashboard">Dashboard</choice>
+      <valuePrefix>searchtype=</valuePrefix>
+      <valueSuffix>*</valueSuffix>
+      <delimiter> OR </delimiter>
+      <default>adhoc,summarization,scheduled,realtime,dashboard</default>
+    </input>
+    <input type="dropdown" token="searchcommands">
+      <label>Search Commands</label>
+      <choice value="*">Any</choice>
+      <populatingSearch fieldForLabel="searchcommands" fieldForValue="searchcommands">| tstats local=t count from `SA_SearchHistory` groupby searchcommands  | where searchcommands!="search"</populatingSearch>
+      <default>*</default>
+      <prefix>searchcommands=</prefix>
+    </input>
+    <input type="dropdown" token="state">
+      <label>State</label>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForLabel="state" fieldForValue="value">| tstats local=t  count  from `SA_SearchHistory` groupby state | eval value="state=" . state</populatingSearch>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="city">
+      <label>City</label>
+      <choice value="*">All</choice>
+      <populatingSearch>| tstats local=t  count  from `SA_SearchHistory` where * $state$ groupby city  | eval value="city=" . city</populatingSearch>
+      <default>*</default>
+    </input>
+    <input type="text" token="username">
+      <label>Username (Wildcards Supported)</label>
+      <default>*</default>
+      <prefix>`UserOrName`=</prefix>
+    </input>
+    <input type="dropdown" token="management">
+      <label>Management Chain Includes</label>
+      <choice value="*">Any</choice>
+      <populatingSearch fieldForLabel="ManagementChain" fieldForValue="ManagementChain">| tstats local=t  count sum(total_run_time) as total_run_time sum(NumExports) as NumExports from `SA_SearchHistory` groupby _time user searchtype span=1d  | stats sum(count) as NumSearches sum(eval(if(searchtype="adhoc",count,0))) as NumAdHocSearches sparkline(sum(count)) as UsageTrend sum(total_run_time) as HoursOfSearchTime sum(eval(if(searchtype="adhoc",total_run_time,0))) as HoursOfAdHocSearchTime sum(NumExports) as NumberOfExports by user| where user!="splunk-system-user" | eval HoursOfSearchTime = round(HoursOfSearchTime/3600,2) | eval HoursOfAdHocSearchTime = round(HoursOfAdHocSearchTime/3600,2) | sort - NumSearches | lookup LDAPMgmtChain sAMAccountName as user | makemv delim="|" ManagementChain | where ManagementChain!="" | stats count by ManagementChain</populatingSearch>
+      <default>*</default>
+      <prefix>ManagementChain="</prefix>
+      <suffix>"</suffix>
+    </input>
+  </fieldset>
+  <row>
+      <table>
+        <title>Results</title>
+        <searchString>| tstats local=t  count sum(total_run_time) as total_run_time sum(NumExports) as NumExports from `SA_SearchHistory` where * $wasshared$ $total_run_time_gt$ $result_count_gt$ $scan_count_gt$ $searchtype$ $searchcommands$ $state$ groupby _time user span=1d | stats sum(count) as count sparkline(sum(count)) as UsageSparkline sum(total_run_time) as HoursOfSearchTime sum(NumExports) as NumberOfExports by user | where user!="splunk-system-user" | eval HoursOfSearchTime = round(HoursOfSearchTime/3600,2) | sort - count | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name mail telephoneNumber  | lookup LDAPMgmtChain sAMAccountName as user OUTPUT ManagementChain| makemv delim="|" ManagementChain | eval ManagementChain=if(isnull(ManagementChain)," ",ManagementChain) | search $username$ $management$</searchString>
+        <earliestTime>$field1.earliest$</earliestTime>
+        <latestTime>$field1.latest$</latestTime>
+        <drilldown>
+          <link>/app/search_activity/per_user_dashboard?form.user=$row.user$</link>
+        </drilldown>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+  </row>
+  <row>
+      <table>
+        <title>Searches</title>
+        <searchString>| tstats local=t  sum(total_run_time) as total_run_time sum(result_count) as Result_Count sum(scan_count) as Scan_Count sum(NumExports) as NumExports values(searchspan_h) as "Search Span (Hours)" values(searchspan_d) as "Search Span (Days)" values(searchtype) as "Search Type" values(searchcommands) as "Search Commands" values(WasShared) as WasShared from `SA_SearchHistory` where * $wasshared$ $total_run_time_gt$ $result_count_gt$ $scan_count_gt$ $searchtype$ $searchcommands$ $state$ groupby _time searchid user | fields user "Search Type" total_run_time Result_Count Scan_Count NumExports "Search Span (Hours)" "Search Span (Days)"  "Search Comands" "WasShared" searchid</searchString>
+        <earliestTime>$field1.earliest$</earliestTime>
+        <latestTime>$field1.latest$</latestTime>
+        <fields>_time user "Search Type" total_run_time Result_Count Scan_Count NumExports "Search Span (Hours)" "Search Span (Days)"  "Search Comands" "WasShared"</fields>
+        <drilldown>
+          <link>/app/search_activity/per_search_view?form.searchid=$row.searchid$</link>
+        </drilldown>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+  </row>
+</form>

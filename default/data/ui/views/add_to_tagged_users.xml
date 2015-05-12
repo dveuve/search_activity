@@ -1,0 +1,36 @@
+<form>
+  <label>Add To Tagged Users</label>
+  <description/>
+  <fieldset submitButton="true">
+    <input type="text" token="user">
+      <label>Username (Or Comma Separated Usernames)</label>
+    </input>
+    <input type="text" token="category">
+      <label>Category (Any Label to Identify these Users)</label>
+    </input>
+  </fieldset>
+  <row>
+    <html>
+      <p>The tagged users list is owned by a lookup table called TaggedUsers. You are welcome to manually edit that file by finding
+        it at $SPLUNK_HOME/etc/apps/search_activity/lookups/TaggedUsers.csv. You may also wish to manipulate it through the UI
+        by leveraging Luke Murphy's fantastic <a href="http://apps.splunk.com/app/1724/">Lookup Editor App from apps.splunk.com</a>.
+        You can also add this functionality into whatever workflow you would like by referencing the SA_Add_Tagged_Users("comma,separated,user,list","category") macro.
+        You can even add users by using the workflow action found when looking through audit logs manually from this app.
+        However, you can also put a username (or a comma-separated list of usernames - no spaces) into the below, and this dashboard
+        will add it for you.
+      </p>
+    </html>
+  </row>
+  <row>
+      <table>
+        <title>Results of Adding Users</title>
+        <searchString>| `SA_Add_Tagged_Users("$user$","$category$")`</searchString>
+        <earliestTime>0</earliestTime>
+        <latestTime/>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+      </table>
+  </row>
+</form>

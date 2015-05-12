@@ -1,0 +1,27 @@
+<form>
+  <label>Group Users Based on Similar Search</label>
+  <fieldset submitButton="false">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+      <table>
+        <title>Similar Users</title>
+        <search>
+          <query>| tstats local=t values(actualsearch) as search values(user) as user from `SA_SearchHistory` where searchtype=adhoc groupby searchid | cluster labelonly=t field=search | stats first(search) as search values(searchid) as searchid values(user) as users by cluster_label | where mvcount(users)&gt;2 | cluster labelonly=t field=users | stats first(search) as search dc(searchid) as numsearches values(users) as users by cluster_label | mvexpand users  | lookup LDAPSearch sAMAccountName as users OUTPUTNEW name department manager | lookup LDAPSearch dn as manager OUTPUTNEW name as managername | eval name=if(isnull(name),"_______",name)| eval department=if(isnull(department),"_______",department)| eval manager=if(isnull(manager),"_______",manager)| stats dc(users) as "# of Users" values(numsearches) as "# of Similar Searches" list(users) as Users list(name) as Names list(department) as Departments list(managername) as Manager first(search) as "Representative Search" by cluster_label |  fields - cluster_label | eval "Representative Search"=if(len('Representative Search')&gt;60,substr('Representative Search',1, 60) . " [..excerpted..]", 'Representative Search') | sort - "# of Similar Searches"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+  </row>
+</form>

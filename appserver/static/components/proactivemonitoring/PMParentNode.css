@@ -1,0 +1,11 @@
+.proactive-monitoring-parent-node > text.name-label {
+	font-size: 14px;
+	text-anchor: start;
+}
+
+.proactive-monitoring-parent-node > text.node-label {
+	fill: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold;
+	text-anchor: middle;
+}

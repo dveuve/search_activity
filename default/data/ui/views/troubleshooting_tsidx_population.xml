@@ -1,0 +1,66 @@
+<form>
+  <label>Troubleshooting TSIDX Population</label>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+      <event>
+        <title>Logs Created by Script</title>
+        <search>
+          <query>source="SA-*-ParseData" sourcetype="sa"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="list.drilldown">full</option>
+        <option name="list.wrap">1</option>
+        <option name="maxLines">5</option>
+        <option name="raw.drilldown">full</option>
+        <option name="rowNumbers">0</option>
+        <option name="table.drilldown">all</option>
+        <option name="table.wrap">1</option>
+        <option name="type">list</option>
+        <fields>[]</fields>
+      </event>
+  </row>
+  <row>
+      <event>
+        <title>Internal Logs From Population Script</title>
+        <search>
+          <query>index=_internal sourcetype=splunkd CheckDataStats</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="list.drilldown">full</option>
+        <option name="list.wrap">1</option>
+        <option name="maxLines">5</option>
+        <option name="raw.drilldown">full</option>
+        <option name="rowNumbers">0</option>
+        <option name="table.drilldown">all</option>
+        <option name="table.wrap">1</option>
+        <option name="type">list</option>
+        <fields>[]</fields>
+      </event>
+  </row>
+  <row>
+      <table>
+        <search>
+          <query>index=_internal sourcetype=splunkd_access (backfill_search_window OR backfill_search_internal OR clearoldbackfilljobs OR updatemacro) | table _time clientip user uri status</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+  </row>
+</form>

@@ -1,0 +1,1895 @@
+<%page expression_filter="h"/>
+<%
+import sys
+from splunk.appserver.mrsparkle.lib.util import make_splunkhome_path
+sys.path.append(make_splunkhome_path(['etc', 'apps', 'search_activity', 'appserver', 'controllers']))
+import splunk
+from search_activity_setup import isValidAdmin
+	
+# Get cherry key
+session_key = cherrypy.session.get('sessionKey')
+
+# Get cherry username
+user = cherrypy.session['user']['name']
+
+# Get capabilities
+validadmin = isValidAdmin(user, session_key)
+
+%>
+<%inherit file="//layout/base.html" />
+<%namespace name="lib" file="//lib.html" import="*"/>
+<%namespace name="helpers" file="//view/_helpers.html" import="*"/>
+
+<%def name="head()">
+	<% parent.head() %>
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="Mon, 22 Jul 2002 11:12:01 GMT">
+</%def>
+
+<%def name="css()">
+	<% CSSFiles = [
+		"/static/css/skins/default/default.css",
+		"/static/app/search_activity/stylesheets/collection_setup.css",
+		"/static/app/SA-Utils/stylesheets/font-awesome.min.css",
+		"/static/app/search_activity/stylesheets/jqueryui-splunk.css"
+	] %>
+	
+	<%lib:stylesheet_tags files="${CSSFiles}" />
+<% 
+splunkVersion = splunk.getReleaseVersion()
+if splunkVersion.startswith("5."):
+	jsFiles = ['/static/app/SA-Utils/scripts/contrib/d3.v3.min.js',
+		'/static/app/SA-Utils/scripts/contrib/jquery-ui-1.8.21.custom.min.js'
+	]
+elif splunkVersion.startswith("6.1"):
+	jsFiles = ['/static/app/SA-Utils/scripts/contrib/d3.v3.min.js',
+		'/static/js/contrib/jquery-ui-1.10.3.min.js'
+	]
+else:
+	jsFiles = ['/static/app/SA-Utils/scripts/contrib/d3.v3.min.js',
+		'/static/js/contrib/jquery/jqueryui.js'
+	]
+%> 
+	<%lib:script_tags files="${jsFiles}" />
+</%def>
+
+${csrf_hidden_input()}
+<div id="disable-overlay" class="ui-overlay ui-widget-overlay" style="display: none;">
+	<p style=" position:absolute; top:50%; text-align: center; width: 100%;">
+				Verifying data with server...
+	</p>
+</div>
+
+## Preform the following if the user accessing the page is a valid admin:
+% if validadmin:
+	<div class="layout">
+	<div id="hydra-node-wrapper" class="conf-panel">
+		<h1>
+			Data Collection Nodes
+		</h1>
+		<div style="float: left; clear: both;">
+			<div class="plus-box" style="float: left; clear: left;">
+				<i id="hydra-node-add" class="icon-plus clickable conf-icon node-icon"></i>
+			</div>
+			<div id="hydra-node-nodebar-container" class="node-bar">
+				
+			</div>
+		</div>
+		<div id="selected-hydra-node-info" class="conf-info">
+			<h2 class="selected-name" style="float:left;clear:left;">
+				None Selected...
+			</h2>
+			<div class="button-bar">
+				<i id="selected-hydra-node-validate" class="icon-refresh clickable conf-icon"></i>
+				<i id="selected-node-edit" class="icon-pencil clickable conf-icon"></i>
+				<i id="hydra-node-delete" class="icon-trash clickable conf-icon"></i>
+			</div>
+			<table class="conf-info-display conf-info-actions">
+				<tr>
+					<th >
+							Splunk Forwarder Username:
+					</th>
+					<td  class="selected-username" colspan="2">
+						please select a node...
+					</td>
+				</tr>
+				<tr>
+					<th>
+						Worker Processes:
+					</th>
+					<td class="selected-heads" colspan="2">
+						please select a node...
+					</td>
+				</tr>
+				<tr>
+					<th>
+						Credential Validation:
+					</th>
+					<td class="selected-cred-validated">
+						please select a node...
+					</td>
+					<td class="selected-cred-msg invalid">
+						
+					</td>
+				</tr>
+				<tr>
+					<th>
+						Add-on Validation:
+					</th>
+					<td class="selected-addon-validated">
+						please select a node...
+					</td>
+					<td class="selected-addon-msg invalid">
+						
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="hydra-node-dialog" class="conf-dialog-content" title="Edit Data Collection Node" style="display: none;">
+			<p class="validate-tips">All fields are required.</p>
+			<form>
+				<input type="hidden" name="node_name" id="dialog-node-name" class="text dialog-field"/>
+				<table class="conf-dialog-table">
+					<tr>
+						<th>
+							<label for="node_path">Splunk Forwarder URI:</label>
+						</th>
+						<td>
+							<input type="text" name="node_path" id="dialog-node-path" class="text ui-widget-content ui-corner-all dialog-field" placeholder="https://10.10.10.10:8089"/>
+						</td>
+					</tr>
+					<tr>
+						<th >
+							<label for="node_username">Splunk Forwarder Username:</label>
+						</th>
+						<td>
+							<input type="text" name="node_username" id="dialog-node-username" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="node_password">Splunk Forwarder Password:</label>
+						</th>
+						<td>
+							<input type="password" name="node_password" id="dialog-node-password" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="node_heads">Worker Processes:</label>
+						</th>
+						<td>
+							<input type="text" name="node_heads" id="dialog-node-heads" value="" class="text ui-widget-content ui-corner-all dialog-field" placeholder="1-8"/>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="hydra-node-delete-confirm-dialog" title="Really Delete Collection Node?" style="display: none;">
+			<table style="margin-top: 16px;">
+				<tr>
+					<td style="padding-right: 15px;">
+						<i class="icon-warning-sign conf-icon"></i>
+					</td>
+					<td>
+						This Collection Node will be permanently deleted. This operation cannot be undone. Are you sure?
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="vc-wrapper" class="conf-panel">
+		<h1>
+			Virtual Centers
+		</h1>
+		<div style="float: left; clear: both;">
+			<div class="plus-box" style="float: left; clear: left;">
+				<i id="vc-add" class="icon-plus clickable conf-icon node-icon"></i>
+			</div>
+			<div id="vc-nodebar-container" class="node-bar">
+				
+			</div>
+		</div>
+		<div id="selected-vc-info" class="conf-info">
+			<h2 class="selected-name" style="float:left;clear:left;">
+				None Selected...
+			</h2>
+			<div class="button-bar">
+				<i id="selected-vc-validate" class="icon-refresh clickable conf-icon"></i>
+				<i id="selected-vc-edit" class="icon-pencil clickable conf-icon"></i>
+				<i id="vc-delete" class="icon-trash clickable conf-icon"></i>
+			</div>
+			<table class="conf-info-display conf-info-actions">
+				<tr>
+					<th>
+						 VC Username:
+					</th>
+					<td class="selected-username" colspan="3">
+						please select a vc...
+					</td>
+				</tr>
+				<tr>
+					<th>
+						Collecting from:
+					</th>
+					<td id="selected-vc-hosts" class="selected-hosts" colspan="2">please select a vc...</td>
+					<td class="selected-vc-msg">
+						
+					</td>
+				</tr>
+				<tr>
+					<th>
+						VC Credential Validation:
+					</th>
+					<td class="selected-cred-validated" >
+						please select a vc...
+					</td>
+					<td class="selected-cred-msg invalid" colspan="2">
+						
+					</td>
+				</tr>
+				<tr class="vclog_info_row"  >
+					<th>
+						VC Forwarder Credential Validation:
+					</th>
+					<td class="selected-vclog-validated" >
+						please select a vc...
+					</td>
+					<td class="selected-vclog-msg invalid" colspan="2">
+						
+					</td>
+				</tr>
+				<tr class="vclog_info_row"  >
+					<th>
+						VC Forwarder Add-on Validation:
+					</th>
+					<td class="selected-vclog-addon-validated" >
+						please select a vc...
+					</td>
+					<td class="selected-vclog-addon-msg invalid" colspan="2">
+						
+					</td>
+				</tr>
+
+			</table>
+		</div>
+		<div id="vc-dialog" class="conf-dialog-content" title="Edit Virtual Center" style="display: none;">
+			<p class="validate-tips">All fields are required.</p>
+			<form>
+				<input type="hidden" name="vc_name" id="dialog-vc-name" class="text dialog-field"/>
+				<table class="conf-dialog-table">
+					<tr>
+						<th>
+							<label for="vc_path">Virtual Center FQDN:</label>
+						</th>
+						<td>
+							<input type="text" name="vc_path" id="dialog-vc-path" class="text ui-widget-content ui-corner-all dialog-field" placeholder="vcenter.example.com"/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="vc_username">VC Username:</label>
+						</th>
+						<td>
+							<input type="text" name="vc_username" id="dialog-vc-username" value="" class="text ui-widget-content ui-corner-all dialog-field" placeholder="user@domain"/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="vc_password">VC Password:</label>
+						</th>
+						<td>
+							<input type="password" name="vc_password" id="dialog-vc-password" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="vc_collect_vc_logs">Collect VC Logs:</label>
+						</th>
+						<td>
+							<input type="checkbox" name="vc_collect_vc_logs" id="dialog-vc-collect-logs" class="ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr class="dialog-vc-log-options">
+						<th>
+							<label for="vc_splunk_uri">VC Splunk Forwarder URI:</label>
+						</th>
+						<td>
+							<input type="text" name="vc_splunk_uri" id="dialog-vc-splunk-uri" value="" class="text ui-widget-content ui-corner-all dialog-field" placeholder="https://vcenter.example.com:8089"/>
+						</td>
+					</tr>
+					<tr class="dialog-vc-log-options">
+						<th>
+							<label for="vc_splunk_username">VC Splunk Forwarder Username:</label>
+						</th>
+						<td>
+							<input type="text" name="vc_splunk_username" id="dialog-vc-splunk-username" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr class="dialog-vc-log-options">
+						<th>
+							<label for="vc_splunk_password">VC Splunk Forwarder Password:</label>
+						</th>
+						<td>
+							<input type="password" name="vc_splunk_password" id="dialog-vc-splunk-password" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="vc_collect_all_hosts">Collect from all hosts:</label>
+						</th>
+						<td>
+							<input type="checkbox" name="vc_collect_all_hosts" id="dialog-vc-collect-all-hosts" checked="checked" class="ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr class="dialog-vc-host-options" style="display: none;">
+						<th>
+							<label for="vc_host_whitelist">Host Whitelist Regex:</label>
+						</th>
+						<td>
+							<input type="text" name="vc_host_whitelist" id="dialog-vc-host-whitelist" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr class="dialog-vc-host-options" style="display: none;">
+						<th>
+							<label for="vc_host_blacklist">Host Blacklist Regex:</label>
+						</th>
+						<td>
+							<input type="text" name="vc_host_blacklist" id="dialog-vc-host-blacklist" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="vc-delete-confirm-dialog" title="Really Delete Virtual Center?" style="display: none;">
+			<table style="margin-top: 16px;">
+				<tr class="log-collection-warning">
+					<td style="padding-right: 15px;">
+						<i class="icon-warning-sign icon-large" style="color:red;"></i>
+					</td>
+					<td style="color:red;">
+						Log collection is still configured for this virtual center, if you delete it without reverting log collection configuration, you may still receive log data.
+						<br />
+						To revert the log collection configuration, exit this dialog, and simply uncheck the collect log checkboxes in the edit virtual center dialog.
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-right: 15px;">
+						<i class="icon-warning-sign icon-large"></i>
+					</td>
+					<td>
+						This Virtual Center will be permanently deleted. This operation cannot be undone. Are you sure?
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="vc-hosts-dialog" class="conf-dialog-content" title="Managed Hosts" style="display: none;">
+			<table class="conf-dialog-table" style="margin-top: 15px;">
+				<tr>
+					<th>
+						<strong>Included Hosts</strong>
+					</th>
+					<th>
+						<strong>Excluded Hosts</strong>
+					</th>
+				</tr>
+				<tr>
+					<td style="vertical-align: top;">
+						<ul id="vc-included-hosts-list" style="padding-left: 20px;"></ul>
+						<span id="vc-included-hosts-msg"></span>
+					</td>
+					<td style="vertical-align: top;">
+						<ul id="vc-excluded-hosts-list" style="padding-left: 20px;"></ul>
+						<span id="vc-excluded-hosts-msg"></span>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	</div>
+	<div id="unmanaged-wrapper" class="conf-panel" style="display:none;">
+		<h1>
+			Unmanaged Hosts
+		</h1>
+		<div style="float: left; clear: both;">
+			<div class="plus-box" style="float: left; clear: left;">
+				<i id="unmanaged-add" class="icon-plus clickable conf-icon node-icon"></i>
+			</div>
+			<div id="unmanaged-nodebar-container" class="node-bar">
+				
+			</div>
+		</div>
+		<div id="selected-unmanaged-info" class="conf-info">
+			<h2 class="selected-name" style="float:left;clear:left;">
+				None Selected...
+			</h2>
+			<div class="button-bar">
+				<i id="selected-unmanaged-validate" class="icon-refresh clickable conf-icon"></i>
+				<i id="selected-unmanaged-edit" class="icon-pencil clickable conf-icon"></i>
+				<i id="unmanaged-delete" class="icon-trash clickable conf-icon"></i>
+			</div>
+			<table class="conf-info-display conf-info-actions">
+				<tr>
+					<th>
+						Username:
+					</th>
+					<td class="selected-username" colspan="2">
+						please select an unmanaged host...
+					</td>
+				</tr>
+				<tr>
+					<th>
+						Credential Validatation:
+					</th>
+					<td class="selected-cred-validated">
+						please select an unmanaged host...
+					</td>
+					<td class="selected-cred-msg invalid">
+						
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="unmanaged-dialog" class="conf-dialog-content" title="Edit Unmanaged Host" style="display: none;">
+			<p class="validate-tips">All fields are required.</p>
+			<form>
+				<input type="hidden" name="unmanaged_name" id="dialog-unmanaged-name" class="text dialog-field"/>
+				<table class="conf-dialog-table">
+					<tr>
+						<th>
+							<label for="unmanaged_path">Unmanaged Host Domain:</label>
+						</th>
+						<td>
+							<input type="text" name="unmanaged_path" id="dialog-unmanaged-path" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="unmanaged_username">Username:</label>
+						</th>
+						<td>
+							<input type="text" name="unmanaged_username" id="dialog-unmanaged-username" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="unmanaged_password">Password:</label>
+						</th>
+						<td>
+							<input type="password" name="unmanaged_password" id="dialog-unmanaged-password" value="" class="text ui-widget-content ui-corner-all dialog-field"/>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="unmanaged-delete-confirm-dialog" title="Really Delete Unmanaged Host?" style="display: none;">
+			<table style="margin-top: 16px;">
+				<tr>
+					<td style="padding-right: 15px;">
+						<i class="icon-warning-sign icon-large"></i>
+					</td>
+					<td>
+						This Unmanaged Host will be permanently deleted. This operation cannot be undone. Are you sure?
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class ="jmFormactions">
+		<button type="button" id="start_stop_button" class="splButton-primary">Start Scheduler</button>	
+	</div>
+	</div>
+
+	<script>
+	// IE9 and IE10 fix
+    if(!window.console) {
+    	var console = {
+        	log : function(){},
+        	warn : function(){},
+        	error : function(){}
+        }
+     }
+	$(document).ready(function() {
+		//Get the data
+		<%
+			import json
+			data_json = json.dumps(conf_data)
+		%>
+		var server_data = ${data_json | n};
+		var selected_vc_hosts = {"included_hosts": [], "excluded_hosts": []};
+		//Utils
+		var validation_good_html = "<i class='icon-ok icon-large valid'></i>";
+		var validation_bad_html = "<i class='icon-remove icon-large invalid'></i>";
+		var validation_working_html = "<i class='icon-refresh icon-spin icon-large' style='color:#373737;'></i>";
+		var disabled_html = "<i class='icon-minus icon-large disabled'></i>";
+		var node_box_good_html = "<i class='icon-ok-circle valid node-icon'></i>";
+		var node_box_bad_html = "<i class='icon-remove-circle invalid node-icon'></i>";
+		var $overlay = $("#disable-overlay");
+		var $node_container = $("#hydra-node-wrapper");
+		var $vc_container = $("#vc-wrapper");
+		var $unmanaged_container = $("#unmanaged-wrapper");
+		$.ajaxSetup({ cache: false });
+		function disableUI() {
+			$overlay.width($(document).width());
+			$overlay.height($(document).height());
+			$overlay.fadeIn();
+		};
+		function enableUI() {
+			$overlay.fadeOut();
+		};
+		$(window).resize(function() {
+			$overlay.width($(document).width());
+			$overlay.height($(document).height());
+		});
+		function updateTips(t, $tips) {
+			$tips
+				.text( t )
+				.addClass( "ui-state-highlight" );
+			setTimeout(function() {
+				$tips.removeClass( "ui-state-highlight", 1500 );
+			}, 500 );
+		};
+		function checkRegexp( o, regexp, n, $tips) {
+			if ( !( regexp.test( o.val() ) ) ) {
+				o.addClass( "ui-state-error" );
+				updateTips(n, $tips);
+				return false;
+			} else {
+				return true;
+			}
+		};
+		function updateConfData(no_info, complete_fun) {
+			/*args:
+			 * no_info - pass true to avoid updating the info box
+			 * complete_fun - pass a function to run after the update is complete
+			 */
+			var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'conf_data');
+			$.ajax({
+				type: "GET",
+				url:uri,
+				data:{},
+				datatype:'json',
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+				},
+				success: function(rsp) {
+					console.log("[search_activity_setup] updated conf data with latest from server");
+					server_data = rsp;
+					console.log("[search_activity_setup] updating collection node interface");
+					updateCollectionButton();
+					updateHydraNodeBar();
+					if (no_info != true) {
+						updateHydraNodeInfoBox();
+					}
+					console.log("[search_activity_setup] updating vc interface");
+					updateVCNodeBar();
+					if (no_info != true) {
+						updateVCInfoBox();
+					}
+					console.log("[search_activity_setup] unmanaged interface disabled");
+					//updateUnmanagedNodeBar();
+					if (no_info != true) {
+						//updateUnmanagedInfoBox();
+					}
+				},
+				error: function(jqXHR,textStatus,errorThrown) {
+					console.log("[search_activity_setup] AJAX Failure on getting updated conf data");
+				},
+				complete: function() {
+					enableUI();
+					if (complete_fun) {
+						complete_fun();
+					}
+				}
+			});
+		};
+		//Client Side Rendering Logic
+		//Make the hydra node interface
+		function updateHydraNodeBar() {
+			//Bind that data!
+			var container = d3.select("#hydra-node-nodebar-container");
+			var node_boxes = container.selectAll("div.node-box")
+				.data(server_data.nodes, function(d) { return d.host_path; });
+			
+			//Make the new guys
+			node_boxes.enter()
+				.append("div")
+				.on("click", function() {
+					d3.select("#hydra-node-nodebar-container").selectAll("div.node-box.selected").classed("selected", false);
+					d3.select(this).classed("selected", true);
+					updateHydraNodeInfoBox();
+				});
+			
+			//Update everybody
+			node_boxes.classed("node-box", true)
+				.classed("valid", function(d) {
+					var d3this = d3.select(this);
+					if (d.credential_validation && d.addon_validation) {
+						d3this.html(node_box_good_html);
+						return true
+					}
+					else {
+						d3this.html(node_box_bad_html);
+						return false
+					}
+				});
+			
+			//Delete the old guys
+			node_boxes.exit().remove();
+			
+			//set the first one to be the selected one if none selected
+			var selected_node = d3.select("#hydra-node-nodebar-container").select(".node-box.selected");
+			if (selected_node.empty()) {
+				d3.select("#hydra-node-nodebar-container").select("div.node-box").classed("selected", true);
+			}
+		};
+		
+		function updateHydraNodeInfoBox() {
+			var selected_node = d3.select("#hydra-node-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				//We have something selected so let's populate the info box, with jquery, cuz we crazy like that
+				var data = selected_node.data()[0];
+				var $info_container = $("#selected-hydra-node-info");
+				//Basic Information
+				$(".selected-name", $info_container).html(data.host_path);
+				$("td.selected-username", $info_container).html(data.username);
+				$("td.selected-heads", $info_container).html(data.heads);
+				//Validation Information
+				$(".selected-cred-validated", $info_container).html(data.credential_validation ? validation_good_html : validation_bad_html);
+				$(".selected-addon-validated", $info_container).html(data.addon_validation ? validation_good_html : validation_bad_html);
+				$(".selected-cred-msg", $info_container).html("");
+				$(".selected-addon-msg", $info_container).html("");
+				//Call validate action
+				$("#selected-hydra-node-validate", $node_container).click();
+			}
+			else {
+				//Basic Information
+				$(".selected-name", $info_container).html("please select a collection node...");
+				$("td.selected-username", $info_container).html("please select a collection node...");
+				$("td.selected-heads", $info_container).html("please select a collection node...");
+				//Validation Information
+				$(".selected-cred-validated", $info_container).html("please select a collection node...");
+				$(".selected-addon-validated", $info_container).html("please select a collection node...");
+				$(".selected-cred-msg", $info_container).html("");
+				$(".selected-addon-msg", $info_container).html("");
+				console.log("No hydra node selected cannot display anything");
+			}
+		};
+		//Make the VC interface
+		function updateVCNodeBar() {
+			//Bind that data!
+			var container = d3.select("#vc-nodebar-container");
+			var node_boxes = container.selectAll("div.node-box")
+				.data(server_data.vcenters, function(d) { return d.target; });
+			
+			//Make the new guys
+			node_boxes.enter()
+				.append("div")
+				.on("click", function() {
+					d3.select("#vc-nodebar-container").selectAll("div.node-box.selected").classed("selected", false);
+					d3.select(this).classed("selected", true);
+					console.log("CLICKED ON A VCENTER");
+					updateVCInfoBox();
+				});
+			
+			//Update everybody
+			node_boxes.classed("node-box", true)
+				.classed("valid", function(d) {
+					var d3this = d3.select(this);
+					// consider VC splunk fowarder validation when "Collect VC Logs" is checked
+					if(d.vc_collect_logs)
+						vc_validation = d.credential_validation && d.forwarder_credential_validation && d.forwarder_addon_validation;	
+					else
+						vc_validation = d.credential_validation;
+					
+					if (vc_validation) {
+						d3this.html(node_box_good_html);
+						return true
+					}
+					else {
+						d3this.html(node_box_bad_html);
+						return false
+					}
+				
+				});
+			
+			//Delete the old guys
+			node_boxes.exit().remove();
+			
+			//Select one if none selected
+			var selected_node = d3.select("#vc-nodebar-container").select(".node-box.selected");
+			if (selected_node.empty()) {
+				d3.select("#vc-nodebar-container").select("div.node-box").classed("selected", true);
+			}
+		};
+		
+		function updateVCHosts(stanza_name) {
+			var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'get_managed_hosts');
+			var $info_container = $("#selected-vc-info");
+			var $hosts_val_td = $("#selected-vc-hosts");
+			var $hosts_msg_td =$("td.selected-vc-msg");
+			$hosts_msg_td.html(validation_working_html);
+			$hosts_val_td.hide();
+			$hosts_msg_td.show();
+			$.ajax({
+					type: "GET",
+					url:uri,
+					data:{vc: $.trim(stanza_name)},
+					datatype:'json',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp, status) {
+						console.log("[search_activity_setup] SUCCESS on vcenter managed host acquizition, updating interface...");
+						selected_vc_hosts = rsp;
+						var include_count = rsp.included_hosts.length;
+						$hosts_msg_td.html("");
+						$hosts_msg_td.hide();
+						$hosts_val_td.html("<a class='clickable'><span>" + String(include_count) + " hosts</span><i class='icon-search conf-icon' style='padding-left: 10px;'></i></a>");
+						$hosts_val_td.show();
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure in managed host get for vcenter");
+						$hosts_val_td.html(validation_bad_html);
+						$hosts_val_td.show();
+						$hosts_msg_td.html("<span class='invalid'>Error getting host list from server")
+						$hosts_msg_td.show();
+					},
+					complete: function() {
+						console.log("[search_activity_setup] completed managed host attempt for vcenter");
+					}
+			});
+		};
+		
+		function updateVCInfoBox() {
+			console.log("UPDATING VC INFO BOX");
+			var selected_node = d3.select("#vc-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				//We have something selected so let's populate the info box, with jquery, cuz we crazy like that
+				var data = selected_node.data()[0];
+				var $info_container = $("#selected-vc-info");
+				var vc = $.trim(data.target);
+				//Basic Information
+				$(".selected-name", $info_container).html(vc);
+				$("td.selected-username", $info_container).html($.trim(data.username));
+				//Validation Information
+				$(".selected-cred-validated", $info_container).html(data.credential_validation ? validation_good_html : validation_bad_html);
+				$(".selected-cred-msg", $info_container).html("");
+				
+				if(data.vc_collect_logs){
+					$(".vclog_info_row", $info_container).show();
+					$(".selected-vclog-validated", $info_container).html(data.forwarder_credential_validation ? validation_good_html : validation_bad_html );
+					$(".selected-vclog-addon-validated", $info_container).html(data.forwarder_addon_validation ? validation_good_html : validation_bad_html );
+				}
+				else
+					$(".vclog_info_row", $info_container).hide();
+				//Call Validate
+				validateVC();
+				$("#selected-vc-validate", $info_container).click();
+				//Populate host list information
+				updateVCHosts($.trim(data.stanza_name));
+			}
+			else {
+				//Basic Information
+				var $info_container = $("#selected-vc-info");
+				$(".selected-name", $info_container).html("please select a vc...");
+				$("td.selected-username", $info_container).html("please select a vc...");
+				//Validation Information
+				$(".selected-cred-validated", $info_container).html("please select a vc...");
+				$(".selected-cred-msg", $info_container).html("");
+				$(".selected-vclog-validated", $info_container).html("please select a vc...");
+				$(".selected-vclog-msg", $info_container).html("");
+				$(".selected-vclog-addon-validated", $info_container).html("please select a vc...");
+				$(".selected-vclog-addon-msg", $info_container).html("");								
+				//Populate host list information
+				$("td.selected-host-list", $info_container).html("please select a vc...");
+				console.log("No vc selected cannot display anything");
+			}
+		};
+		
+		//Make the unmanaged host interface
+		function updateUnmanagedNodeBar() {
+			//Bind that data!
+			var container = d3.select("#unmanaged-nodebar-container");
+			var node_boxes = container.selectAll("div.node-box")
+				.data(server_data.unmanaged_hosts, function(d) { return d.target; });
+			
+			//Make the new guys
+			node_boxes.enter()
+				.append("div")
+				.on("click", function() {
+					d3.select("#unmanaged-nodebar-container").selectAll("div.node-box.selected").classed("selected", false);
+					d3.select(this).classed("selected", true);
+					updateUnmanagedInfoBox();
+				});
+			
+			//Update everybody
+			node_boxes.classed("node-box", true)
+				.classed("valid", function(d) {
+					var d3this = d3.select(this);
+					if (d.credential_validation) {
+						d3this.html(node_box_good_html);
+						return true
+					}
+					else {
+						d3this.html(node_box_bad_html);
+						return false
+					}
+				});
+			
+			//Delete the old guys
+			node_boxes.exit().remove();
+			
+			//Select one if none selected
+			var selected_node = d3.select("#unmanaged-nodebar-container").select(".node-box.selected");
+			if (selected_node.empty()) {
+				d3.select("#unmanaged-nodebar-container").select("div.node-box").classed("selected", true);
+			}
+		};
+		function updateUnmanagedInfoBox() {
+			var selected_node = d3.select("#unmanaged-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				//We have something selected so let's populate the info box, with jquery, cuz we crazy like that
+				var data = selected_node.data()[0];
+				var $info_container = $("#selected-unmanaged-info");
+				//Basic Information
+				$(".selected-name", $info_container).html(data.target);
+				$("td.selected-username", $info_container).html(data.username);
+				//Validation Information
+				$(".selected-cred-validated", $info_container).html(data.credential_validation ? validation_good_html : validation_bad_html);
+				$(".selected-cred-msg", $info_container).html("");
+				//Call Validate
+				$("#selected-unmanaged-validate", $unmanaged_container).click();
+			}
+			else {
+				//Populate host list information
+				console.log("No unmanaged host selected cannot display anything");
+				var $info_container = $("#selected-unmanaged-info");
+				//Basic Information
+				$(".selected-name", $info_container).html("please select an unmanaged host...");
+				$("td.selected-username", $info_container).html("please select an unmanaged host...");
+				//Validation Information
+				$(".selected-cred-validated", $info_container).html("please select an unmanaged host...");
+				$(".selected-cred-msg", $info_container).html("");
+			}
+		};
+		
+		//VALIDATION LOGIC
+		function validateHydraNode() {
+			var selected_node = d3.select("#hydra-node-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				data = selected_node.data()[0];
+				var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'validate_collection_node');
+				var params = {
+					node : $.trim(data.host_path)
+				};
+				var $icon = $(this).addClass("icon-spin");
+				var $info_container = $("#selected-hydra-node-info");
+				$(".selected-cred-validated", $info_container).html(validation_working_html);
+				$(".selected-addon-validated", $info_container).html(validation_working_html);
+				$.ajax({
+					type: "GET",
+					url:uri,
+					data:params,
+					datatype:'json',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp) {
+						if (d3.select("#hydra-node-nodebar-container").select(".node-box.selected").data()[0].host_path == params.node) {
+							if (rsp.status == "valid") {
+								$(".selected-cred-validated", $info_container).html(validation_good_html);
+								$(".selected-addon-validated", $info_container).html(validation_good_html);
+								$(".selected-cred-msg", $info_container).html("");
+								$(".selected-addon-msg", $info_container).html("");
+							}
+							else if (rsp.status == "invalid") {
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html(rsp.msg);
+								$(".selected-addon-validated", $info_container).html(validation_bad_html);
+								$(".selected-addon-msg", $info_container).html(rsp.msg);								
+							}
+							else if (rsp.status == "badapps") {
+								$(".selected-cred-validated", $info_container).html(validation_good_html);
+								$(".selected-addon-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html("");
+								$(".selected-addon-msg", $info_container).html(rsp.msg);
+							}
+							else if (rsp.status == "unreachable") {
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-addon-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html(rsp.msg);
+								$(".selected-addon-msg", $info_container).html(rsp.msg);
+							}
+							else {
+								console.log("Unexpected response from splunk:");
+								console.log(rsp);
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-addon-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html("ERROR");
+								$(".selected-addon-msg", $info_container).html("ERROR");
+							}
+						}
+						updateConfData(true);
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure");
+					},
+					complete: function() {
+						$icon.removeClass("icon-spin");
+					}
+				})
+			}
+			else {
+				console.log("No hydra node selected cannot validate nothing!");
+			}
+		};
+	
+		function validateVCSplunkForwarder() {
+			var selected_node = d3.select("#vc-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				data = selected_node.data()[0];
+				var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'validate_vcenter_forwarder');
+				var params = {
+					vc : $.trim(data.target),
+					name : $.trim(data.stanza_name),
+					host_path : $.trim(data.forwarder_uri),
+					username : $.trim(data.forwarder_username)
+					
+				};
+				var $icon = $(this).addClass("icon-spin");
+				var $info_container = $("#selected-vc-info");
+				$(".selected-vclog-validated", $info_container).html(validation_working_html);
+				$(".selected-vclog-msg", $info_container).html("");
+				$(".selected-vclog-addon-validated", $info_container).html(validation_working_html);
+				$(".selected-vclog-addon-msg", $info_container).html("");
+				$.ajax({
+					type: "GET",
+					url:uri,
+					data:params,
+					datatype:'json',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp) {
+						if (d3.select("#vc-nodebar-container").select(".node-box.selected").data()[0].target == params.vc) {
+							if (rsp.status == "valid") {
+								$(".selected-vclog-validated", $info_container).html(validation_good_html);
+								$(".selected-vclog-msg", $info_container).html("");
+								$(".selected-vclog-addon-validated", $info_container).html(validation_good_html);
+								$(".selected-vclog-addon-msg", $info_container).html("");								
+							}
+							else if (rsp.status == "invalid") {
+								$(".selected-vclog-validated", $info_container).html(validation_bad_html);
+								$(".selected-vclog-msg", $info_container).html(rsp.msg);
+								$(".selected-vclog-addon-validated", $info_container).html(validation_bad_html);
+								$(".selected-vclog-addon-msg", $info_container).html(rsp.msg);								
+							}
+							else if (rsp.status == "unreachable") {
+								$(".selected-vclog-validated", $info_container).html(validation_bad_html);
+								$(".selected-vclog-msg", $info_container).html(rsp.msg);
+								$(".selected-vclog-addon-validated", $info_container).html(validation_bad_html);
+								$(".selected-vclog-addon-msg", $info_container).html(rsp.msg);								
+							}
+							else {
+								console.log("Unexpected response from splunk:");
+								console.log(rsp);
+								$(".selected-vclog-validated", $info_container).html(validation_bad_html);
+								$(".selected-vclog-msg", $info_container).html("ERROR");
+								$(".selected-vclog-addon-validated", $info_container).html(validation_bad_html);
+								$(".selected-vclog-addon-msg", $info_container).html("ERROR");								
+							}
+						}
+						updateConfData(true);
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure");
+					},
+					complete: function() {
+						$icon.removeClass("icon-spin");
+					}
+				})
+			}
+			else {
+				console.log("No vc selected cannot validate nothing!");
+			}
+		};
+				
+		function validateVC() {
+			var selected_node = d3.select("#vc-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				data = selected_node.data()[0];
+				var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'validate_vcenter');
+				var params = {
+					vc : $.trim(data.target),
+					name : $.trim(data.stanza_name),
+					vc_collect_logs : data.vc_collect_logs
+				};
+				var $icon = $(this).addClass("icon-spin");
+				var $info_container = $("#selected-vc-info");
+				$(".selected-cred-validated", $info_container).html(validation_working_html);
+				console.log("validateVC called");
+				$.ajax({
+					type: "GET",
+					url:uri,
+					data:params,
+					datatype:'json',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp) {
+						if (d3.select("#vc-nodebar-container").select(".node-box.selected").data()[0].target == params.vc) {
+							if (rsp.status == "valid") {
+								$(".selected-cred-validated", $info_container).html(validation_good_html);
+								$(".selected-cred-msg", $info_container).html("");
+							}
+							else if (rsp.status == "invalid") {
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html(rsp.msg);
+							}
+							else if (rsp.status == "unreachable") {
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html(rsp.msg);
+							}
+							else {
+								console.log("Unexpected response from splunk:");
+								console.log(rsp);
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html("ERROR");
+							}
+						}
+						updateConfData(true);
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure");
+					},
+					complete: function() {
+						$icon.removeClass("icon-spin");
+					}
+				})
+			}
+			else {
+				console.log("No vc selected cannot validate nothing!");
+			}
+			if(data.vc_collect_logs){
+				validateVCSplunkForwarder();
+			}
+		};
+		
+
+		function validateUnmanaged() {
+			var selected_node = d3.select("#unmanaged-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				data = selected_node.data()[0];
+				var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'validate_unmanaged_host');
+				var params = {
+					host : $.trim(data.target),
+					name : $.trim(data.stanza_name)
+				};
+				var $icon = $(this).addClass("icon-spin");
+				var $info_container = $("#selected-unmanaged-info");
+				$(".selected-cred-validated", $info_container).html(validation_working_html);
+				$.ajax({
+					type: "GET",
+					url:uri,
+					data:params,
+					datatype:'json',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp) {
+						if (d3.select("#unmanaged-nodebar-container").select(".node-box.selected").data()[0].target == params.host) {
+							if (rsp.status == "valid") {
+								$(".selected-cred-validated", $info_container).html(validation_good_html);
+								$(".selected-cred-msg", $info_container).html("");
+							}
+							else if (rsp.status == "invalid") {
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html(rsp.msg);
+							}
+							else if (rsp.status == "unreachable") {
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html(rsp.msg);
+							}
+							else {
+								console.log("Unexpected response from splunk:");
+								console.log(rsp);
+								$(".selected-cred-validated", $info_container).html(validation_bad_html);
+								$(".selected-cred-msg", $info_container).html("ERROR");
+							}
+						}
+						updateConfData(true);
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure");
+					},
+					complete: function() {
+						$icon.removeClass("icon-spin");
+					}
+				})
+			}
+			else {
+				console.log("No unmanaged selected cannot validate nothing!");
+			}
+		};
+		//EDIT LOGIC
+		function saveHydraNode(params) {
+			var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'save_collection_node');
+			if (params.node_name.length == 0) {
+				delete params.node_name;
+			}
+			if (params.password.length == 0) {
+				delete params.password;
+			}
+			disableUI();
+			$.ajax({
+					type: "POST",
+					url:uri,
+					data:params,
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp, status) {
+						console.log("[search_activity_setup] SUCCESS on hydra node save, updating interface...");
+						updateConfData(true, function() {
+							d3.select("#hydra-node-nodebar-container").selectAll("div.node-box")
+								.each(function(d) {
+									if (d.host_path == params.node) {
+										d3.select(this).classed("selected", true);
+									}
+									else {
+										d3.select(this).classed("selected", false);
+									}
+								});
+							updateHydraNodeInfoBox();
+						});
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure in save of hydra collection node");
+					},
+					complete: function() {
+						console.log("[search_activity_setup] completed save attempt for hydra collection node");
+					}
+			});
+		};
+
+		function saveVC(params) {
+			var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'save_vcenter');
+			if (params.password.length == 0) {
+				delete params.password;
+			}
+			if (params.host_whitelist.length == 0) {
+				delete params.host_whitelist;
+			}
+			if (params.host_blacklist.length == 0) {
+				delete params.host_blacklist;
+			}
+			disableUI();
+			$.ajax({
+					type: "POST",
+					url:uri,
+					data:params,
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp, status) {
+						console.log("[search_activity_setup] SUCCESS on vcenter save, updating interface...");
+						updateConfData(true, function() {
+							d3.select("#vc-nodebar-container").selectAll("div.node-box")
+								.each(function(d) {
+									if (d.target == params.vc) {
+										d3.select(this).classed("selected", true);
+									}
+									else {
+										d3.select(this).classed("selected", false);
+									}
+								});
+							updateVCInfoBox();
+						});
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure in save of vcenter");
+					},
+					complete: function() {
+						updateConfData(true);
+						console.log("[search_activity_setup] completed save attempt for vcenter");
+					}
+			});
+		};
+		function updateCollectionButton(){
+			if (server_data["isSchedulerDisabled"])
+				$("button#start_stop_button").html("Start Scheduler")
+			else
+				$("button#start_stop_button").html("Stop Scheduler")	
+				
+		};
+		function updateCollection(){
+			var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'update_collection');
+			$.ajax({
+					type: "GET",
+					url:uri,
+					//data:params,
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp) {
+						console.log("[search_activity_setup] SUCCESS on updating collection");
+						updateConfData(true);
+						updateCollectionButton();
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure while updating data collection status");
+					},
+					complete: function() {
+						console.log("[search_activity_setup] completed updating data collection status");
+					}
+
+			});
+		};
+		
+		function saveUnmanaged(params) {
+			var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'save_unmanaged_host');
+			if (params.password.length == 0) {
+				delete params.password;
+			}
+			disableUI();
+			$.ajax({
+					type: "POST",
+					url:uri,
+					data:params,
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+					},
+					success: function(rsp, status) {
+						console.log("[search_activity_setup] SUCCESS on unmanaged host save, updating interface...");
+						updateConfData(true, function() {
+							d3.select("#unmanaged-nodebar-container").selectAll("div.node-box")
+								.each(function(d) {
+									if (d.target == params.host) {
+										d3.select(this).classed("selected", true);
+									}
+									else {
+										d3.select(this).classed("selected", false);
+									}
+								});
+							updateUnmanagedInfoBox();
+						});
+					},
+					error: function(jqXHR,textStatus,errorThrown) {
+						console.log("[search_activity_setup] AJAX Failure in save of unmanaged");
+					},
+					complete: function() {
+						console.log("[search_activity_setup] completed save attempt for unmanaged");
+					}
+			});
+		};
+		//CRUD binding for collection nodes
+		var $hydra_node_dialog = $("#hydra-node-dialog");
+		var $hydra_node_tips = $("p.validate-tips", $hydra_node_dialog);
+		$hydra_node_dialog.dialog({
+			autoOpen: false,
+			dialogClass: "conf-dialog",
+			height: 350,
+			width: 480,
+			modal: true,
+			buttons: {
+				Cancel: {
+					class: 'left-button',
+					text: 'Cancel',
+					click: function() {
+						$(".dialog-field", $hydra_node_dialog).removeClass( "ui-state-error" );
+						$( this ).dialog( "close" );
+					}
+				},
+				"Save": {
+					class: 'right-button',
+					text: 'Save',
+					click: function() {
+						var validation = true;
+						$(".dialog-field", $hydra_node_dialog).removeClass( "ui-state-error" );
+						
+						validation = validation && checkRegexp( $('#dialog-node-path', $hydra_node_dialog), /^\s*https?:\/\/[A-Za-z0-9\.\-_]+:\d+\/?\s*$/, "You must specify protocol, address, and port for a management uri", $hydra_node_tips);
+						validation = validation && checkRegexp( $('#dialog-node-username', $hydra_node_dialog), /./, "You must specify a username", $hydra_node_tips);
+						validation = validation && checkRegexp( $('#dialog-node-password', $hydra_node_dialog), /./, "You must specify a password", $hydra_node_tips);
+						validation = validation && checkRegexp( $('#dialog-node-heads', $hydra_node_dialog), /^[1-8]$/, "You must specify a number of worker processes from 1 to 8", $hydra_node_tips);
+						if ( validation ) {
+							var password = $("#dialog-node-password", $hydra_node_dialog).val();
+							//if password is the default we set it to empty string to indicate no change
+							password = password == "$$$$$$$$" ? "" : password;
+							var params = {
+								node_name: $.trim($("#dialog-node-name", $hydra_node_dialog).val()),
+								node: $.trim($("#dialog-node-path", $hydra_node_dialog).val()),
+								username: $.trim($("#dialog-node-username", $hydra_node_dialog).val()),
+								password: password,
+								heads: $("#dialog-node-heads", $hydra_node_dialog).val()
+							};
+							saveHydraNode(params);
+							$( this ).dialog( "close" );
+						}
+					}
+				}
+			},
+			close: function() {
+					$(".dialog-field", $hydra_node_dialog).val( "" ).removeClass( "ui-state-error" );
+				}
+		});
+		$("#selected-node-edit").click( function() {
+			//Populate the dialog from selected node
+			var selected_node = d3.select("#hydra-node-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				data = selected_node.data()[0];
+				$("#dialog-node-name", $hydra_node_dialog).val($.trim(data.host_path));
+				$("#dialog-node-path", $hydra_node_dialog).val($.trim(data.host_path));
+				$("#dialog-node-username", $hydra_node_dialog).val($.trim(data.username));
+				//Set the password to 8 dollar signs to show that this node exists and password can be edited
+				$("#dialog-node-password", $hydra_node_dialog).val("$$$$$$$$");
+				$("#dialog-node-heads", $hydra_node_dialog).val(data.heads);
+				//Set title to edit one
+				$hydra_node_dialog.dialog("option", "title", "Edit Data Collection Node");
+			}
+			else {
+				//Set 'em blank
+				$("#dialog-node-name", $hydra_node_dialog).val("");
+				$("#dialog-node-path", $hydra_node_dialog).val("");
+				$("#dialog-node-username", $hydra_node_dialog).val("");
+				$("#dialog-node-password", $hydra_node_dialog).val("");
+				$("#dialog-node-heads", $hydra_node_dialog).val("");
+				//Set title to creating new one
+				$hydra_node_dialog.dialog("option", "title", "Create New Collection Node");
+			}
+			$hydra_node_tips.html("");
+			$hydra_node_dialog.dialog("open");
+		});
+		$("#hydra-node-add").click( function() {
+			//Set dialog blank
+			$("#dialog-node-name", $hydra_node_dialog).val("");
+			$("#dialog-node-path", $hydra_node_dialog).val("");
+			$("#dialog-node-username", $hydra_node_dialog).val("");
+			$("#dialog-node-password", $hydra_node_dialog).val("");
+			$("#dialog-node-heads", $hydra_node_dialog).val("");
+			//Set title to creating new one
+			$hydra_node_dialog.dialog("option", "title", "Create New Collection Node");
+			$hydra_node_tips.html("");
+			$hydra_node_dialog.dialog("open");
+		});
+		var $hydra_node_delete_dialog = $( "#hydra-node-delete-confirm-dialog" ).dialog({
+			autoOpen: false,
+			dialogClass: "conf-dialog",
+			resizable: false,
+			height: 200,
+			width: 400,
+			modal: true,
+			buttons: {
+				Cancel: {
+					class: 'left-button',
+					text: 'Cancel',
+					click: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				"Delete Node": {
+					class: 'right-button',
+					text: 'Delete Node',
+					click: function() {
+						var selected_node = d3.select("#hydra-node-nodebar-container").select(".node-box.selected");
+						if (!selected_node.empty()) {
+							var data = selected_node.data()[0];
+							var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'delete_collection_node', encodeURIComponent($.trim(data.host_path)));
+							disableUI();
+							$.ajax({
+								type: "DELETE",
+								url:uri,
+								beforeSend: function(xhr) {
+									xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+								},
+								success: function(rsp) {
+									console.log("[search_activity_setup] deleted node " + data.host_path);
+									updateConfData();
+								},
+								error: function(jqXHR,textStatus,errorThrown) {
+									console.log("[search_activity_setup] AJAX Failure in deletion of node");
+								},
+							});
+						}
+						else {
+							console.log("[search_activity_setup] cannot delete a node when none are selected, please select a node to delete first.");
+						}
+						$( this ).dialog( "close" );
+					}
+				}
+			}
+		});
+		$("#hydra-node-delete").click( function() {
+			$hydra_node_delete_dialog.dialog("open");
+		});
+		$("button#start_stop_button").click(function(){
+	//			$("button#start_stop_button").html("clicked");
+			updateCollection();
+		});
+		//CRUD bindings for vcenters
+		var $vc_hosts_dialog = $("#vc-hosts-dialog");
+		$vc_hosts_dialog.dialog({
+			autoOpen: false,
+			dialogClass: "conf-dialog",
+			height: 400,
+			width: 600,
+			modal: true,
+			buttons: {
+				"Close": {
+					class: 'right-button',
+					text: 'Close',
+					click: function() {
+						$( this ).dialog( "close" );
+					}
+				}
+			},
+			close: function() {
+				console.log("[dialog] Close called on host list dialog");
+			}
+		});
+		var $vc_dialog = $("#vc-dialog");
+		var $vc_tips = $("p.validate-tips", $vc_dialog);
+		//Checkbox functionality on the dialog
+		$("#dialog-vc-collect-all-hosts", $vc_dialog).click(function() {
+			if (this.checked) {
+				$(".dialog-vc-host-options", $vc_dialog).hide();
+			}
+			else {
+				$(".dialog-vc-host-options", $vc_dialog).show();
+			}
+		});
+		$("#dialog-vc-collect-logs", $vc_dialog).click(function() {
+			if (this.checked) {
+				$(".dialog-vc-log-options", $vc_dialog).show();
+			}
+			else {
+				$(".dialog-vc-log-options", $vc_dialog).hide();
+			}
+		});	
+		$vc_dialog.dialog({
+			autoOpen: false,
+			dialogClass: "conf-dialog",
+			height: 450,
+			width: 580,
+			modal: true,
+			buttons: {
+				Cancel: {
+					class: 'left-button',
+					text: 'Cancel',
+					click: function() {
+						$(".dialog-field", $vc_dialog).removeClass( "ui-state-error" );
+						$( this ).dialog( "close" );
+					}
+				},
+				"Save": {
+					class: 'right-button',
+					text: 'Save',
+					click: function() {
+						var validation = true;
+						$(".dialog-field", $vc_dialog).removeClass( "ui-state-error" );
+						
+						validation = validation && checkRegexp( $('#dialog-vc-path', $vc_dialog), /[A-Za-z0-9\.\-_]/, "You must specify a virtual center domain", $vc_tips);
+						validation = validation && checkRegexp( $('#dialog-vc-username', $vc_dialog), /[A-Za-z0-9\.\-_]/, "You must specify a username", $vc_tips);
+						validation = validation && checkRegexp( $('#dialog-vc-password', $vc_dialog), /./, "You must specify a password", $vc_tips);
+						var vc_splunk_uri;
+						var vc_splunk_username;
+						var vc_splunk_password;
+				
+						if ($("#dialog-vc-collect-logs", $vc_dialog).prop("checked")) {
+							vc_splunk_uri = $.trim($("#dialog-vc-splunk-uri", $vc_dialog).val());
+							vc_splunk_username = $.trim($("#dialog-vc-splunk-username", $vc_dialog).val());
+							vc_splunk_password = $("#dialog-vc-splunk-password", $vc_dialog).val();
+							validation = validation && checkRegexp( $("#dialog-vc-splunk-uri", $vc_dialog), /^\s*https?:\/\/[A-Za-z0-9\.\-_]+:\d+\/?\s*$/, "You must specify protocol, address, and port for a management uri", $vc_tips);
+							validation = validation && checkRegexp( $("#dialog-vc-splunk-useranme", $vc_dialog), /./, "You must specify a splunk username for your vc forwarder to get logs", $vc_tips);
+							validation = validation && checkRegexp( $("#dialog-vc-splunk-password", $vc_dialog), /./, "You must specify a password for the splunk user on your vc forwarder to get logs", $vc_tips);
+							//if password is the default we set it to empty string to indicate no change
+							vc_splunk_password = vc_splunk_password == "$$$$$$$$" ? "" : vc_splunk_password;
+						}
+						if ( validation ) {
+							//Handle different host list behavior
+							var host_whitelist;
+							var host_blacklist;
+							if ($("#dialog-vc-collect-all-hosts", $vc_dialog).prop("checked")) {
+								host_whitelist = "";
+								host_blacklist = "";
+							}
+							else {
+								host_whitelist = $("#dialog-vc-host-whitelist", $vc_dialog).val();
+								host_blacklist = $("#dialog-vc-host-blacklist", $vc_dialog).val();
+							}
+							var password = $("#dialog-vc-password", $vc_dialog).val();
+							var vc_collect_logs =$("#dialog-vc-collect-logs", $vc_dialog).prop("checked");
+							vc_collect_logs = vc_collect_logs == true ? 1:0;
+							//if password is the default we set it to empty string to indicate no change
+							password = password == "$$$$$$$$" ? "" : password;
+							var params = {
+								name: $.trim($("#dialog-vc-name", $vc_dialog).val()),
+								// Need to set in lower case as we do create tsidx namespace in lower case only
+								// SOLNVMW-3550
+								vc: $.trim($("#dialog-vc-path", $vc_dialog).val().toLowerCase()),
+								username: $.trim($("#dialog-vc-username", $vc_dialog).val()),
+								password: password,
+								host_whitelist: host_whitelist,
+								host_blacklist: host_blacklist,
+								vc_collect_logs: vc_collect_logs,
+							};
+							if ($("#dialog-vc-collect-logs", $vc_dialog).prop("checked")) {
+
+								params["vc_splunk_uri"] = vc_splunk_uri;
+								params["vc_splunk_username"] = vc_splunk_username;
+								params["vc_splunk_password"] = vc_splunk_password;
+							}
+							saveVC(params);
+							$( this ).dialog( "close" );
+							$(window).resize();
+						}
+					}
+				}
+			},
+			close: function() {
+				$(".dialog-field", $vc_dialog).val( "" ).removeClass( "ui-state-error" );
+			}
+		});
+		$("#selected-vc-edit").click( function() {
+			//Populate the dialog from selected node
+			var selected_node = d3.select("#vc-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				data = selected_node.data()[0];
+				$("#dialog-vc-name", $vc_dialog).val($.trim(data.stanza_name));
+				$("#dialog-vc-path", $vc_dialog).val($.trim(data.target));
+				$("#dialog-vc-username", $vc_dialog).val($.trim(data.username));
+				//Set the password to a phoney 8 dollar signs.
+				$("#dialog-vc-password", $vc_dialog).val("$$$$$$$$");
+				//Handle vc log forwarding
+				if (data.forwarder_uri == null || data.forwarder_uri == "") {
+					$("#dialog-vc-collect-logs", $vc_dialog).prop("checked", false);
+					$(".dialog-vc-log-options", $vc_dialog).hide();
+					$("#dialog-vc-splunk-uri", $vc_dialog).val("");
+					$("#dialog-vc-splunk-username", $vc_dialog).val("");
+					$("#dialog-vc-splunk-password", $vc_dialog).val("");
+				}
+				else {
+					$("#dialog-vc-collect-logs", $vc_dialog).prop("checked", true);
+					$(".dialog-vc-log-options", $vc_dialog).show();
+					$("#dialog-vc-splunk-uri", $vc_dialog).val($.trim(data.forwarder_uri));
+					$("#dialog-vc-splunk-username", $vc_dialog).val($.trim(data.forwarder_username));
+					//Set the password to a phoney 8 dollar signs.
+					$("#dialog-vc-splunk-password", $vc_dialog).val("$$$$$$$$");
+				}
+				//Handle managed hosts whitelist
+				if ((data.managed_host_whitelist == null || data.managed_host_whitelist == "None") && (data.managed_host_blacklist == null || data.managed_host_blacklist == "None")) {
+					$("#dialog-vc-collect-all-hosts", $vc_dialog).prop("checked", true);
+					$(".dialog-vc-host-options", $vc_dialog).hide();
+					$("#dialog-vc-host-whitelist", $vc_dialog).val("");
+					$("#dialog-vc-host-blacklist", $vc_dialog).val("");
+				}
+				else {
+					$("#dialog-vc-collect-all-hosts", $vc_dialog).prop("checked", false);
+					$(".dialog-vc-host-options", $vc_dialog).show();
+					$("#dialog-vc-host-whitelist", $vc_dialog).val(data.managed_host_whitelist && data.managed_host_whitelist != "None" ? data.managed_host_whitelist : "");
+					$("#dialog-vc-host-blacklist", $vc_dialog).val(data.managed_host_blacklist && data.managed_host_blacklist != "None" ? data.managed_host_blacklist : "");
+				}
+
+				//Set title to edit one
+				$vc_dialog.dialog("option", "title", "Edit Collection from Virtual Center");
+			}
+			else {
+				//Set 'em blank
+				$("#dialog-vc-name", $vc_dialog).val("");
+				$("#dialog-vc-path", $vc_dialog).val("");
+				$("#dialog-vc-username", $vc_dialog).val("");
+				$("#dialog-vc-password", $vc_dialog).val("");
+				$("#dialog-vc-collect-logs", $vc_dialog).prop("checked", false);
+				$(".dialog-vc-log-options", $vc_dialog).hide();
+				$("#dialog-vc-splunk-uri", $vc_dialog).val("");
+				$("#dialog-vc-splunk-username", $vc_dialog).val("");
+				$("#dialog-vc-splunk-password", $vc_dialog).val("");
+				$("#dialog-vc-collect-all-hosts", $vc_dialog).prop("checked", true);
+				$("#dialog-vc-host-options-container", $vc_dialog).hide();
+				$("#dialog-vc-host-whitelist", $vc_dialog).val("");
+				$("#dialog-vc-host-blacklist", $vc_dialog).val("");
+				//Set title to creating new one
+				$vc_dialog.dialog("option", "title", "Collect from New Virtual Center");
+			}
+			$vc_tips.html("");
+			$vc_dialog.dialog("open");
+		});
+		$("#vc-add").click( function() {
+			//Set dialog blank
+			$("#dialog-vc-name", $vc_dialog).val("");
+			$("#dialog-vc-path", $vc_dialog).val("");
+			$("#dialog-vc-username", $vc_dialog).val("");
+			$("#dialog-vc-password", $vc_dialog).val("");
+			$("#dialog-vc-collect-logs", $vc_dialog).prop("checked", false);
+			$(".dialog-vc-log-options", $vc_dialog).hide();
+			$("#dialog-vc-splunk-uri", $vc_dialog).val("");
+			$("#dialog-vc-splunk-username", $vc_dialog).val("");
+			$("#dialog-vc-splunk-password", $vc_dialog).val("");
+			$("#dialog-vc-collect-all-hosts", $vc_dialog).prop("checked", true);
+			$(".dialog-vc-host-options", $vc_dialog).hide();
+			$("#dialog-vc-host-whitelist", $vc_dialog).val("");
+			$("#dialog-vc-host-blacklist", $vc_dialog).val("");
+			//Set title to creating new one
+			$vc_dialog.dialog("option", "title", "Collect from New Virtual Center");
+			$vc_tips.html("");
+			$vc_dialog.dialog("open");
+		});
+		var $vc_delete_dialog = $( "#vc-delete-confirm-dialog" ).dialog({
+			autoOpen: false,
+			dialogClass: "conf-dialog",
+			resizable: false,
+			height: 250,
+			width: 400,
+			modal: true,
+			buttons: {
+				Cancel: {
+					class: 'left-button',
+					text: 'Cancel',
+					click: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				"Delete Virtual Center": {
+					class: 'right-button',
+					text: 'Delete Virtual Center',
+					click: function() {
+						var selected_node = d3.select("#vc-nodebar-container").select(".node-box.selected");
+						if (!selected_node.empty()) {
+							var data = selected_node.data()[0];
+							var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'delete_vcenter', encodeURIComponent($.trim(data.stanza_name)));
+							disableUI();
+							$.ajax({
+								type: "DELETE",
+								url:uri,
+								beforeSend: function(xhr) {
+									xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+								},
+								success: function(rsp) {
+									console.log("[search_activity_setup] deleted node " + data.stanza_name);
+									updateConfData();
+								},
+								error: function(jqXHR,textStatus,errorThrown) {
+									console.log("[search_activity_setup] AJAX Failure in deletion of node");
+								},
+							});
+						}
+						else {
+							console.log("[search_activity_setup] cannot delete a node when none are selected, please select a node to delete first.");
+						}
+						$( this ).dialog( "close" );
+					}
+				}
+			}
+		});
+		$("#vc-delete").click( function() {
+			//Populate the dialog from selected node
+			var selected_node = d3.select("#vc-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				var data = selected_node.data()[0]; 
+				var warn_bool = false
+				if (data.forwarder_uri !== null && data.forwarder_uri !== "" && data.forwarder_uri !== undefined) {
+					warn_bool = true;
+				}
+				if (warn_bool) {
+					$(".log-collection-warning", $vc_delete_dialog).show();
+				}
+				else {
+					$(".log-collection-warning", $vc_delete_dialog).hide();
+				}
+				$vc_delete_dialog.dialog("open");
+			}
+		});
+		
+		//Unmanaged host UI bindings
+		/*
+		var $unmanaged_dialog = $("#unmanaged-dialog");
+		var $unmanaged_tips = $("p.validate-tips", $unmanaged_dialog);
+		$unmanaged_dialog.dialog({
+			autoOpen: false,
+			dialogClass: "conf-dialog",
+			height: 300,
+			width: 480,
+			modal: true,
+			buttons: {
+				Cancel: {
+					class: 'left-button',
+					text: 'Cancel',
+					click: function() {
+						$(".dialog-field", $unmanaged_dialog).removeClass( "ui-state-error" );
+						$( this ).dialog( "close" );
+					}
+				},
+				"Save": {
+					class: 'right-button',
+					text: 'Save',
+					click: function() {
+						var validation = true;
+						$(".dialog-field", $vc_dialog).removeClass( "ui-state-error" );
+						
+						validation = validation && checkRegexp( $('#dialog-unmanaged-path', $unmanaged_dialog), /[A-Za-z0-9\.\-_]/, "You must specify a virtual center domain", $unmanaged_tips);
+						validation = validation && checkRegexp( $('#dialog-unmanaged-username', $unmanaged_dialog), /[A-Za-z0-9\.\-_]/, "You must specify a username", $unmanaged_tips);
+						validation = validation && checkRegexp( $('#dialog-unmanaged-password', $unmanaged_dialog), /./, "You must specify a password", $unmanaged_tips);
+						if ( validation ) {
+							var password = $("#dialog-unmanaged-password", $unmanaged_dialog).val();
+							//if password is the default we set it to empty string to indicate no change
+							password = password == "$$$$$$$$" ? "" : password;
+							var params = {
+								name: $("#dialog-unmanaged-name", $unmanaged_dialog).val(),
+								host: $("#dialog-unmanaged-path", $unmanaged_dialog).val(),
+								username: $("#dialog-unmanaged-username", $unmanaged_dialog).val(),
+								password: password
+							};
+							saveUnmanaged(params);
+							$( this ).dialog( "close" );
+						}
+					}
+				}
+			},
+			close: function() {
+					$(".dialog-field", $unmanaged_dialog).val( "" ).removeClass( "ui-state-error" );
+			}
+		});
+		$("#selected-unmanaged-edit").click( function() {
+			//Populate the dialog from selected node
+			var selected_node = d3.select("#unmanaged-nodebar-container").select(".node-box.selected");
+			if (!selected_node.empty()) {
+				data = selected_node.data()[0];
+				$("#dialog-unmanaged-name", $unmanaged_dialog).val(data.stanza_name);
+				$("#dialog-unmanaged-path", $unmanaged_dialog).val(data.target);
+				$("#dialog-unmanaged-username", $unmanaged_dialog).val(data.username);
+				//Set the password to a phoney 8 dollar signs.
+				$("#dialog-unmanaged-password", $unmanaged_dialog).val("$$$$$$$$");
+				//Set title to edit one
+				$unmanaged_dialog.dialog("option", "title", "Edit Collection from Unmanaged Host");
+			}
+			else {
+				//Set 'em blank
+				$("#dialog-unmanaged-name", $unmanaged_dialog).val("");
+				$("#dialog-unmanaged-path", $unmanaged_dialog).val("");
+				$("#dialog-unmanaged-username", $unmanaged_dialog).val("");
+				$("#dialog-unmanaged-password", $unmanaged_dialog).val("");
+				//Set title to creating new one
+				$unmanaged_dialog.dialog("option", "title", "Collect from New Unmanaged Host");
+			}
+			$unmanaged_tips.html("");
+			$unmanaged_dialog.dialog("open");
+		});
+		$("#unmanaged-add").click( function() {
+			//Set dialog blank
+			$("#dialog-unmanaged-name", $unmanaged_dialog).val("");
+			$("#dialog-unmanaged-path", $unmanaged_dialog).val("");
+			$("#dialog-unmanaged-username", $unmanaged_dialog).val("");
+			$("#dialog-unmanaged-password", $unmanaged_dialog).val("");
+			//Set title to creating new one
+			$unmanaged_dialog.dialog("option", "title", "Collect from New Unmanaged Host");
+			$unmanaged_tips.html("");
+			$unmanaged_dialog.dialog("open");
+		});
+		
+		var $unmanaged_delete_dialog = $( "#unmanaged-delete-confirm-dialog" ).dialog({
+			autoOpen: false,
+			dialogClass: "conf-dialog",
+			resizable: false,
+			height: 200,
+			width: 400,
+			modal: true,
+			buttons: {
+				Cancel: {
+					class: 'left-button',
+					text: 'Cancel',
+					click: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				"Delete Unmanaged Host": {
+					class: 'right-button',
+					text: 'Delete Unmanaged Host',
+					click: function() {
+						var selected_node = d3.select("#unmanaged-nodebar-container").select(".node-box.selected");
+						if (!selected_node.empty()) {
+							var data = selected_node.data()[0];
+							var uri = Splunk.util.make_url('custom', 'search_activity' , 'search_activity_setup', 'search_activity', 'delete_unmanaged_host', encodeURIComponent(data.stanza_name));
+							disableUI();
+							$.ajax({
+								type: "DELETE",
+								url:uri,
+								beforeSend: function(xhr) {
+									xhr.setRequestHeader('X-Splunk-Form-Key', $('input[name=splunk_form_key]').val());
+								},
+								success: function(rsp) {
+									console.log("[search_activity_setup] deleted node " + data.stanza_name);
+									updateConfData();
+								},
+								error: function(jqXHR,textStatus,errorThrown) {
+									console.log("[search_activity_setup] AJAX Failure in deletion of node");
+								},
+							});
+						}
+						else {
+							console.log("[search_activity_setup] cannot delete a node when none are selected, please select a node to delete first.");
+						}
+						$( this ).dialog( "close" );
+					}
+				}
+			}
+		});
+		$("#unmanaged-delete").click( function() {
+			$unmanaged_delete_dialog.dialog("open");
+		});
+		*/
+		//Bind event handlers for hydra node
+		$("#selected-hydra-node-validate", $node_container).click(validateHydraNode);
+		//Initialize the node information
+		updateHydraNodeBar();
+		updateHydraNodeInfoBox();
+
+		console.log("Finished rendering hydra nodes");
+		
+		// Bind validate icon click with appropriate method
+		$("#selected-vc-validate", $vc_container).click(validateVC);
+		
+		//Initialize the vc information
+		updateVCNodeBar();
+		updateVCInfoBox();
+		//Bind event handlers for vcenters
+		$("#selected-vc-hosts").click(function() {
+			console.log("Creating Managed hosts list")
+			//Update the host lists
+			hosts = d3.select("#vc-included-hosts-list").selectAll("li")
+				.data(selected_vc_hosts.included_hosts, function(d) { return d; });
+			hosts.enter()
+				.append("li")
+				.text(function(d) { return d; });
+			
+			hosts.exit().remove();
+			
+			if (selected_vc_hosts.included_hosts.length == 0) {
+				$("#vc-included-hosts-msg").text("None");
+			}
+			else {
+				$("#vc-included-hosts-msg").text("");
+			}
+			
+			hosts = d3.select("#vc-excluded-hosts-list").selectAll("li")
+				.data(selected_vc_hosts.excluded_hosts, function(d) { return d; });
+			hosts.enter()
+				.append("li")
+				.text(function(d) { return d; });
+			
+			hosts.exit().remove();
+			
+			if (selected_vc_hosts.excluded_hosts.length == 0) {
+				$("#vc-excluded-hosts-msg").text("None");
+			}
+			else {
+				$("#vc-excluded-hosts-msg").text("");
+			}
+			
+			$vc_hosts_dialog.dialog("open");
+		});
+
+		
+		console.log("Finished rendering vcenters");
+		//Initialize the unmanaged information
+		//updateUnmanagedNodeBar();
+		//updateUnmanagedInfoBox();
+		$("#selected-unmanaged-validate", $unmanaged_container).click(validateUnmanaged);
+		
+		console.log("Finished rendering data");
+	});
+	</script>
+
+## Preform the following if the user accessing the page is NOT a valid admin:
+% else:
+	<div class="layout">
+		<div id="hydra-node-wrapper" class="conf-panel">
+			<h1>
+				Insufficient Access
+			<h4>
+				You are trying to modify a page that you do not have access to, please contact your splunk administrator for more assistance.
+			</h4>
+			</h1>
+		</div>
+	</div>
+
+% endif

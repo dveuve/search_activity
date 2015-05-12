@@ -1,0 +1,361 @@
+<form script="check_data_availability.js">
+  <label>Search Activity</label>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+    <input type="multiselect" token="sh_clause">
+      <label>Search Head</label>
+      <choice value="*">All</choice>
+      <populatingSearch earliest="$earliest$" latest="$latest$" fieldForLabel="SearchHead" fieldForValue="SearchHead">| tstats local=t count from `SA_SearchHistory` groupby SearchHead</populatingSearch>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>SearchHead=</valuePrefix>
+      <delimiter> OR </delimiter>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="user_criteria" searchWhenChanged="true">
+      <label>Select Leader (Based on Org Chart)</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <populatingSearch earliest="$earliest$" latest="$latest$" fieldForLabel="MyName" fieldForValue="tstats_search_criteria">| inputlookup LDAPMgmtChain | makemv delim="|" ManagementChain_sAMAccountName | stats values(sAMAccountName) as user by ManagementChain_sAMAccountName | eval tstats_search_criteria="(user=" . mvjoin(user," OR user=") . ")" | lookup LDAPSearch sAMAccountName as ManagementChain_sAMAccountName OUTPUTNEW name | eval MyName=name . " (" . ManagementChain_sAMAccountName . ")" | sort MyName</populatingSearch>
+    </input>
+    <input type="dropdown" token="tagged_user_criteria" searchWhenChanged="true">
+      <label>Tagged Users</label>
+      <choice value="*">All Users</choice>
+      <search>
+        <query>|inputlookup TaggedUsers | stats values(user) as user by category | eval search="(user=" . mvjoin(user, " OR user=") . ")" | stats values(category) as category by search | eval category=mvjoin(category," / ")</query>
+      </search>
+      <fieldForLabel>category</fieldForLabel>
+      <fieldForValue>search</fieldForValue>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <table>
+      <title>Overall Metrics</title>
+      <searchString>| tstats local=t count from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$ groupby searchtype, user | stats sum(count) as count sum(eval(if(searchtype="adhoc",count,0))) as "Adhoc Search Count" sum(eval(if(searchtype="dashboard",count,0))) as "Dashboard Search Count" sum(eval(if(searchtype="realtime",count,0))) as "Realtime Search Count" sum(eval(if(searchtype="scheduled",count,0))) as "Scheduled Search Count" sum(eval(if(searchtype="summarization",count,0))) as "Summarization Search Count" by user | stats sum(count) as "Total Number of Searches" count as "Number of Users" count(eval(count&gt;30)) as "Number of Users with &gt; 30 searches" sum("* Search Count") as "* Search Count" | eval Type = "Total" | append [| tstats local=t count from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  groupby searchtype, user _time span=1d | stats sum(count) as count sum(eval(if(searchtype="adhoc",count,0))) as "Adhoc Search Count" sum(eval(if(searchtype="dashboard",count,0))) as "Dashboard Search Count" sum(eval(if(searchtype="realtime",count,0))) as "Realtime Search Count" sum(eval(if(searchtype="scheduled",count,0))) as "Scheduled Search Count" sum(eval(if(searchtype="summarization",count,0))) as "Summarization Search Count" by user, _time | stats sum(count) as "Total Number of Searches" count as "Number of Users" count(eval(count&gt;30)) as "Number of Users with &gt; 30 searches" sum("* Search Count") as "* Search Count" by _time | stats avg(*) as * | eval Type = "Daily Average"] | foreach *Number* *Count* [fieldformat "&lt;&lt;FIELD&gt;&gt;"=round('&lt;&lt;FIELD&gt;&gt;',1)] | fields Type *Number* *Count*</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">cell</option>
+    </table>
+  </row>
+  <row>
+    <table>
+      <title>Top Users</title>
+      <search>
+        <query>|stats count as bogus    | append [| tstats local=t  count sum(total_run_time) as total_run_time sum(NumExports) as NumExports from `SA_SearchHistory`  where * $sh_clause$ $tagged_user_criteria$ $user_criteria$ groupby _time user searchtype span=1d | stats sum(count) as NumSearches sum(eval(if(searchtype="adhoc",count,0))) as NumAdHocSearches sparkline(sum(count)) as UsageTrend sum(total_run_time) as HoursOfSearchTime sum(eval(if(searchtype="adhoc",total_run_time,0))) as HoursOfAdHocSearchTime sum(NumExports) as NumberOfExports by user| where user!="splunk-system-user" | eval HoursOfSearchTime = round(HoursOfSearchTime/3600,2) | eval HoursOfAdHocSearchTime = round(HoursOfAdHocSearchTime/3600,2) | sort - count ]        | append [| tstats prestats=t local=t count from `SA_SearchHistory`  where * $sh_clause$ $tagged_user_criteria$ $user_criteria$ searchtype=adhoc groupby searchcommands , user| stats count by searchcommands, user| eval maturity=`eval_high_complexity_search_commands` | eval maturity=`eval_med_complexity_search_commands` | eval maturity=`eval_low_complexity_search_commands`  | stats sum(eval(if(searchcommands="search",count,null))) as search_num sum(maturity) as maturity by user | eval "search_complexity_score"=if(maturity/search_num&gt;`max_search_complexity_rating`,`max_search_complexity_rating`,1+round(maturity/search_num,0)) | fields user search_complexity_score | sort - search_complexity_score | streamstats count as complexity_order | eventstats count as NumComplexityUsers]        | append  [| tstats local=t avg(accuracy) as Accuracy from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  accuracy&gt;0 total_run_time&gt;0 result_count&gt;0 searchtype=adhoc groupby user| sort - Accuracy | streamstats count as accuracy_order | eventstats count as NumAccuracyUsers]       | append  [ | tstats  local=t avg(total_run_time) as runtime from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$   searchtype=adhoc groupby user | eval runtime=round(runtime,0) | stats avg(runtime) as runtime by user | fields user runtime | sort - runtime | streamstats count as runtime_order | eventstats count as NumRuntimeUsers]     | append [| tstats  local=t count sum(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  groupby user | sort - ShouldInvestigate | streamstats count as investigate_order | eventstats count as NumInvestigateUsers]    | append [| tstats local=t count from `SA_Events` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  type=scheduler groupby user status  	| append [| tstats local=t count  from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$ groupby user search_status ] | stats sum(eval(if(status="skipped",count,0))) as SkippedScheduled sum(eval(if(status="success",count,0))) as SuccessfulScheduled sum(eval(if(search_status="failed",count,0))) as FailedAdHoc sum(eval(if(search_status="success",count,0))) as SuccessfulAdHoc by  user | eval PercentFailed=round(100*(SkippedScheduled+FailedAdHoc)/(SuccessfulScheduled+SuccessfulAdHoc)) | sort - PercentFailed | streamstats count as FailureOrder | eventstats max(FailureOrder) as NumUsersFailure ]    | eval "Accuracy Order" = accuracy_order . " out of " . NumAccuracyUsers     | eval "Search Complexity Order" = complexity_order . " out of " . NumComplexityUsers     | eval "Slow Search Runtime Order" = runtime_order . " out of " . NumRuntimeUsers      | eval "Search Failure Order" = FailureOrder . " out of " . NumUsersFailure  | eval "Questionable Search Order" = investigate_order . " out of " . NumInvestigateUsers  | lookup LDAPSearch sAMAccountName as user OUTPUTNEW mail   | eventstats values(*Order*) as *Order* by user  | fields user NumSearches NumAdHocSearches UsageTrend HoursOfSearchTime HoursOfAdHocSearchTime NumberOfExports "Accuracy Order" "Search Complexity Order" "Search Failure Order" "Questionable Search Order" "Slow Search Runtime Order" mail | sort - NumSearches | where NumSearches&gt;0</query>
+        <earliest>$field1.earliest$</earliest>
+        <latest>$field1.latest$</latest>
+      </search>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$row.user$</link>
+      </drilldown>
+      <option name="drilldown">cell</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+  <row>
+    <chart>
+      <title>Top Users</title>
+      <searchString>| tstats local=t prestats=t count from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  groupby _time `UserOrName` span=1d | timechart  count by `UserOrName` useother=f limit=20 | fields - splunk-system-user</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$click.name2$</link>
+      </drilldown>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+      <option name="charting.axisTitleY2.visibility">visible</option>
+      <option name="charting.axisY2.enabled">false</option>
+      <option name="charting.axisY2.scale">inherit</option>
+    </chart>
+    <chart>
+      <title>Count by Search Type</title>
+      <searchString>| tstats local=t prestats=t count from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$ groupby _time searchtype span=1d | timechart count by searchtype</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <drilldown>
+        <link>/app/search_activity/user_search?form.searchtype=$click.name2$</link>
+      </drilldown>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+      <option name="charting.axisTitleY2.visibility">visible</option>
+      <option name="charting.axisY2.enabled">false</option>
+      <option name="charting.axisY2.scale">inherit</option>
+    </chart>
+    <chart>
+      <title>Activity By Search Head</title>
+      <search>
+        <query>| tstats prestats=t local=t count from `SA_SearchHistory` groupby searchtype, SearchHead | chart count over SearchHead by searchtype</query>
+        <earliest>$field1.earliest$</earliest>
+        <latest>$field1.latest$</latest>
+      </search>
+      <option name="charting.chart">column</option>
+      <option name="charting.axisY2.enabled">false</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisTitleY2.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.axisY2.scale">inherit</option>
+      <option name="charting.chart.bubbleMaximumSize">50</option>
+      <option name="charting.chart.bubbleMinimumSize">10</option>
+      <option name="charting.chart.bubbleSizeBy">area</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <title>Top Apps and Views</title>
+      <search>
+        <query>| tstats local=t  prestats=t count  from `SA_Events` where * $tagged_user_criteria$ $user_criteria$  type=weblog  groupby myapp myview | stats count by myapp, myview | sort myapp,  -count | streamstats count as mycount by myapp | where mycount &lt;=5 | stats sum(count) as "Total Hits" list(count) as "Hits Per View" list(myview) as "Views" by myapp | rename myapp to "App" | sort - "Total Hits"</query>
+        <earliest>$field1.earliest$</earliest>
+        <latest>$field1.latest$</latest>
+      </search>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">none</option>
+      <option name="count">5</option>
+    </table>
+  </row>
+  <row>
+    <chart>
+      <title>Search Health and Activity Indicators</title>
+      <searchString>| tstats prestats=t local=t count from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  searchtype=adhoc groupby searchcommands _time span=1d |bucket _time span=1d| stats count by searchcommands, _time| eval maturity=`eval_high_complexity_search_commands` | eval maturity=`eval_med_complexity_search_commands` | eval maturity=`eval_low_complexity_search_commands`  | stats sum(eval(if(searchcommands="search",count,null))) as search_num sum(maturity) as maturity by _time | eval "search_complexity_score"=if(maturity/search_num&gt;`max_search_complexity_rating`,`max_search_complexity_rating`,1+round(maturity/search_num,1)) | fields _time search_complexity_score    
+| join type=outer _time [| tstats prestats=t local=t sum(event_count) sum(scan_count) from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  total_run_time&gt;15 event_count&gt;0 searchtype=adhoc groupby _time span=1d | bucket _time span=1d | stats sum(event_count) as events sum(scan_count) as scanned by _time | eval coverage = 100 * events/scanned | timechart span=1d avg(coverage) as Accuracy]    
+| join type=outer _time [| tstats  local=t prestats=t avg(total_run_time) as runtime from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$   searchtype=adhoc groupby _time span=1d | timechart span=1d avg(total_run_time) as total_run_time ]   
+| join type=outer _time [| tstats local=t prestats=t count from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  searchtype=adhoc groupby _time span=1d | timechart span=1d count as NumAdHocQueries ]    
+| join type=outer _time [| tstats local=t prestats=t count from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  groupby _time span=1d | timechart span=1d count as NumTotalQueries ]     
+| join type=outer _time [| tstats local=t count from `SA_Events` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  type=scheduler groupby _time span=1d status | append [| tstats local=t count  from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$ groupby _time span=1d search_status ] | bucket _time span=1d | stats sum(eval(if(status="skipped",count,0))) as SkippedScheduled sum(eval(if(status="success",count,0))) as SuccessfulScheduled sum(eval(if(search_status="failed",count,0))) as FailedAdHoc sum(eval(if(search_status="completed",count,0))) as SuccessfulAdHoc by  _time | eval PercentFailed=round(100*(SkippedScheduled+FailedAdHoc)/(SuccessfulScheduled+SuccessfulAdHoc)) | timechart span=1d avg(PercentFailed) as PercentageSearchesFailing] | eventstats avg(*) as avg* | eval search_complexity_score=round(100*search_complexity_score/avgsearch_complexity_score,1) | eval Accuracy=round(100*Accuracy/avgAccuracy,1) | eval NumAdHocQueries=round(100*NumAdHocQueries/avgNumAdHocQueries,1) | eval NumTotalQueries=round(100*NumTotalQueries/avgNumTotalQueries,1) | eval PercentageSearchesFailing = round(100* PercentageSearchesFailing / avgPercentageSearchesFailing,1) | eval total_run_time=round(100*total_run_time/avgtotal_run_time,1) | rename search_complexity_score as "Search Complexity vs Avg (%)" Accuracy as "Search Accuracy vs Avg (%)"  NumAdHocQueries as "# of Adhoc Queries vs Avg (%)" NumTotalQueries as "Total # of Queries vs Avg (%)" PercentageSearchesFailing as "Percentage of Searches Failing (%)"  | fields _time "* *" | timechart bins=50 values(*) as *</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisTitleY2.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">log</option>
+      <option name="charting.axisY2.enabled">false</option>
+      <option name="charting.axisY2.scale">inherit</option>
+      <option name="charting.chart">line</option>
+      <option name="charting.chart.nullValueMode">connect</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$click.name2$</link>
+      </drilldown>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">bottom</option>
+    </chart>
+  </row>
+  <row>
+    <html>
+      <h1>Security</h1>
+      <p>The below cover security risks and configurations.</p>
+    </html>
+  </row>
+  <row>
+    <table>
+      <title>Exported Search Results</title>
+      <search>
+        <query>| tstats local=t count as "Number of Exports" values(actualsearch) as Search dc(user) as NumUsers max(result_count) as "Number of Results"  values(user) as "Users who Exported" from `SA_SearchHistory` where * (SearchHead=*) * *  WasExported=yes groupby searchid | sort - "Number of Results", NumUsers | table searchid  "Number of Results" "Users Who Exported" "Number of Exports" Search</query>
+        <earliest>$field1.earliest$</earliest>
+        <latest>$field1.latest$</latest>
+      </search>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$row.user$</link>
+      </drilldown>
+      <option name="drilldown">cell</option>
+      <option name="count">10</option>
+    </table>
+    <chart>
+      <title>Number of Shared Searches over Time</title>
+      <searchString>| tstats local=t prestats=t count from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  WasShared=Yes groupby _time  span=1d | timechart bins=50  count</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="count">10</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisTitleY2.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.axisY2.enabled">false</option>
+      <option name="charting.axisY2.scale">inherit</option>
+      <option name="charting.chart">area</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$click.name2$</link>
+      </drilldown>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <html>
+      <h1>Search Performance</h1>
+      <p>The below cover search performance.</p>
+    </html>
+  </row>
+  <row>
+    <table>
+      <title>Search Performance by User</title>
+      <searchString>| tstats local=t count sum(total_run_time) as total_run_time sum(result_count) as result_count sum(scan_count) as scan_count avg(searchspan_m) as searchspan_m  from `SA_SearchHistory`  where * $sh_clause$ $tagged_user_criteria$ $user_criteria$ groupby user _time | stats sum(count) as count sparkline(sum(count)) as "Search Trend" sum(total_run_time) as "Sum of Search Runtime (Hours)" avg(eval(result_count/count)) as "Average Number of Results Returned Per Search" avg(eval(scan_count/count)) as "Average Number of Events Scanned Per Search" avg(searchspan_m) as "Average Timespan (min)" by user | eval "Total Search Runtime (Hours)"='Total Search Runtime (Hours)'/3600  | foreach "Average Number of Results Returned Per Search" "Average Number of Events Scanned Per Search" "Total Search Runtime (Hours)" "Average Timespan (min)" "Sum of Search Runtime (Hours)" [eval "&lt;&lt;FIELD&gt;&gt;"=round('&lt;&lt;FIELD&gt;&gt;')]| eval "Sum of Search Runtime (Hours)" = round('Sum of Search Runtime (Hours)'/3600,1) | sort - count | where user!="splunk-system-user"</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$row.user$</link>
+      </drilldown>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">cell</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+  <row>
+    <table>
+      <title>Search Commands Associated with Expensive Searches</title>
+      <searchString>| tstats  local=t count as "Number of Searches" avg(total_run_time) stdev(total_run_time)  from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  searchtype=adhoc groupby searchcommands | sort - avg(total_run_time)</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">none</option>
+      <option name="count">10</option>
+    </table>
+    <table>
+      <title>Average Search Timespan by User</title>
+      <searchString>| tstats local=t sum(total_run_time) as total_run_time avg(searchspan_m) as searchspan_m  avg(searchspan_h) as searchspan_h avg(searchspan_d) as searchspan_d   from `SA_SearchHistory`  where * $sh_clause$ $tagged_user_criteria$ $user_criteria$ groupby user | eval total_run_time=round(total_run_time/3600,2) | where user!="n/a" | rename searchspan_m as "Search Timespan (min)" searchspan_d as "Search Timespan (day)" searchspan_h as "Search Timespan (hour)" total_run_time as "Total Search Runtime (h)" | sort - "Total Search Runtime (h)" | where user!="splunk-system-user"</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="wrap">true</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$row.user$</link>
+      </drilldown>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">cell</option>
+    </table>
+  </row>
+  <row>
+    <chart>
+      <title>Change in User Search Settings</title>
+      <searchString>| tstats local=t sum(total_run_time) as total_run_time avg(accuracy) as accuracy sum(result_count) as result_count sum(scan_count) as scan_count sum(searchspan_m) as searchspan_m  from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  groupby _time | eval ResultsPerSecond=result_count / total_run_time | eval ScannedPerSecond=scan_count / total_run_time| timechart span=1d avg(accuracy) as accuracy avg(*PerSecond) as *PerSecond avg(searchspan_m) as searchspan_m  avg(result_count) as result_count  | eventstats avg(accuracy) as avgaccuracy avg(ResultsPerSecond) as avgResultsPerSecond avg(ScannedPerSecond) as avgScannedPerSecond avg(searchspan_m) as avgsearchspan_m avg(result_count) as avgresult_count | eval accuracy=round(100*(accuracy/avgaccuracy)) | eval ResultsPerSecond=round(100*(ResultsPerSecond/avgResultsPerSecond)) | eval ScannedPerSecond=round(100*(ScannedPerSecond/avgScannedPerSecond)) | eval searchspan_m=round(100*(searchspan_m/avgsearchspan_m)) | eval result_count=round(100*(result_count/avgresult_count)) | fields - avg* | rename accuracy AS "Accuracy (% Delta)" ResultsPerSecond as "Results/Second (% Delta)" ScannedPerSecond as "Scanned/Second (% Delta)" searchspan_m as "Timespan (% Delta)" result_count as "# Results (% Delta)" | fields _time  "*Results *" "Accuracy*" "Timespan*"  | timechart  bins=50 avg(*) as *</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisTitleY2.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">log</option>
+      <option name="charting.axisY2.enabled">false</option>
+      <option name="charting.axisY2.scale">inherit</option>
+      <option name="charting.chart">line</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$click.name2$</link>
+      </drilldown>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <chart>
+      <title>Change in System Search Performance Metrics</title>
+      <searchString>| tstats local=t sum(total_run_time) as total_run_time avg(accuracy) as accuracy sum(result_count) as result_count sum(event_count) as event_count sum(scan_count) as scan_count sum(searchspan_m) as searchspan_m  from `SA_SearchHistory` where * $sh_clause$ $tagged_user_criteria$ $user_criteria$  groupby _time | eval EventsPerSecond=event_count / total_run_time | eval ScannedPerSecond=scan_count / total_run_time| timechart span=1d avg(accuracy) as accuracy avg(*PerSecond) as *PerSecond avg(searchspan_m) as searchspan_m  avg(result_count) as result_count  | eventstats avg(accuracy) as avgaccuracy avg(EventsPerSecond) as avgEventsPerSecond avg(ScannedPerSecond) as avgScannedPerSecond avg(searchspan_m) as avgsearchspan_m avg(result_count) as avgresult_count | eval accuracy=round(100*(accuracy/avgaccuracy)) | eval EventsPerSecond=round(100*(EventsPerSecond/avgEventsPerSecond)) | eval ScannedPerSecond=round(100*(ScannedPerSecond/avgScannedPerSecond)) | eval searchspan_m=round(100*(searchspan_m/avgsearchspan_m)) | eval result_count=round(100*(result_count/avgresult_count)) | fields - avg* | rename accuracy AS "Accuracy (% Delta)" EventsPerSecond as "Events/Second (% Delta)" ScannedPerSecond as "Scanned/Second (% Delta)" searchspan_m as "Timespan (% Delta)" result_count as "# Results (% Delta)" | fields _time "*Second*" | timechart  bins=50 avg(*) as *</searchString>
+      <earliestTime>$field1.earliest$</earliestTime>
+      <latestTime>$field1.latest$</latestTime>
+      <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+      <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisTitleY2.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.axisY2.enabled">false</option>
+      <option name="charting.axisY2.scale">inherit</option>
+      <option name="charting.chart">line</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <drilldown>
+        <link>/app/search_activity/per_user_dashboard?form.user=$click.name2$</link>
+      </drilldown>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+</form>

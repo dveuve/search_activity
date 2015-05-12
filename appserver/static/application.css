@@ -1,0 +1,868 @@
+/* Copyright (C) 2005-2012 Splunk Inc. All Rights Reserved. */
+/* App header elements
+---------------------------------*/
+
+/* Application logo
+
+height and width should be the same as your image. make sure to include some top and buttom margin in the padding.
+
+use these for a white logo on dark background. note that the second stanza (_background) is required for IE6, which cannot handle alpha-transparency.
+
+background: url(appLogo.png) no-repeat 0 0;
+_background: url(appLogo.gif) no-repeat 0 0;
+
+use these for a black logo on light background.
+background: url(appLogo_black.png) no-repeat 0 0;
+_background: url(appLogo_black.gif) no-repeat 0 0;
+
+default black and green logo
+background: url(appLogo_default.png) no-repeat 0 0;
+*/
+
+.appLogo {
+    height: 50px; 
+    width: 190px;
+    background: url(appLogo_vmware.png) no-repeat;
+}
+
+/* the name of your app. line height can be adjusted to fix alignment isaes w/ the logo. color is the color of the text. if your logo has the name in it, then you can set this to "display:none;  */
+
+.appHeaderWrapper h1 {
+    display: none;
+}
+
+
+/* background-color and/or image of your app */
+.appHeaderWrapper {
+	background: #ccdff1; /* Old browsers */
+	background: -moz-linear-gradient(top, #ccdff1 0%, #9bacc1 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ccdff1), color-stop(100%,#9bacc1)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #ccdff1 0%,#9bacc1 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #ccdff1 0%,#9bacc1 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #ccdff1 0%,#9bacc1 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #ccdff1 0%,#9bacc1 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ccdff1', endColorstr='#9bacc1',GradientType=0 ); /* IE6-9 */
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+
+/* color of top-right text */
+.appHeaderWrapper {
+    color: #333333;
+}
+/* color of top-right links */
+.appHeaderWrapper a {
+    color:#000000;
+}
+
+/* app menu arrows; see arrows section, below, for more info */
+.appHeaderWrapper .splIcon-triangle-3-s {
+	background-position:-7px -367px;
+}
+
+
+/* loader background */
+#loading {
+    background-color: #5aa5c6;
+}
+
+
+/* link colors 
+---------------------------------*/
+a {
+    color: #3399CC;
+}
+a.disabled {
+    color:#999999;
+}
+
+
+/* nav bar and aux links
+---------------------------------*/
+.splHeader-navigation {
+    background-color: #000000;
+    background-image: none;
+}
+
+/*--- the default state ---*/
+ul.appBarNav li a, ul.appBarNav li a:active, ul.appBarNav li a:visited  {
+    color: #ffffff;
+    font-size: 11px;
+}
+
+/*--- the hover state ---*/
+ul.appBarNav li.hasMenu a:hover, ul.appBarNav li a:hover {
+    color: #ffffff;
+    background-color: #474747;
+}
+
+/*--- the open state ---*/
+ul.appBarNav li a.menuOpen {
+    color: #ffffff;
+    background-color: #000000;
+}
+
+/*--- link color ---*/
+ul.appBarNav li.hasMenu a:hover, ul.appBarNav li a.menuOpen {
+    color: #ffffff;
+}
+
+
+/* auxiliary text and links */
+.AppBar .auxLinks a {
+    color: #FFFFFF;
+}
+.AppBar .auxLinks span {
+    color: #666666;
+}
+
+/* Menus
+---------------------------------*/
+
+/* primary menu */
+.splMenu-primary ul {
+    background-color: #474747;
+}
+.splMenu-primary, .splMenu-primary a, .splMenu-primary a:visited {
+    color: #ffffff;
+}
+
+.splMenu-primary li:hover {
+    background-color: #888888;
+    background-image: none;
+}
+
+ .splMenu-primary a:hover {
+    color: #ffffff;
+ }
+/* secondary menu, used for apps pulldown */
+.splMenu-secondary ul {
+    background-color: #474747;
+}
+.splMenu-secondary, .splMenu-secondary a {
+    color: #ffffff;
+}
+.splMenu-secondary li.disabled a {
+    color: #ffffff;
+}   
+.splMenu-secondary li:hover {
+    background-color: #cbd598;
+    background-image: none;
+}
+.splMenu-secondary a:hover {
+    color: #333333;   
+}
+
+/* actions menu open state */
+.TitleBar div.menuOpen {
+    background-color: #5aa5c6;
+    color: #ffffff;
+}
+
+
+/* Arrows
+---------------------------------*/
+
+/* 
+Arrow color is changed by adjusting the frist background position. The second value controls the direction of the arrow (i.e. NSEW). 
+
+For south arrows, Use the following values for these colors:
+    grey    background-position: -7px -367px;
+    white   background-position: -27px -367px;
+    green   background-position: -47px -367px;
+    black   background-position: -67px -367px;
+
+For east arrows, Use the following values for these colors:    
+    grey    background-position: -7px -407px;
+    white   background-position: -27px -407px;
+    green   background-position: -47px -407px;
+    black   background-position: -67px -407px;
+*/
+
+
+.splIcon-triangle-2-s {
+    background-position: -27px -367px;
+}
+
+/* nav arrow, default state */
+ul.appBarNav li.hasMenu a span.splIcon-triangle-2-s {
+    background-position: -27px -367px; /*white */
+}
+
+/* hover state */
+ul.appBarNav li.hasMenu a:hover span.splIcon-triangle-2-s {
+    background-position: -27px -367px; /*white */
+}
+
+/* open state */
+ul.appBarNav li.hasMenu a.menuOpen span.splIcon-triangle-2-s {
+    background-position: -27px -367px; /*white */
+}
+
+span.splIcon-triangle-4-e.dropDown {
+    background-position: -27px -407px; /*white */
+}
+/* actions menu open state */
+.TitleBar div.menuOpen .splIcon-triangle-4-s {
+    background-position: -27px -367px; /*white */
+}
+
+
+/* background colors
+---------------------------------*/
+
+/* default page color */
+body, .splBackground-default, 
+.graphArea, .resultsArea,  
+.reportSecondPanel, .reportThirdPanel, 
+.sidebarCollapsed,
+.SearchBar .saTypeaheadWrapper,
+.ui-datepicker-links,
+.popupContent {
+    background-color: #EDEDE7;
+}
+
+/* primary background - applies to search controls and primary action panels */
+.viewHeader, .mainSearchControls, .splSearchControls-inline,
+.SearchBar .saHelpWrapper,
+.popupContent  {
+    background-color: #EDEDE7;
+}
+
+/* secondary background - sidebar, other panels */
+.splBackground-secondary, .sidebarExpanded,
+.fieldValuePopup p.reportLinks {
+    background-color:#E9F0F7;
+}
+
+/* Specific overrides */
+.layoutCellInner .ResultsHeader .splHeader, .layoutCellInner .ResultsHeader .splHeader-secondary {
+    background: transparent none;
+}
+
+/* Specific overrides */
+.popupFooter {
+    background-color: #f0f0f0;
+}
+
+/* dashboard background color */
+body.splTemplate-dashboard, table.splTemplate-dashboard, body.splTemplate-home_proactive_monitor {
+    background-color:#EDEDE7;
+}
+
+/* dashboard titlebar */
+body.splTemplate-dashboard .splHeader-primary {
+    background-color:#EDEDE7;
+}
+
+
+
+
+/* dashboard containers */
+.dashboardCell {
+    background-color: #ffffff; 
+}
+
+/* headers 
+---------------------------------*/
+
+/* default header font color */
+.splHeader-dashboard h2, .dashboardContent .ServerSideInclude h2, .dashboardContent .GenericHeader h3, .SearchBar .saRow h4  {
+    color: #686868;
+}
+
+/* primary header background color + overlay */
+.splHeader-primary,
+.TitleBar .splHeader, 
+.FieldPickerPopup .splHeader-primary {
+    background-color: #ffffff;
+}
+
+/* secondary (i.e. sidebar) header background color + overlay */
+.splHeader-secondary {
+background-color:#eff6de;
+background-image:url(overlay_topgradient.png);
+background-repeat:repeat-x;
+_background-image: none;
+}
+
+/* headers w/o any overlay */
+.FlashTimeline .splHeader-primary {
+    background-color:#ffffff;
+    background-image: none;
+}
+
+/* borders 
+---------------------------------*/
+
+/* ALL elements with a generic border attribute */
+* { 
+border-color: #ddd;
+}
+
+/* refactor to remove these in default.css since they have specific color declarations; should be same value as * elements, above */ 
+.splMenu-primary ul, 
+.splMenu-secondary ul,
+.fieldLayers .popupContainer,
+.splMenu-primary .actionsMenuDivider {
+border-color: #ddd;
+}
+
+/* specific overrides */ 
+
+.fieldValuePopup table tr.fieldNameHeaderRow th {
+    border-bottom:1px solid #ddd;
+}
+
+/* horizontal rules in the sidebar */ 
+.splDivider, .SuggestedFieldViewer .splBorder-n {
+    border-color: #ddd;
+}
+
+
+
+
+/* search controls 
+---------------------------------*/
+
+/* search button color; background-position of 0 0 is black, -40px 0 is white */
+input.searchButton {
+    background-color: #5aa5c6;
+    background-position:-40px 0;   
+}
+
+.SearchBar .assistantActivator {
+    background-color: #5aa5c6;
+}
+table.mainSearchControlsTable .TimeRangePicker .timeRangeActivatorWrapper {
+    background-color: #5aa5c6;
+    border: 1px solid #5B7CAF;
+    background: #5aa5c6 url(/static/img/skins/default/search_bar.png);
+
+}
+input.searchButton:hover, input.searchButton:focus , table.mainSearchControlsTable .TimeRangePicker .timeRangeActivatorWrapper:hover,
+table.mainSearchControlsTable .TimeRangePicker .timeRangeActivatorWrapper:focus {
+    background-color: #5B7CAF
+}
+
+table.mainSearchControlsTable .SearchBar .searchFieldWrapper {
+    border: 1px solid #5AA5C6; 
+    background-color: #5aa5c6;
+}
+
+.SearchBar .searchFieldWrapperInner {
+    border-color: #5aa5c6;
+}
+/* Flash timeline and charts 
+---------------------------------*/
+
+/* All flash charts */
+/*
+  background-color -> controls bgcolor
+  border-left-color -> controls foregroundColor
+  color -> controls fontColor
+  controls and and font color get screened via an alpha layer, so should probably be set to all black or white, depending on main background
+*/
+div.FlashChart {
+    background-color: #ffffff;
+    color: #000000;
+    border-left-color: #000000;
+}
+
+/* flash timeline specific */
+/*
+  background-color -> controls bgcolor
+  border-left-color -> controls foregroundColor
+  color -> controls fontColor
+  border-right-color -> controls seriesColor
+controls and and font color get screened via an alpha layer, so should probably be set to all black or white, depending on main background
+*/
+div.FlashTimeline {
+    background-color: #ffffff;
+    border-left-color: #000000;
+    color: #ffffff;
+    /* the color of the histogram bar. border-right-color = fill */
+    border-right-color: #a5ca4b; 
+}
+
+/* popup bar chart; should be same color as flash timeline */
+.splBarGraphBar {
+background-color:#a5ca4b;
+}
+
+/* background of bar graph */
+.splBarGraph {
+background:#ddd;
+}
+
+
+
+
+/* buttons 
+---------------------------------*/
+
+.splButton-primary {
+    background-color: #5aa5c6;   
+    color: #FFF;
+}
+.splButton-primary:hover {
+    background-color: #73bbda;   
+}
+.splButton-secondary {
+    background-color:#999999;
+    color: #FFF;   
+}
+.splButton-secondary:hover {
+    background-color: #888888;   
+}
+
+/* form elements
+_________________________________*/
+
+fieldset legend {
+    color: #222;
+}
+fieldset legend span {
+    color: #000000;
+}
+p.exampleText {
+    color: #666666;
+}
+p.fieldsetHelpText {
+    color: #666666;
+}
+
+/*-- disabled and read-only form elements --*/
+
+label.disabledLabel {
+    color:#666666;
+}
+select option[disabled] {
+    color:#999999;
+}
+input.readonly {
+    background-color: #999999;
+}
+
+
+input[disabled]{
+background-color: transparent;
+border-color: transparent;
+color: #333333;
+}
+
+/* Icons 
+---------------------------------*/
+/*
+.splIcon-events-list, .splIcon-events-table, .splIcon-results-table {
+/*-- master icon file. edit the local file if you want to change colors or remove this stanza to use default icons --*/
+/* background-image: url(splIcons.gif);
+} */
+
+/*-- background color for icons --*/
+.splIcon {
+    background-color: #FFFFFF;
+}
+
+/*-- switchers that use icons  --*/
+
+.ButtonSwitcher ul li.selected, .ButtonSwitcher ul li.selected:hover,
+.EventsViewer .default .actions,
+div.FlashTimeline a.logScaleSelected span, div.FlashTimeline a.linScaleSelected span  {
+    border: 1px solid #999999;
+    background-color: #999999;
+}
+
+/*-- paginator uses similar styles --*/
+
+.Paginator .active a, .Paginator .active a:hover, .Pager .selected a, .Pager .selected a:hover  {
+    background-color: #5B7CAF;
+    border-color: #466491;
+    color: #ffffff;
+}
+
+/*-- arrow icons --*/
+.splIcon-arrow-n, .splIcon-arrow-e, .splIcon-arrow-s, .splIcon-arrow-w {
+    background-color: #999999;
+}
+
+/* triangles. keep this last to avoid getting background colors in the arrows! */
+/* Note: to separate color from implementation, we're using a numbering system to differentiate colors.  
+   1=grey,2=white,3=green,4=black,5=blue.  If the icon sprite changes, the number mapping to colors would be different */
+.splIcon-triangle, 
+.splIcon-triangle-1-n, .splIcon-triangle-1-s, .splIcon-triangle-1-e, .splIcon-triangle-1-w,
+.splIcon-triangle-2-n, .splIcon-triangle-2-s, .splIcon-triangle-2-e, .splIcon-triangle-2-w,
+.splIcon-triangle-3-n, .splIcon-triangle-3-s, .splIcon-triangle-3-e, .splIcon-triangle-3-w,
+.splIcon-triangle-4-n, .splIcon-triangle-4-s, .splIcon-triangle-4-e, .splIcon-triangle-4-w,
+.splIcon-triangle-5-n, .splIcon-triangle-5-s, .splIcon-triangle-5-e, .splIcon-triangle-5-w {
+    background-color:transparent;   
+}
+.splIcon-triangle-large {
+    background-color:transparent;  
+}
+
+
+
+
+
+/* highlight colors 
+---------------------------------*/
+/*-- event items --*/
+.EventsViewer .default .a, .EventsViewer .default .h, .EventsViewer .default .fields .v:hover, .EventsViewer .default .fields .tg:hover {
+	background-color:#f5e998;
+}
+
+/*-- row highlighting for tables --*/
+table.splTable tr:hover td {
+    background-color:#f5e998;
+}
+.mouseoverHighlight, .mouseoverHightlight td {
+    background-color:#f5e998;
+}
+
+/*-- matching search terms --*/
+.SimpleEventsViewer span.searchTermHighlight {
+    background-color:#f5e998;
+}
+
+/* MultiFieldViewer + SuggestedFieldViewer, i.e. highlight in the fields sidebar */
+.MultiFieldViewer .fieldTabs .mouseoverHighlight,
+.MultiFieldViewer .fieldTabs .selected,
+.SuggestedFieldViewer .fieldTabs .mouseoverHighlight,
+.SuggestedFieldViewer .fieldTabs .selected {
+    background-color:#cbd598;
+}
+
+/* field picker popup hover row */
+.FieldPickerPopup .fpFieldList tbody tr:hover, .FieldPickerPopup .fpFieldList tbody tr.mouseoverHighlight {
+    background-color: #cbd598;
+}
+
+
+
+/* date picker 
+---------------------------------*/
+.ui-datepicker-current-day {
+    background-color: #effaff;
+}
+
+.ui-datepicker-links {
+    background-image: url(overlay_gradient.png) repeat-x 0 0;
+    _background-image: none;
+} 
+
+/* popups 
+---------------------------------*/
+.splHeader-popup {
+background:#666 url(overlay_gradient.png) repeat-x 0 0;
+_background-image: none;
+}
+
+.splHeader-popup h2 {
+    color:#FFF; 
+    font-size:12px;  
+}
+
+.popupContainer {
+border-color:#333333;
+}
+
+/* modal overlay */
+.splOverlay, .splOverlay-white {
+    background-color: #000000;    
+    opacity:0.8;
+    filter:alpha(opacity=80);
+}
+.splOverlay-white {
+    background-color:#FFF;  
+}
+
+/* Misc 
+---------------------------------*/
+
+/* resize handle */
+.ui-resizable-s {
+background-color:#ddd !important;
+}
+
+/* loading image for jobs */
+.JobStatus .output .running h2,
+.JobStatus .output .runningReport h2,
+.JobStatus .output .finalizing h2 {
+    background-image: url(loader.gif);
+}
+
+
+/* remove the gradient at top of event and results area */
+.EventsViewer, .SimpleResultsTableResults {
+    background-image: none;
+}
+
+.dashboardCell .Paginator {
+    clear:both;
+}
+
+.SmallSingleValue {
+	font-size: 12px;
+}
+
+.dashboardCell .FlashChart {
+	clear:both;
+} 
+
+
+.propertyTable th,
+.propertyTable td {
+    text-align:left;
+    padding-right:10px;
+}
+
+/* Adding in a block to float left the timepicker on select views, in select locations */
+.splView-vm_detail #TimeRangePicker_0_1_2,
+.splView-vmware_host_stat #TimeRangePicker_0_1_2,
+.splView-vmware_host_perf_by_instance #TimeRangePicker_0_1_2 {
+    float:left;
+}
+
+/* Setting SingleValue coloring */
+.SingleValueHolder {
+    background-color: #EDEDE7;
+}
+
+
+/* View specific CSS */
+.splView-vmware_security #TimeRangePicker_0_0_0, 
+.splView-vmware_tasks_on_host #TimeRangePicker_0_1_2,
+.splView-vmware_tasks_on_host #Button_0_11_0,
+.splView-vmware_event_vh_stat #TimeRangePicker_0_1_1,
+.splView-vmware_task_stat #TimeRangePicker_0_0_0,
+.splView-vmware_vm_perf #TimeRangePicker_0_1_3,
+.splView-vmware_task_event_details #TimeRangePicker_0_0_0, 
+.splView-vmware_log_error_host #TimeRangePicker_0_1_1,
+.splView-vmware_log_error_vc #TimeRangePicker_0_1_0,
+.splView-vmware_inventory_data_health #TimeRangePicker_0_0_0,
+.splView-vmware_software_for_host #TimeRangePicker_0_1_2,
+.splView-vmware_host_perf #TimeRangePicker_0_1_3,
+.splView-vmware_tasks_and_events_data_health #TimeRangePicker_0_0_0,
+.splView-vmware_log_error_overall #TimeRangePicker_0_1_3 {
+    float:left;
+}
+
+.splView-proactive_monitoring .TimeRangePicker {
+	float: left;
+	clear: both;
+}
+
+.splView-capacity_planning_hosts #HTML_1_7_0, 
+.splView-capacity_planning_clusters #HTML_2_7_0 {
+    float: left;
+    padding: 0;
+    margin: 10px 10px 0px 0px;
+    font-size: 9pt;
+}
+
+.splView-vmware_task_stat .TextField input, .splView-vmware_task_stat .TextField label, .splView-vmware_task_stat .PullDown label , .splView-vmware_task_stat .PullDown select, 
+.splView-vmware_task_event_details .TextField input, .splView-vmware_task_event_details .TextField label, .splView-vmware_task_event_details .PullDown label , .splView-vmware_task_event_details .PullDown select, 
+.splView-vmware_log_error_host .TextField input, .splView-vmware_log_error_host .TextField label, .splView-vmware_log_error_host .PullDown label , .splView-vmware_log_error_host .PullDown select {
+	width: 100px;
+	float: left;
+	text-align: right;
+}
+
+.splView-searchDashboard .layoutCell .sidebar .sidebarExpanded {
+	background-color: #EDEDE7;
+}
+
+.splView-vmware_security .Pulldown, .splView-vmware_security .StaticSelect {
+    float:left;
+}
+
+/* setting search dashboard buttons */
+.ButtonSwitcher ul li.selected, .ButtonSwitcher ul li.selected:hover, .EventsViewer .default .actions, div.FlashTimeline a.logScaleSelected span, div.FlashTimeline a.linScaleSelected span {
+	background-color: #5B7CAF;
+    border-color: #466491;
+    color: #ffffff;
+}
+
+.splView-vmware_inventory_hierarchy .SearchSelectLister {
+	float: left;
+	padding-right: 5px;
+}
+
+.splView-vmware_vcenter_server_log_data_health #HTML_2_3_0{
+	padding: 0;
+}
+
+/* Panel Header Styling */
+.panelHeader {
+	padding: 12px 0 0 15px;
+}
+
+.panelBody {
+	padding: 0 0 0 15px;
+}
+
+.panelHeader, .panelHeader a {
+	font-family: "Helvetica nenu", Helvetica, Arial, sans-serif;
+	font-size: 19px;
+	font-weight: 100;
+}
+.panelHeader, .panelBody, .panelFooter {
+	color : #686868;
+}
+
+.panelHeader .SimpleResultsTable,.panelFooter .SimpleResultsTable {
+	font-family: "Helvetica nenu", Helvetica, Arial, sans-serif;
+	color : #686868;
+	font-size: 12px;
+}
+
+.panelFooter th{
+	font-weight: 100;
+}
+
+
+/* Setting h1 coloring */
+h1 {
+    color: #5B7CAF;
+    font-size: 16px;
+}
+
+/* Setting hr coloring */
+hr {
+    background-color: #DDD;
+}
+
+/* Adding css for the dynamic tree */
+.dynatreetooltip .tooltipbackground {
+    stroke: #ffffff;
+    fill: #E9F0F7;
+}
+.dynatreetooltip .tooltipforeground {
+    stroke: #466491;
+    fill: #FCFDFE;
+}
+.dynatreetooltip .tooltiptext {
+    fill: #466491;
+}
+
+/* adding css for coloring threshold cells in embeded tables */
+/* adding css for coloring vmtools cells in embeded tables */
+td.normal, span.normal, td.hoststatus-green, td.toolsOk, td.dsaccess-True {
+    color: green;
+}
+
+td.warning, span.warning, td.hoststatus-yellow, td.toolsOld {
+    color: orange;
+}
+
+td.critical, span.critical, td.hoststatus-red, td.toolsNotRunning,
+td.toolsNotInstalled, td.dsaccess-False {
+    color: red;
+} 
+
+td.warningIcon.critical {
+	width:15px;
+	height:15px;
+	background-image:url('/static/app/search_activity/critical.png') !important;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+td.warningIcon.warning {
+	width:15px;
+	height:15px;
+	background-image:url('/static/app/search_activity/warning.png');
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+/* adjust simpleResultsTable padding */
+.SimpleResultsTable, .SimpleResultsTable .simpleResultsTableWrapper{
+	padding: 0 0 0 0;
+}
+
+/* adjust panel width for vm_detail */
+body.splView-vm_detail .panel_row2_col .layoutCell {
+	width:30% !important;
+}
+body.splView-vm_detail .panel_row2_col .firstCell {
+	width:70% !important;
+}
+
+/* adjustments for the threshold settings page */
+body.splView-config td.data-td {
+	min-width:150px;
+}
+
+body.splView-config th {
+	text-align:left;
+}
+
+body.splView-config tr {
+	padding:10px 5px;
+}
+
+body.splView-config tr.alt {
+		background-color: #DAE1F2;
+}
+
+/* adjust showing and hiding errors for vm_detail warning box*/
+.VMDetailWarningRow-unknown, .VMDetailWarningRow-normal {
+	display: none;
+}
+
+.VMDetailWarningRow-warning, .VMDetailWarningRow-critical {
+}
+
+/* control layoutCell panel information with thresholds, will override display in critical casses */
+.layoutCell.warning, .layoutCell.critical {
+	display: block !important;
+}
+
+.layoutCell.unknown, .layoutCell.normal, .layoutCell.hidediv {
+	display: none;
+}
+
+/* used to change empty A elements into a clickable item */
+.soln-link-button {
+    cursor: pointer;
+}
+
+/*For stupid overflow fail in dashboard content*/
+body.splView-config .dashboardContent {
+	overflow: auto;
+}
+
+/* For phony half dashboard cells in sidebar dashboards */
+.leftHalfDashboardCell {
+	position: relative;
+	background: #ffffff;
+	border-style: solid;
+	border-width: 1px;
+	-moz-border-top-right-radius: 5px;
+	-moz-border-bottom-right-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-moz-box-shadow: 2px 0px 2px 0px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: 2px 0px 2px 0px #D4D4D4;
+	box-shadow: 2px 0px 2px 0px #D4D4D4;
+}
+
+.rightHalfDashboardCell {
+	position: relative;
+	background: #ffffff;
+	border-style: solid;
+	border-width: 1px;
+	-moz-border-top-left-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: #ccc 0 0 5px;
+	box-shadow: #ccc 0 0 5px;
+}

@@ -1,0 +1,14 @@
+<table class="pm-pinned-detail-table">
+	<tbody>
+		<% _.each(data.fields, function(field, index) {%>
+			<tr>
+				<th>
+					<%= field %>
+				</th>
+				<td>
+					<%= data.data[index] %>
+				</td>
+			</tr>
+		<% }); %>
+	</tbody>
+</table>

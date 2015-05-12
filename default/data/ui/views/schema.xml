@@ -1,0 +1,113 @@
+<dashboard>
+  <label>Schema</label>
+  <description/>
+  <row>
+    <html>
+      <h1>Search Activity Help: Schema</h1>
+      
+      <h2>Help Contents</h2>
+      <ul>
+        <li><a href="/app/search_activity/help">Help Home</a></li>
+        <li><a href="/app/search_activity/installation">Installation</a></li>
+        <li><a href="/app/search_activity/featurelist">Feature List</a></li>
+        <li>Schema</li>
+    </ul>
+      <p>For anyone interested in developing on top of this app, creating your own views, etc., you will find two tsidx namespaces generated 
+        via the tscollect command. The parameters available in these namespaces are as follows:
+        <ul>
+          <li>search_activity.searchhistory - This source of data is fed entirely by the audit.log held normally in index=_audit sourcetype=audittrail
+            <ol>
+              <li>_time - float - The earliest time found.</li>
+              <li>NumExports - int - The number of times a search was exported (by any user -- careful)</li>
+              <li>WasShared - "yes"/"no" - Were there hits to the acl rest endpoint and the control rest endpoint, characteristic of sharing a search?</li>
+              <li>searchspan - latest minus earliest:
+              <ul>
+                <li>searchspan_s - int - seconds</li>
+                <li>searchspan_m - 1-precision - minutes</li>
+                <li>searchspan_h - 1-precision - hours</li>
+                <li>searchspan_d - 1-precision - days</li>
+              </ul>
+              </li>
+              <li>total_run_time - int - How long did the search run for?</li>
+              <li>result_count - int - How many results were there?</li>
+              <li>scan_count - int - How many results were scanned? (Placeholder for a thorough Splunk® answers or blog post, upon demand)</li>
+              <li>event_count - int - How many results were brought back off disk?</li>
+              <li>Accuracy - float - round((event_count / scan_count) * 100,2). </li>
+              <li>searchtype - "adhoc"/"adhoc (subsearch)"/"dashboard"/"dashboard (subsearch)"/"summarization"/"summarization (subsearch)"/"scheduled"/"subsearch (subsearch)"/"realtime" - Type of search (calculated by searchtype eval field in props)</li>
+              <li>search_status - "failed"/"completed"/"cancelled"/? - The result of the search. Technically: values(eval(if(info="granted",null,info)))</li>
+              <li>savedsearch_name - string - The name of the saved search, if defined</li>
+              <li>searchcommands - string - Effectively values(eval(commands(actualsearch))). This is a list of all the commands used in a search (though tscollect doesn't support notating if someone uses eventstats four times in a search, much to my chagrin. At least not without more work.)</li>
+              <li>user - string - Username (= sAMAccountName for AD people)</li>
+              <!-- <li>name - string - If doing LDAP, this will be the LDAP displayName</li>
+              <li>ManagerDN - string - If doing LDAP, this will be the manager's distinguishedName</li>
+              <li>email - string - IF doing LDAP, this will be the mail attribute</li>
+              <li>description - string - If doing LDAP, this will be the description attribute</li>
+              <li>city - string - If doing LDAP, this will be the c attribute</li>
+              <li>location - string - If doing LDAP, this will be the l attribute</li>
+              <li>organization - string - If doing LDAP, this will be the o attribute (usually referring to some sort of geography, for AD people)</li>
+              <li>state - string - If doing LDAP, this will be the st attribute</li>
+              <li>title - string - If doing LDAP, this will be the title attribute</li>
+              <li>ManagementChain - string - If doing LDAP, this will be the users mvjoin(ManagementChain, "|"). See note on temporality for the LDAP queries and tscollect, below</li>
+              <li>ManagerName - string - If doing LDAP, this will be the manager's name.</li>
+              <li>NumDirectReports - int - If doing LDAP, this will show how many direct reports the user has</li> -->
+              <li>exec_time - int - The exec_time of the search (from the log)</li>
+              <li>earliest - float - The earliest_time of the search.</li>
+              <li>latest - float - The latest_time of the search.</li>
+              <li>actualsearch - string - The full search string.</li>
+              <li>Accuracy - float - The ratio of event_count / result_count, represented as a percentage (i.e., n * 100)</li>
+              <li>search_et_diff - int - The difference between exec_time and the earliest_time (effectively, going back to -15min or -30d)</li>
+              <li>search_lt_diff - int - The difference between exec_time and the latest_time (effectively, starting now or -7d)</li>
+              <li>MVSearchCommands - string - A pipe separated list of the search commands for this search. (When using tscollect, 10 multi-valued rex commands become one.) Created with mvjoin(searchcomands, "|"), so feel free to use | makemv MVSearchCommands delim="|". </li>
+              <li>WasShared - string - "yes" or "no" indicates whether the ACL endpoint was hit for the search string in the 10-20 minutes after the search completed.</li>
+              <li>WasExported - string - "yes" or "no" indicates whether the export endpoint was hit for the search string in the 10-20 minutes after the search completed. This is a pretty bad metric, and will be improved moving forward.</li>
+              <li>search_et_diff - int - earliest_time - earliest.</li>
+              <li>search_lt_diff - int - earliest_time - latest.</li>
+              <li>time_bucket - string - a case statement that puts search_et_diff into different time buckets.</li>
+              <li>ShouldInvestigate - int - Are there any telltale signs that this search should be inspected? Defined by the macro `ShouldInvestigate`.</li>
+              <li>SearchHead - string - The search head where the search was run.</li>
+
+            </ol>
+          </li>
+        </ul>
+        <ul>
+          <li>search_activity.events - This source of data is held mostly in index=_internal, with the logon history pulled from index=_audit
+            <ol>
+              <li>_time - float - The time of each event.</li>
+              <li>date_hour - string - The hour of the day of each event (for convenience).</li>
+              <li>type - string - The type of the log. Options are: weblog, manager, scheduler, search_concurrency, login.</li>
+              <li>uri_path - string - The URL browsed to for weblogs.</li>
+              <li>myapp - string - For weblogs, the app.</li>
+              <li>myview - string - For weblogs, the view.</li>
+              <li>result - string - For login events, the result.</li>
+              <li>user - string - The username of the event.</li>
+              <li>active_hist_searches - int - How many historical searches are active at one time (from the search concurrency logs).</li>
+              <li>active_realtime_searches - int - How many realtime searches are active at one time (from the search concurrency logs).</li>
+              <li>status - string - The status of a scheduled search.</li>
+              <li>savedsearch_name - string - The name of a scheduled search.</li>
+              <li>mysearch - string - The search string for a scheduled search.</li>
+              <li>exported - string - "export" if this event indicates that the search was exported.</li>
+              <li>searchid - string - The search ID where appropriate.</li>
+              <li>myaction </li>
+              <li>result_count - int - The number of results in a search.</li>
+              <li>alert_actions - string - The alert ations of a scheduled search.</li>
+              <li>result_count - string - How many results came from a scheduled search.</li>
+              <li>SearchHead - string - The search head that generated the log.</li>
+              <li>actualsearch - string - The search string for audit logs (included in both TSIDX to ease the correlation.. may be more efficient in the future to leverage a lookup that will pull them up).</li>
+            </ol>
+          </li>
+        </ul>
+      </p>
+              
+        
+      <p>For those interested, there are two primary reasons for utilizing tscollect rather than the generally
+        preferable data model acceleration. The first reason is that in the case of the searchhistory report, I wanted to consolidate many 
+        logs together and provide one entry per search. Without a preliminary stats, there would be several different logs related to 
+        each event, confusing the ability to do counts accurately (would require dc(searchid) instead of count, which isn't intuitive).
+        The second, smaller reason, is that the initial customers did not want to impact their environment with distributed tsidx files,
+        normally a major benefit, except that it would trigger change control requirements. tscollect allows the data to stay local on
+        a admin or dev search head. This works fairly well in this scenario, given the small size of the tsidx namespace for this app.
+        </p>
+             
+    </html>
+  </row>
+</dashboard>

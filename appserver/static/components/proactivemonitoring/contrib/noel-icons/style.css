@@ -1,0 +1,28 @@
+@font-face {
+	font-family: 'push_pin';
+	src:url('fonts/push_pin.eot');
+	src:url('fonts/push_pin.eot?#iefix') format('embedded-opentype'),
+		url('fonts/push_pin.woff') format('woff'),
+		url('fonts/push_pin.ttf') format('truetype'),
+		url('fonts/push_pin.svg#push_pin') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="noel-icon-"], [class*=" noel-icon-"] {
+	font-family: 'push_pin';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.noel-icon-push_pin:before {
+	content: "\e600";
+}

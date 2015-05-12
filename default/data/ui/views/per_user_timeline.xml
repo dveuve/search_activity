@@ -1,0 +1,73 @@
+<form script="check_data_availability.js">
+  <label>Per User Timeline</label>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+    <input type="dropdown" token="user" searchWhenChanged="true">
+      <label>User</label>
+      <populatingSearch fieldForLabel="user" fieldForValue="user">| tstats local=t count  from `SA_SearchHistory` groupby `UserOrName` | fields - count | sort `UserOrName` | rename `UserOrName` as user</populatingSearch>
+    </input>
+    <input type="radio" token="sched">
+      <label>Scheduled and Summarization</label>
+      <choice value="OR searchtype=scheduled* OR searchtype=summarization*">Include</choice>
+      <choice value="">Exclude</choice>
+    </input>
+  </fieldset>
+  <row>
+      <chart>
+        <title>User Activity</title>
+        <search>
+          <query>| tstats local=t prestats=t count from `SA_SearchHistory` where (searchtype=adhoc* OR searchtype=dashboard* OR searchtype=realtime* ) user=$user$ groupby searchtype _time span=1h | timechart span=1h count by searchtype | join type=outer _time [| tstats local=t prestats=t count from `SA_Events` where type=login OR type=weblog user=$user$ groupby type _time span=1h| timechart span=1h count by type | rename weblog as "Dashboard View"] |  rename adhoc as "Adhoc Search" dashboard as "Dashboard Search" realtime as "Real-time Search" scheduled as "Scheduled Search" summarization as "Summarization Search" login as "Splunk Login"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <selection>
+          <set token="selection.earliest">$start$</set>
+          <set token="selection.latest">$end$</set>
+          <set token="start.count">$start.count$</set>
+          <set token="end.count">$end.count$</set>
+        </selection>
+      </chart>
+  </row>
+  <row>
+      <table>
+        <title>Activities</title>
+        <search>
+          <query>| tstats local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(searchtype) as searchtype values(total_run_time) as total_run_time values(result_count) as result_count values(scan_count) as scan_count values(event_count) as event_count values(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory` where (searchtype=adhoc* OR searchtype=dashboard* OR searchtype=realtime* ) user=$user$ groupby searchid | eval Message = if(isnull(savedsearch_name) OR savedsearch_name="", actualsearch, "(" . savedsearch_name . ") --- " . actualsearch)  | append [| tstats local=t values(user) as user from `SA_Events` where user=$user$ type=weblog groupby _time span=1s myview myapp| eval Message = user . " visited the dashboard '" . myview . "' in the '" . myapp . "' app." | fields - myview myapp ] | append [| tstats local=t count from `SA_Events` where user=$user$ type=login  groupby user _time span=1m | eval Message = user . " successfully or unsuccessfully (bug, pending resolution in this app) attempted to log in to Splunk " . count . " times." | fields - count ]  | fields _time searchid  total* scan* event* result* Should* searchtype Message | sort  _time</query>
+          <earliest>$selection.earliest$</earliest>
+          <latest>$selection.latest$</latest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">undefined</option>
+        <option name="drilldown">row</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+  </row>
+</form>

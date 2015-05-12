@@ -1,0 +1,44 @@
+<dashboard>
+  <label>Feature List</label>
+  <description/>
+  <row>
+    <html>
+      <h1>Search Activity Help: Feature List</h1>
+      
+      <h2>Help Contents</h2>
+      <ul>
+        <li><a href="/app/search_activity/help">Help Home</a></li>
+        <li><a href="/app/search_activity/installation">Installation</a></li>
+        <li>Feature List</li>
+        <li><a href="/app/search_activity/schema">Schema</a></li>
+    </ul>
+<p>The Search Activity App (SA) was written to help Splunk® champions understand and grow Splunk usage within their organizations, in addition to better understanding the activities and personas of their users. There are three primary areas of functionality:</p>
+
+<ul><li>Essential Metrics
+  <ul><li>This includes the Search Overview dashboard, the Per-User dashboard, and the Per-Search dashboard. Together, these allow you to view the top users in the environment, and understand some of how they use the system.</li>
+  <li>Questions you can answer here include “what users are chewing up searches?” “Who is running realtime searches today?” “How complex is this user’s grasp of the search language?” “How many errors do they receive?” “How long does it take them to run a search, and over what timeframe?” “Who is exporting or sharing search results?”</li>
+  <li>The Find Users dashboard also allows you to group particular sets of users based on search metrics or LDAP metrics. This is useful if you want to invite your local users to a SplunkLive event! The Find Searches dashboard allow you to find problematic searches or searches that meet a particular characteristic.</li></ul>
+</li>
+<li>Organizational Information<ul>
+<li>The centerpiece of this section is the hierarchy view, which will take your LDAP information and then overlay statistics, so that you can understand who uses Splunk within the organization, who faces slow search time, and more.</li>
+<li>In addition to the hierarchy, the usage by leader allows you to understand the search behavior of particular departments (implicitly) or under a particular leader, allowing you to describe Splunk’s value to those leaders. </li>
+</ul>
+</li>
+<li>Adoption Information<ul>
+  <li>The Organizational Adoption dashboard shows metrics relating to how people within the organization are using Splunk.</li>
+<li>By tagging users, you can group and track cohorts of users. This is great for understanding the usage of recently onboarded or trained users. You might also tag VIPs to keep a special eye on them.</li>
+</ul>
+</li>
+</ul>
+<p>A common question is: “How is this different from Splunk on Splunk (SOS)?” SOS is a fantastic app that you should have installed and SA doesn’t try to rival its power for monitoring and troubleshooting. While there are a few areas of overlap (and a few reports borrowed), SA isn’t primarily a troubleshooting app.</p>
+
+<p>Overall, it is the goal of this app to improve the ease of tracking consumption, and increasing adoption of Splunk. Please put any questions / suggestions on Splunk Answers. </p>
+
+<p>Overall thank you to everyone involved in the creation of SA, and those who contributed to base understanding, including the VMware App Team (and their amazing hierarchy), the SOS team, the NorCal Majors SE team, Splunk Answers, and everyone who ever answered a python question on Google.</p>
+
+<!-- <p>While there is too many different reports present to document each individually, the next few pages will pull out a few of the highlights from the system. </p> -->
+
+
+          </html>
+  </row>
+</dashboard>

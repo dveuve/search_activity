@@ -1,0 +1,27 @@
+td.pm-threshold-indicator-cell {
+	vertical-align: middle;
+	/* overriding the core css for the table needs importants */
+	padding-bottom: 4px !important;
+	padding-left: 7px !important;
+	padding-right: 0px !important;
+	padding-top: 4px !important;
+}
+
+.pm-threshold-indicator-circle {
+	width: 10px;
+	height: 10px;
+	border-radius: 5px;
+	text-align: center;
+} 
+.pm-threshold-indicator-circle.pm-threshold-critical {
+	background-color: #C44545;
+}
+.pm-threshold-indicator-circle.pm-threshold-warning {
+	background-color: #DE9400;
+}
+.pm-threshold-indicator-circle.pm-threshold-normal {
+	background-color: #57A116;
+}
+.pm-threshold-indicator-circle.pm-threshold-unknown {
+	background-color: #D5D5D5;
+}

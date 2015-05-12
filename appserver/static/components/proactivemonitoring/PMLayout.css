@@ -1,0 +1,26 @@
+.proactive-monitoring-layout {
+	min-width: 800px;
+	min-height: 800px;
+}
+
+.proactive-monitoring-main-stage-container {
+	float: left;
+	clear: left;
+	margin: 0px;
+	padding: 0px;
+	min-width: 545px;
+	width: 100%; /* DV - Added */
+	height: 100%;
+	overflow: hidden;
+}
+
+.proactive-monitoring-sidebar-container {
+	float: right;
+	clear: right;
+	border-left: 1px solid #CCCCCC;
+	margin: 0px;
+	padding: 0px;
+	width: 0px; /* DV - Modified from 300px */
+	height: 100%;
+	overflow-y: scroll;
+}

@@ -1,0 +1,97 @@
+<form script="check_data_availability.js">
+  <label>Find Searches</label>
+  <description></description>
+  <fieldset submitButton="true">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+    <input type="dropdown" token="wasshared" searchWhenChanged="false">
+      <label>Was Shared</label>
+      <choice value="yes OR wasshared=no">Either</choice>
+      <choice value="yes">Yes</choice>
+      <choice value="no">No</choice>
+      <prefix>WasShared=</prefix>
+      <default>yes OR wasshared=no</default>
+    </input>
+    <input type="text" token="total_run_time_gt">
+      <label>Total Run Time &gt;=</label>
+      <default>0</default>
+      <prefix>total_run_time&gt;=</prefix>
+    </input>
+    <input type="text" token="result_count_gt">
+      <label>Result Count &gt;=</label>
+      <default>0</default>
+      <prefix>result_count&gt;=</prefix>
+    </input>
+    <input type="text" token="scan_count_gt">
+      <label>Scan Count &gt;=</label>
+      <default>0</default>
+      <prefix>scan_count&gt;=</prefix>
+    </input>
+    <input type="multiselect" token="searchtype">
+      <label>Search Type(s)</label>
+      <choice value="adhoc">Adhoc</choice>
+      <choice value="scheduled">Scheduled</choice>
+      <choice value="summarization">Summarization</choice>
+      <choice value="realtime">Realtime</choice>
+      <choice value="dashboard">Dashboard</choice>
+      <valuePrefix>searchtype=</valuePrefix>
+      <valueSuffix>*</valueSuffix>
+      <delimiter> OR </delimiter>
+      <default>adhoc,summarization,scheduled,realtime,dashboard</default>
+    </input>
+    <input type="dropdown" token="searchcommands">
+      <label>Search Commands</label>
+      <choice value="*">Any</choice>
+      <populatingSearch fieldForLabel="searchcommands" fieldForValue="searchcommands">| tstats local=t count from `SA_SearchHistory` groupby searchcommands  | where searchcommands!="search"</populatingSearch>
+      <default>*</default>
+      <prefix>searchcommands=</prefix>
+    </input>
+    <input type="text" token="user">
+      <label>Username (Wildcards Supported)</label>
+      <default>*</default>
+      <prefix>user=</prefix>
+    </input>
+    <input type="radio" token="shouldinvestigate">
+      <label>Questionable Searches</label>
+      <choice value="*">Either</choice>
+      <choice value="ShouldInvestigate&gt;0">Yes</choice>
+      <choice value="ShouldInvestigate=0">No</choice>
+      <default>*</default>
+    </input>
+    <input type="multiselect" token="sh_clause">
+      <label>Search Head</label>
+      <choice value="*">Any</choice>
+      <search>
+        <query>| tstats local=t count from `SA_SearchHistory` groupby SearchHead</query>
+      </search>
+      <fieldForLabel>SearchHead</fieldForLabel>
+      <fieldForValue>SearchHead</fieldForValue>
+      <default>*</default>
+      <valuePrefix>SearchHead=</valuePrefix>
+      <delimiter> OR </delimiter>
+    </input>
+  </fieldset>
+  <row>
+      <table>
+        <title>Results</title>
+        <search>
+          <query>| tstats local=t min(_time) as _time values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name values(searchtype) as searchtype values(total_run_time) as total_run_time values(result_count) as result_count values(scan_count) as scan_count values(event_count) as event_count values(ShouldInvestigate) as ShouldInvestigate from `SA_SearchHistory`   where  *  $wasshared$  $total_run_time_gt$  $result_count_gt$  $scan_count_gt$  $searchtype$  $searchcommands$  $sh_clause$  $user$  $shouldinvestigate$  groupby searchid  | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name mail telephoneNumber  | lookup LDAPMgmtChain sAMAccountName as user OUTPUT ManagementChain| makemv delim="|" ManagementChain | eval ManagementChain=if(isnull(ManagementChain)," ",ManagementChain)</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <drilldown>
+          <link>/app/search_activity/per_user_dashboard?form.user=$row.user$</link>
+        </drilldown>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+  </row>
+</form>

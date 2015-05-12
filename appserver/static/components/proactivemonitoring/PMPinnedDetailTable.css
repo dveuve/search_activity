@@ -1,0 +1,16 @@
+table.pm-pinned-detail-table tr {
+	border: none;
+	padding: 2px;
+}
+
+table.pm-pinned-detail-table th {
+	font-weight: normal;
+	color: #888888;
+	text-align: left;
+}
+
+table.pm-pinned-detail-table td {
+	font-weight: normal;
+	color: #000000;
+	text-align: left;
+}

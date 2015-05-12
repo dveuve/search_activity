@@ -1,0 +1,12 @@
+.proactive-monitoring-leaf-node > text.name-label {
+	font-size: 11px;
+	text-anchor: start;
+}
+
+.proactive-monitoring-leaf-node > text.node-label {
+	fill: #FFFFFF;
+	font-size: 8px;
+	font-weight: normal;
+	text-anchor: middle;
+	letter-spacing: 1px;
+}

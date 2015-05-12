@@ -1,0 +1,18 @@
+<%page expression_filter="h" args="module"/>
+<%
+	style=module["style"]
+%>
+<%namespace name="lib" file="//lib.html" import="*"/>
+<div class="solnselector-container">
+  		<div class="btn-group solnselector-toggle-group"></div>
+    	<div class="trie-search SOLNTextInput">
+    		<div class="soln-inputs">
+        		<input type="text" class="solnselector-input" />
+        		<input type="text" class="solnselector-autocomplete-input" style="color:gray" />
+        	</div>
+        	<div class="solnselector-result" style="clear:both;display:none"></div>
+        </div>
+        <div class="nav-control" style="clear:both;display:none">
+			<button class="ui-tree-set-selection ui-tree-button" style="margin:5px;float:left;display:none">Set Selection</button>
+		</div>
+ </div>	

@@ -1,0 +1,20 @@
+<dashboard>
+  <label>Help Overview</label>
+  <description/>
+  <row>
+    <html>
+      <h1>Search Activity Help: Overview</h1>
+      <h2>Overview</h2>
+      <p>The primary goal of this app is to provide visibility into the adoption of Splunk® within an organzation. </p>
+
+      <h2>Help Contents</h2>
+      <ul>
+        <li>Help Home</li>
+        <li><a href="/app/search_activity/installation">Installation</a></li>
+        <li><a href="/app/search_activity/featurelist">Feature List</a></li>
+        <li><a href="/app/search_activity/schema">Schema</a></li>
+    </ul>
+    <p>If you run into any issues, please don't hesitate to go to <a href="http://answers.splunk.com/">Splunk Answers</a> and search for your issue, or ask a new question. Make sure to tag Search Activity, and you should get a fast response.</p>
+    </html>
+  </row>
+</dashboard>

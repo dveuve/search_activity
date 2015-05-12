@@ -1,0 +1,26 @@
+.D3DynamicTree {
+	padding : 0 !important;
+}
+
+.node circle {
+  cursor: pointer;
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+path.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+.loading-gif {
+	background-image: url("D3DynamicTree/loading.gif");
+	width: 66px;
+	height: 66px;
+}

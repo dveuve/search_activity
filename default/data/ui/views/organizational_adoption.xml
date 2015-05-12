@@ -1,0 +1,187 @@
+<form script="check_data_availability.js">
+  <label>Organizational Adoption</label>
+  <description/>
+  <fieldset autoRun="true" submitButton="false">
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+      <table>
+        <title>Overall Metrics</title>
+        <searchString>| tstats local=t count from `SA_SearchHistory` groupby searchtype, user | stats sum(count) as count sum(eval(if(searchtype="adhoc",count,0))) as "Adhoc Search Count" sum(eval(if(searchtype="dashboard",count,0))) as "Dashboard Search Count" sum(eval(if(searchtype="realtime",count,0))) as "Realtime Search Count" sum(eval(if(searchtype="scheduled",count,0))) as "Scheduled Search Count" sum(eval(if(searchtype="summarization",count,0))) as "Summarization Search Count" by user | stats sum(count) as "Total Number of Searches" count as "Number of Users" count(eval(count&gt;30)) as "Number of Users with &gt; 30 searches" sum("* Search Count") as "* Search Count"</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+      </table>
+  </row>
+  <row>
+      <chart>
+        <title>Number of Distinct Users</title>
+        <searchString>| tstats local=t prestats=t dc(user) from `SA_SearchHistory` groupby _time span=1d | timechart span=1d dc(user) as "Number of Users"</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+  </row>
+  <row>
+      <chart>
+        <title>AdHoc Search Adoption</title>
+        <searchString>| tstats local=t prestats=t count from `SA_SearchHistory` where searchtype=adhoc groupby _time span=1d | timechart span=1d count</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+      <chart>
+        <title>Realtime Search Adoption</title>
+        <searchString>| tstats local=t prestats=t count from `SA_SearchHistory` where searchtype=realtime groupby _time span=1d | timechart span=1d count</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+  </row>
+  <row>
+      <chart>
+        <title>Dashboard Search Adoption</title>
+        <searchString>| tstats local=t prestats=t count from `SA_SearchHistory` where searchtype=dashboard groupby _time span=1d | timechart span=1d count</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+      <chart>
+        <title>Scheduled Search Adoption</title>
+        <searchString>| tstats local=t prestats=t count from `SA_SearchHistory` where searchtype=scheduled OR searchtype=summarization groupby _time span=1d | timechart span=1d count</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+  </row>
+  <row>
+      <table>
+        <title>Top Users</title>
+        <searchString>| tstats local=t  count sum(total_run_time) as total_run_time sum(NumExports) as NumExports from `SA_SearchHistory` groupby _time user searchtype span=1d  | stats sum(count) as NumSearches sum(eval(if(searchtype="adhoc",count,0))) as NumAdHocSearches sparkline(sum(count)) as UsageTrend sum(total_run_time) as HoursOfSearchTime sum(eval(if(searchtype="adhoc",total_run_time,0))) as HoursOfAdHocSearchTime sum(NumExports) as NumberOfExports by user | where user!="splunk-system-user" | eval HoursOfSearchTime = round(HoursOfSearchTime/3600,2) | eval HoursOfAdHocSearchTime = round(HoursOfAdHocSearchTime/3600,2) | sort - NumSearches | lookup LDAPSearch sAMAccountName as user OUTPUT name</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+  </row>
+  <row>
+      <table>
+        <title>Users with Management Chain</title>
+        <searchString>| tstats local=t  count sum(total_run_time) as total_run_time sum(NumExports) as NumExports from `SA_SearchHistory` groupby _time user searchtype span=1d  | stats sum(count) as NumSearches sum(eval(if(searchtype="adhoc",count,0))) as NumAdHocSearches sparkline(sum(count)) as UsageTrend sum(total_run_time) as HoursOfSearchTime sum(eval(if(searchtype="adhoc",total_run_time,0))) as HoursOfAdHocSearchTime sum(NumExports) as NumberOfExports by user| where user!="splunk-system-user" | eval HoursOfSearchTime = round(HoursOfSearchTime/3600,2) | eval HoursOfAdHocSearchTime = round(HoursOfAdHocSearchTime/3600,2) | sort - NumSearches | lookup LDAPMgmtChain sAMAccountName as user | makemv delim="|" ManagementChain | where ManagementChain!="" | rename managerdisplayname as "Manager's Name"</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+      </table>
+  </row>
+  <row>
+      <table>
+        <title>Users by Management Chain (Inclusive)</title>
+        <searchString>| tstats local=t  count sum(total_run_time) as total_run_time sum(NumExports) as NumExports from `SA_SearchHistory` groupby _time user searchtype span=1d  | stats sum(count) as NumSearches sum(eval(if(searchtype="adhoc",count,0))) as NumAdHocSearches sparkline(sum(count)) as UsageTrend sum(total_run_time) as HoursOfSearchTime sum(eval(if(searchtype="adhoc",total_run_time,0))) as HoursOfAdHocSearchTime sum(NumExports) as NumberOfExports by user| where user!="splunk-system-user" | eval HoursOfSearchTime = round(HoursOfSearchTime/3600,2) | eval HoursOfAdHocSearchTime = round(HoursOfAdHocSearchTime/3600,2) | sort - NumSearches | lookup LDAPMgmtChain sAMAccountName as user | makemv delim="|" ManagementChain | where ManagementChain!="" | stats count as NumUsers sum(NumSearches) as TotalNumSearches sum(NumAdHocSearches) as TotalNumAdHocSearches by ManagementChain | sort - NumUsers</searchString>
+        <earliestTime>$earliest$</earliestTime>
+        <latestTime>$latest$</latestTime>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+      </table>
+  </row>
+</form>

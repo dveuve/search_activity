@@ -1,0 +1,79 @@
+.pm-pinned-detail {
+	font-family: Roboto, Droid, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-weight: normal;
+}
+
+.pm-pinned-detail-title-bar {
+	overflow: hidden;
+	padding: 5px 0px 6px 10px;
+	line-height: 16px;
+	background-color: #F5F5F5;
+	/*border: 1px solid #aeaeae;
+	border-top-color: #b7b7b7;
+	border-bottom-color: #989898;*/
+	color: #333333;
+	text-decoration: none;
+	border-bottom: none;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	cursor: pointer;
+}
+
+.pm-pinned-detail-name {
+	font-size: 14px;
+	margin-top: 3px;
+}
+
+.pm-pinned-detail-button-container {
+	padding: 0px;
+	margin: 0px;
+}
+
+.pm-pinned-detail-icon {
+	color: #FFFFFF;
+	vertical-align: middle;
+	font-size: 12px;
+	margin-top: 2px;
+	margin-left: 1px;
+	display: block;
+}
+
+div.pm-pinned-detail-icon-circle {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	background-color: #6B6B6B;
+	text-align: center;
+	cursor: pointer;
+}
+div.pm-pinned-detail-icon-circle:hover {
+	background-color: #333333;
+}
+
+div.pm-pinned-detail-detail-section {
+	padding: 7px 0px 7px 12px;
+}
+
+div.pm-pinned-detail-metric-section {
+	padding: 7px 0px 7px 12px;
+}
+
+div.pm-pinned-detail-chart-section {
+	padding-left: 7px;
+}
+
+.pm-pinned-detail-chart-section th {
+	display: none;
+}
+
+.pm-pinned-detail-chart-section td {
+	/* core css tiger stripping is hard to get rid of, hence the important*/
+	background-color: #FFFFFF !important;
+	border: none;
+}
+

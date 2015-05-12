@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>Organizational Hierarchy | Search Activity | Splunk</title>
+	<link rel="shortcut icon" href="{{SPLUNKWEB_URL_PREFIX}}/static/img/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/pages/dashboard-simple-bootstrap.min.css" />
+	<!-- APP/PAGE CSS --> 
+	<link rel="stylesheet" type="text/css" media="all" href="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/components/proactivemonitoring/contrib/noel-icons/style.css" />
+	<!--<link rel="stylesheet" type="text/css" media="all" href="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/dashboard.css" />-->
+	<!--[if IE 7]><link rel="stylesheet" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/sprites-ie7.css" /><![endif]-->
+</head>
+<body class="simplexml preload">
+
+<!-- 
+BEGIN LAYOUT
+This section contains the layout for the dashboard. Splunk uses proprietary
+styles in <div> tags, similar to Bootstrap's grid system. 
+-->
+
+<div class="header">
+	<div id="placeholder-splunk-bar">
+		<a href="{{SPLUNKWEB_URL_PREFIX}}/app/launcher/home" class="brand" title="splunk &gt; listen to your data">splunk<strong>&gt;</strong></a>
+	</div>
+	<div id="placeholder-app-bar"></div>
+</div>
+<div class="dashboard-body container-fluid main-section-body" data-role="main">
+	<div class="dashboard-header clearfix">
+		<h2>Organizational Hierarchy</h2>
+		<p class="description">Presents Search Activity in the context of organizational adoption</p>
+	</div>
+	<div class="fieldset">
+		<div class="element input-dropdown" id="field2">
+			<label>Performance Type</label>
+		</div>
+		<div class="element input-dropdown" id="field3">
+			<label>Metric</label>
+		</div>
+		<div class="input input-timerangepicker" id="field4">
+			<label>&nbsp;</label>
+		</div>
+		<div class="input form-submit" id="search_btn">
+			<button class="btn btn-primary submit">Search</button>
+		</div>
+		
+		<div id="legend_avg_run_time" style="display:none;"><p style="display:inline;">When tracking average run time, we are looking at how long a typical search takes. By default, these parameters are: 400 seconds: Red; >200 seconds: Yellow; Other: Green</p></div>
+		<div id="legend_has_exported" style="display:none;"><p style="display:inline;">This metric will show green for anyone who has run an export. </p></div>
+		<div id="legend_avg_search_span_hours" style="display:none;"><p style="display:inline;">This will label users by their average search timeframe. >28 days is red, >7 days is yellow, and <=7 days is green. </p></div>
+		<div id="legend_avg_accuracy" style="display:none;"><p style="display:inline;">This will label users by the accuracy of their searches. Specifically, this will track the event_count / scan_count and label anyone under 1% as Red, under 30% as yellow, and the rest as green. A great example of how this manifests is if I were to search for <emphasis>index=myindex myfield=* | stats count(eval(otherfield="abc"))</emphasis> or alternatively <emphasis>index=myindex | search otherfield=abc</emphasis>. Both of those searches will bring back all the results off disk, and only use a small subset, resulting in low accuracy. They could be re-written as <emphasis>index=myfield otherfield=abc...</emphasis> or even <emphasis>index=myfield abc...</emphasis> to gain efficiency.</p></div>
+		<div id="legend_scan_count" style="display:none;"><p style="display:inline;">This will track the number of event scanned (read off the disk), which is a very rough measure of how much the indexers need to work to perform a search.</p></div>
+		<div id="legend_has_run_adhoc_searches" style="display:none;"><p style="display:inline;">This metric wll show users who run AdHoc searches in an organization. </p></div>
+		<div id="legend_has_run_searches" style="display:none;"><p style="display:inline;">This metric wll show users who have run any searches in an organization. </p></div>
+		<div id="legend_has_run_dashboard_searches" style="display:none;"><p style="display:inline;">This metric wll show users who run Dashboard searches in an organization. </p></div>
+		<div id="legend_has_run_realtime_searches" style="display:none;"><p style="display:inline;">This metric wll show users who run Realtime searches in an organization. </p></div>
+		<div id="legend_has_run_scheduled_searches" style="display:none;"><p style="display:inline;">This metric wll show users who run Scheduled searches in an organization. </p></div>
+		<div id="legend_has_shared_results" style="display:none;"><p style="display:inline;">This metric wll show users who share searches in an organization. </p></div>
+		<div id="search_processing_indicator" class="pm-perf-message-container">
+			
+		</div>
+	</div>
+	<div class="dashboard-row dashboard-row1">
+		<div class="dashboard-cell" style="width: 100%;">
+			<div class="dashboard-panel clearfix">
+				<div class="panel-element-row">
+					<div class="dashboard-element" id="element1" style="width: 100%">
+						<div class="panel-body" style="padding:0px;overflow:visible;">
+							<div class="proactive-monitoring-container"></div>
+						</div>
+					</div>
+					<div id="ldaprequireddescription" style="display:none;">
+						<p>LDAP setup is required for the org chart view. Please visit the <a href="/app/search_activity/setup">setup</a> page for help configuring LDAP.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="footer"></div>
+<!-- END LAYOUT -->
+
+<!-- REQUIRE, CONFIG, AND i18n -->
+<script src="{{SPLUNKWEB_URL_PREFIX}}/config?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/contrib/require.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/i18n.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/i18ncatalog?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/profiles/shared.js"></script>
+<script type="text/javascript">
+require.config({
+	baseUrl: "{{SPLUNKWEB_URL_PREFIX}}/static/js",
+	paths: {
+		"pm": "{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/components/proactivemonitoring"
+	}
+});
+</script>
+<!-- END REQUIRE, CONFIG, AND i18n -->
+
+<!-- PRODUCTION PAGE JS -->
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/pages/proactive_monitoring.js"></script>
+<!-- END PRODUCTION JS -->
+
+<!-- DEV PAGE JS 
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/contrib/require_dev_config.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/pages/proactive_monitoring.js"></script>
+END DEV PAGE JS-->
+
+</body>
+</html>

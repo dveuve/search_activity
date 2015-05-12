@@ -1,0 +1,11 @@
+command,entity,field,metric,perftype,tsidxnamespace
+avg,hostsystem,"Average Search Runtime (Seconds)",avg_run_time,searches,searchhistory
+avg,hostsystem,num_exports,num_exports,searches,searchhistory
+avg,hostsystem,search_span,search_span,searches,searchhistory
+avg,hostsystem,accuracy,accuracy,searches,searchhistory
+avg,hostsystem,scan_count,scan_count,searches,searchhistory
+avg,hostsystem,NumAdHoc,NumAdHoc,searches,searchhistory
+avg,hostsystem,NumDashboard,NumDashboard,searches,searchhistory
+avg,hostsystem,NumRealtime,NumRealtime,searches,searchhistory
+avg,hostsystem,NumScheduled,NumScheduled,searches,searchhistory
+avg,hostsystem,NumShares,NumShares,searches,searchhistory

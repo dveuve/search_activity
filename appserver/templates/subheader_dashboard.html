@@ -1,0 +1,266 @@
+<%inherit file="//layout/view.html" />
+<%namespace file="//view/_helpers.html" import="*"/>
+<%namespace name="lib" file="//lib.html" import="*"/>
+<%!
+import math
+
+headerPanels = ["appHeader", "navigationHeader"]
+
+upperPanels = ["viewHeader", "splSearchControls-inline", "mainSearchControls"]
+
+renderingErrors = []
+successfullyRenderedPanels = {}
+%>
+
+<%def name="head()">
+	<% parent.head() %>
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="Mon, 22 Jul 2002 11:12:01 GMT">
+</%def>
+
+<%def name="css()">
+	<% parent.css() %>
+	<%lib:stylesheet_tags files="${['/static/css/dashboard.css']}" />
+</%def>
+
+<%def name="js()">
+	<% parent.js() %>
+</%def>
+
+<%doc>
+	Takes an array of layoutPanel strings, all of which are asamed to be for a particular row N and column M
+	In other words, everything within a particular rounded-corner panel. 
+	There will be so called 'ungrouped' layout panels as well as 'grouped' ones. 
+</%doc>
+
+
+
+
+
+<%def name="getFloatLayoutRow(modules, row)">	
+	<%	
+	# this is our data structure for the panels that are defined in this row.
+	# the false values are placeholders.  
+	# this ends up being a 2D matrix, where for each i, panelNamesByColumn[i] is a flat 
+	# list of all the panelName strings (both grouped and ungrouped) for that column that 
+	# contain 1 or more modules in the given view.
+	panelNamesByColumn = [false, false, false]
+	for col in range(1,4) :
+		basePanelName = 'panel_row' + str(row) + '_col'
+		
+		namesInThisPanel = [];
+		
+		# get the panel names for '_header' panels, (if there are any defined in the view)
+		if (modules.get(basePanelName + str(col) + "_header")) :
+			panelName = basePanelName + str(col) + "_header"
+			namesInThisPanel.append(panelName)
+			successfullyRenderedPanels[panelName] = 1
+		
+		# get the panel names for '_subheader' panels, (if there are any defined in the view)
+		if (modules.get(basePanelName + str(col) + "_subheader")) :
+			panelName = basePanelName + str(col) + "_subheader"
+			namesInThisPanel.append(panelName)
+			successfullyRenderedPanels[panelName] = 1
+		
+		# get the panel names for 'ungrouped' panels, (if there are any defined in the view)
+		if (modules.get(basePanelName + str(col))) :
+			panelName = basePanelName + str(col)
+			namesInThisPanel.append(panelName)
+			successfullyRenderedPanels[panelName] = 1
+			
+		## move on to getting the grouped panels, if there are any.
+		baseGroupName = basePanelName + str(col) + "_grp"
+		group = 1
+		# if there's a gap here at the grp level, like if there's grp1, grp2, and grp7,   
+		# then we will ignore the 7 here. 
+		#	the problem will get picked up later when we cross-check successfullyRenderedPanels[]
+		while (modules.get(baseGroupName + str(group))) :
+			panelName = baseGroupName + str(group)
+			namesInThisPanel.append(panelName)
+			successfullyRenderedPanels[panelName] = 1
+			group = group + 1 
+
+
+		# get the panel names for '_footer' panels, (if there are any defined in the view)
+		if (modules.get(basePanelName + str(col) + "_footer")) :
+			panelName = basePanelName + str(col) + "_footer"
+			namesInThisPanel.append(panelName)
+			successfullyRenderedPanels[panelName] = 1
+		
+		# we only keep getting them until we reach a column with nothing at all.
+		# if there's a gap at the col level, the error will be picked up later.
+		#	(when we cross-check successfullyRenderedPanels[])
+		if (len(namesInThisPanel) == 0) :
+			break;
+		else :
+			panelNamesByColumn[col-1] = namesInThisPanel
+	
+	# now that we know what we're dealing with, we have to set some css classes on the overall row.
+	rowClasses = ["layoutRow", "equalHeightRow", "splClearfix", basePanelName]
+
+	if (row==1) :
+		rowClasses.append("firstRow")
+
+	if (panelNamesByColumn[2]) :
+		rowClasses.append("threeColRow")
+	elif (panelNamesByColumn[1]) :
+		rowClasses.append("twoColRow")
+	elif (panelNamesByColumn[0]) :
+		rowClasses.append("oneColRow")
+
+	numberOfColumns = len(panelNamesByColumn)
+	%>
+	
+	% if panelNamesByColumn[0]:
+	<div class="${' '.join(rowClasses)|h}">
+	% for col in range(numberOfColumns)  : 
+		<%
+		if (not panelNamesByColumn[col]):
+			break;
+		cellClasses = ["layoutCell"]
+		if (col==0) :
+			cellClasses.append("firstCell")
+		if (col==numberOfColumns-1) :
+			cellClasses.append("lastCell")
+		
+		 %>
+			<div class="${' '.join(cellClasses)|h}">
+				<%call expr="getDashboardPanel(modules, panelNamesByColumn[col])"></%call>
+			</div>
+	% endfor
+	</div>
+	% endif
+</%def>
+
+
+
+
+
+
+
+<%def name="getDashboardPanel(modules, panelGroup)">
+	% if VIEW.get('nativeObjectMode','')=='SimpleDashboard' and VIEW['canWrite'] is True and VIEW['hasRowGrouping'] is False:
+		<div class="layoutCellInner dashboardCell dashboardCellEditable">
+		   <div class="meta">
+			   % if len(panelGroup) > 0:
+					% for module in modules[panelGroup[0]]:
+						% if module.get('intersect'):
+							<a href="#" 
+							class="paneledit splButton-tertiary" 
+							data-sequence="${module.get('sequence', '')|h}" 
+							data-intersect-x="${module['intersect'][0]|h}" 
+							data-intersect-y="${module['intersect'][1]|h}" 
+							data-dashboard-id="${VIEW.get('editUrlPath')|h}" 
+							data-app="${APP['id']|h}"
+							data-paneltype="${module.get('panelType', '')|h}"
+							style=""
+							>
+								<span class="splButtonIcon"></span>
+								<span>Edit</span>
+								<span class="splMenuIcon"></span>
+							</a>
+						% endif
+					% endfor
+				% endif
+			</div>
+	% else:
+		<div class="layoutCellInner dashboardCell">
+		<div class="meta"></div>
+	% endif
+
+		<div class="dashboardContent">
+<%
+			numberOfGroups = 0 
+			panelGroupName = "" 
+			groupWidth=100
+			for groupName in panelGroup :
+				if (groupName.find("_grp") != -1) :
+					numberOfGroups = numberOfGroups+1
+			splitBase = panelGroup[0].split('_')
+			panelGroupName = splitBase[0] + "_" + splitBase[1] + "_" + splitBase[2]
+			if (numberOfGroups):groupWidth = math.floor(100 / numberOfGroups)
+%>
+			<div id="${panelGroupName}-header" class="panelHeader" style="clear:both;">
+				% for groupName in panelGroup :
+					% if (groupName.find("_header") >= 1) :
+						<%call expr="parent.buildPanelContents(modules, groupName)"></%call>
+					% endif
+				% endfor
+			</div>
+			<div id="${panelGroupName}-subheader" class="panelSubheader" style="clear:both;">
+				% for groupName in panelGroup :
+					% if (groupName.find("_subheader") >= 1) :
+						<%call expr="parent.buildPanelContents(modules, groupName)"></%call>
+					% endif
+				% endfor
+			</div>
+			<div id="${panelGroupName}-body" class="panelBody" style="clear:both;">
+				% for groupName in panelGroup :
+					% if (groupName.find("_grp") == -1 and groupName.find("_header") == -1 and groupName.find("_footer") == -1 and groupName.find("_subheader") == -1 ) :
+						<%call expr="parent.buildPanelContents(modules, groupName)"></%call>
+					% endif
+				% endfor
+				% if (numberOfGroups > 0) :
+					<table style="table-layout:fixed; overflow:auto; width:100%;" id="${panelGroupName}-grp" class="panelBody-table">
+						<tr>
+						% for groupName in panelGroup :
+							% if (groupName.find("_grp") != -1) :
+								<%
+								targetGroup = groupName.split('_')[-1]
+								%>
+								<td width="${groupWidth}%" class="${targetGroup}">
+									<%call expr="parent.buildPanelContents(modules, groupName)"></%call>
+								</td>
+							% endif 
+						% endfor
+						</tr>
+					</table>
+				% endif
+			</div>
+			<div id="${panelGroupName}-footer" class="panelFooter" style="clear:both;">
+				% for groupName in panelGroup :
+					% if (groupName.find("_footer") >= 1) :
+						<%call expr="parent.buildPanelContents(modules, groupName)"></%call>
+					% endif
+				% endfor
+			</div>
+		</div>
+	</div>
+</%def>
+
+% if "messaging" in modules :
+	<%call expr="parent.buildSimplePanelContainer(modules, 'messaging')"></%call>
+% endif
+
+<div class="appHeaderWrapper">
+	% for panelName in headerPanels : 
+		<%call expr="parent.buildSimplePanelContainer(modules, panelName)"></%call>
+	% endfor	
+</div>
+
+% for panelName in upperPanels : 
+	<%call expr="parent.buildSimplePanelContainer(modules, panelName)"></%call>
+% endfor
+
+
+<table style="width:100%; table-layout:fixed;" class="splTemplate-dashboard">
+	<tr>
+		<td style="vertical-align:top;">
+			<div class="layoutRow equalHeightRow splClearfix warnings firstRow oneColRow">
+				<div class="layoutCell firstCell hidediv">
+					<div class="layoutCellInner dashboardCell">
+						<div class="dashboardContent">
+							% if ('warnings' in modules) :
+							<%call expr="parent.buildPanelContents(modules, 'warnings')"></%call>
+							% endif
+						</div>
+					</div>
+				</div>
+			</div>
+			% for rowNumber in range(1,50): 
+				<%call expr="self.getFloatLayoutRow(modules, rowNumber)"></%call>
+			% endfor
+		</td>
+	</tr>
+</table>
+
