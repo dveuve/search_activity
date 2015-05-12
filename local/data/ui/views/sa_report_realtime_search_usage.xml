@@ -10,6 +10,7 @@
     </input>
   </fieldset>
   <row>
+    <panel>
       <table>
         <title>Clustered Real-time Search Activity</title>
         <searchString>
@@ -23,5 +24,6 @@
         <option name="drilldown">cell</option>
         <option name="count">20</option>
       </table>
+    </panel>
   </row>
 </form>

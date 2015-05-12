@@ -4,9 +4,6 @@ import HTMLParser
 import urllib, htmlentitydefs, csv
 import sys
 import json
-r = requests.get("http://www.splunk.com/en_us/about-us/events.html")
-h = HTMLParser.HTMLParser()
-
 
 # http://effbot.org/zone/re-sub.htm#unescape-html
 def unescape(text):
@@ -31,50 +28,90 @@ def unescape(text):
     return re.sub("&#?\w+;", fixup, text)
 
 
+NumberOfPages = 4 
+
+
+d = dict()
+for s in sys.argv:
+	if "=" in s: 
+		(a,b) = s.split("=")
+		d[a] = b
+
+if 'NumPages' in d:
+	NumberOfPages = int(d['NumPages'])
+
+
+#print "Using NumPages: " + str(NumberOfPages)
+
 writer = csv.writer(sys.stdout)
 data = list()
+answersURLs = dict()
+
 iterate = 0
-writer.writerow(["title","description","url","img","location","date"])
-page = r.content
-articles = re.findall('<article.*?</article>', page, re.DOTALL)
-for article in articles:
-	#print article
-	img = ""
-	url = ""
+writer.writerow(["title","url","date", "score"])
+
+
+for i in range(1, NumberOfPages):
+
+	r = requests.get("http://blogs.splunk.com/page/" + str(i) + "/")
+	h = HTMLParser.HTMLParser()
+
+	page = r.content
+	articles = re.findall(' <div class="post postExcerpt">.*?</div>\s*</div>', page, re.DOTALL)
+	for article in articles:
+		#print article
+		#print "*****************************************************************"
+		img = ""
+		url = ""
+		title = ""
+		description = ""
+		location = ""
+		date = ""
+		match = re.search(r"a href=\"(?P<url>http://blogs.splunk.com[^\"]*).*?class=\"postTitle\">(?P<title>[^<]*)", article) 
+		if match:
+			#print "Got a match!"
+			url = match.group('url')
+			title = match.group('title')
+			match2 = re.search(r"Smart AnSwerS", title) 
+			if match2:
+				data.append(url);
+		
+for url in data:
+	r = requests.get(url)
+	h = HTMLParser.HTMLParser()
+	urls = re.findall('https?://answers.splunk.com/answers/\d*[^"<]*', r.content, re.DOTALL)
+	for link in urls:
+		answersURLs[link] = 1
+
+		
+for url in answersURLs:
+	r = requests.get(url)
+	h = HTMLParser.HTMLParser()
 	title = ""
-	description = ""
-	location = ""
 	date = ""
-	match = re.search(r"src=.(?P<img>[^\"]*)", article) 
+	score = ""
+	match = re.search(r"\<title\>(?P<title>.*?)\W*Question | Splunk Answers", r.content) 
 	if match:
 		#print "Got a match!"
-		img = "https://www.splunk.com" + match.group('img')
-
-	match = re.search(r"a href=\"(?P<url>[^\"]*).*?><h2>(?P<title>[^<]*)", article) 
-	if match:
-		#print "Got a match!"
-		url = match.group('url')
 		title = match.group('title')
-	
-	match = re.search(r"h3>(?P<location>[^<]*)", article) 
+
+	match = re.search(r"Asked:.*?(?P<date>\w* \d*(, \d*)? at \d*:\d* \w*)", r.content) 
 	if match:
-		location = match.group('location')
-		
-	match = re.search(r":(?P<date>[^:]*)$", unicode(unescape(title)).encode("utf8")) 
-	if match:
-		date = match.group('date')
-		
-	match = re.search(r"(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)+,+(?P<date>.*?)$", date) 
-	if match:
+		#print "Got a match!"
 		date = match.group('date')
 
-		
-	match = re.search(r"<p>\s*<p>(?P<description>.*?)</p>\s*</p>", article) 
+	match = re.search(r"class=\"score[^\"]*\">(?P<score>\d*)", r.content) 
 	if match:
-		description = match.group('description')
-		
+		#print "Got a match!"
+		score = match.group('score')
 
-	writer.writerow([unicode(unescape(title)).encode("utf8"), description, unicode(unescape(url)).encode("utf8"), unicode(unescape(img)).encode("utf8"), unicode(unescape(location)).encode("utf8"), date])
+	writer.writerow([unescape(title), url, date, score])
+		#print title
+		#print url
+		#print img
+		#print date
+		#writer.writerow([title, url, img, date])
+		#writer.writerow([unicode(unescape(title)).encode("utf8"), unicode(unescape(url)).encode("utf8"), unicode(unescape(img)).encode("utf8"), date])
 #	data.append(dict())
 	#data[iterate]['title'] = unicode(unescape(title)).encode("utf8")
 	#data[iterate]['description'] = description

@@ -19,6 +19,7 @@
     </input>
   </fieldset>
   <row>
+    <panel>
       <chart>
         <title>User Activity</title>
         <searchString>
@@ -54,8 +55,10 @@
           <set token="end.count">$end.count$</set>
         </selection>
       </chart>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Activities</title>
         <searchString>
@@ -69,5 +72,6 @@
         <option name="dataOverlayMode">none</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
 </form>

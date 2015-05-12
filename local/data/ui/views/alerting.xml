@@ -1,6 +1,7 @@
 <dashboard>
   <label>Alerting</label>
   <row>
+    <panel>
       <table>
         <title>Users Logging In for the First Time with Many Failed Searches (&gt; 5 and &gt; 10%, less than 100 searches total)</title>
         <searchString>
@@ -9,8 +10,10 @@
           <earliestTime>0</earliestTime>
           <latestTime></latestTime>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Users with More Failed or Canceled Searches than Normal in Last Three Days</title>
         <searchString>
@@ -19,24 +22,30 @@
           <earliestTime></earliestTime>
           <latestTime></latestTime>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Users who Logged In and Then Left</title>
         <searchString>
           | tstats local=t count as NumLogin min(_time) as EarliestLogin max(_time) as LastLogin values(result) as Results from `SA_Events` where type=login groupby user | join type=outer user [| tstats local=t count as NumSearches from `SA_SearchHistory` groupby user] | where NumSearches &lt; 5 OR isnull(NumSearches) AND NumLogin &lt; 30 | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name manager mail department | lookup LDAPSearch dn as manager OUTPUTNEW name as ManagerName | fields user name department mail ManagerName EarliestLogin LastLogin NumLogin NumSearches | eval NumSearches=if(isnull(NumSearches),0,NumSearches) | sort - LastLogin| convert ctime(EarliestLogin) ctime(LastLogin)
 	</searchString>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Users Whose First Logon (in indexed history) was In Last 7 Days</title>
         <searchString>
           | tstats local=t min(_time) as first max(_time) as last count from `SA_SearchHistory` groupby user | lookup LDAPSearch sAMAccountName as user OUTPUTNEW mail name | where first &gt; relative_time(now(),"-7d")  | sort - first | convert ctime(first) ctime(last) | rename first as "First Logon Found" last as "Last Logon Found" count as "# Searches Run" | fields user name mail First* Last* #*
 	</searchString>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Users Who Last Logged in More than 4 Months Ago and Still in LDAP</title>
         <searchString>
@@ -50,5 +59,6 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
 </dashboard>

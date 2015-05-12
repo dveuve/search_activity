@@ -36,6 +36,7 @@
     </input>
   </fieldset>
   <row>
+    <panel>
       <table>
         <title>Overall App Usage</title>
         <searchString>
@@ -44,5 +45,6 @@
           <earliestTime>-30d@d</earliestTime>
           <latestTime>now</latestTime>
       </table>
+    </panel>
   </row>
 </form>

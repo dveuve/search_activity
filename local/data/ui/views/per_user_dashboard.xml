@@ -14,6 +14,7 @@
     </input>
   </fieldset>
   <row>
+    <panel>
       <html>
         <h1>Overview</h1>
         <div id="HighLevelInfo">
@@ -113,14 +114,18 @@
         <p>This app has a capability of tracking groups of users (such as new users, or particular projects, or other categories of user). Click <a href="/app/search_activity/add_to_tagged_users">here</a> to tag $background_splunk_username$.
           </p>
       </html>
+    </panel>
   </row>
   <row>
+    <panel>
       <html>
         <h2>Per User Timeline View</h2>
         <p>To view $background_splunk_username$'s activity in chronological order, please visit the <a href="/app/search_activity/per_user_timeline?form.user=$background_splunk_username$">Per User Timeline View</a>.</p>
       </html>
+    </panel>
   </row>
   <row>
+    <panel>
       <chart>
         <title>Search Complexity Score</title>
         <searchString>
@@ -152,6 +157,8 @@
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
       </chart>
+    </panel>
+    <panel>
       <chart>
         <title>Search Accuracy (slow searches)</title>
         <searchString>
@@ -183,6 +190,8 @@
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
       </chart>
+    </panel>
+    <panel>
       <chart>
         <title>Average Search Time (seconds)</title>
         <searchString>
@@ -215,6 +224,8 @@
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
       </chart>
+    </panel>
+    <panel>
       <chart>
         <title>Failed Search Percentage</title>
         <searchString>
@@ -246,6 +257,8 @@
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
       </chart>
+    </panel>
+    <panel>
       <chart>
         <title>% Searches Needing Investigation</title>
         <searchString>
@@ -277,8 +290,10 @@
         <option name="charting.chart.rangeValues">["0","5","10","100"]</option>
         <option name="charting.gaugeColors">[0x84E900,0xFFE800,0xBF3030]</option>
       </chart>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Comparison to Organization</title>
         <searchString>
@@ -292,8 +307,10 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <chart>
         <title>Search Type over Time</title>
         <searchString>| tstats local=t prestats=t count from `SA_SearchHistory` where user=$user$ groupby _time searchtype  span=1d| timechart bins=50 count by searchtype</searchString>
@@ -319,6 +336,8 @@
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart.overlayFields">"Median Search Run Time"</option>
       </chart>
+    </panel>
+    <panel>
       <table>
         <title>Overall Details by Search Type</title>
         <searchString>| tstats local=t prestats=t count sum(total_run_time)  from `SA_SearchHistory` where user=$user$ groupby searchtype  | stats count sum(total_run_time) by searchtype</searchString>
@@ -330,6 +349,8 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
+    <panel>
       <chart>
         <title>Activity By Search Head</title>
         <searchString>
@@ -359,8 +380,10 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
       </chart>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Apps and Views Visited</title>
         <searchString>| tstats local=t  prestats=t count values(user)  from `SA_Events` where type=weblog user=$user$ groupby myapp myview | stats count values(user) as user by myapp, myview | stats sum(count) as "Total Hits" values(user) as "Users" list(count) as "Hits Per View" list(myview) as "Views" by myapp | rename myapp to "App" | sort - "Total Hits"</searchString>
@@ -371,14 +394,18 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <html>
       <h1>Security</h1>
         <p>The below cover security risks and configurations.</p>
     </html>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Exported Search Results</title>
         <searchString>[| tstats local=t count from `SA_SearchHistory` where NumExports&gt;0 user=$user$ groupby searchid | fields searchid ] `auditindex` `auditsourcetype` action=search  (((info=granted AND search=*) OR info=canceled OR info=failed OR info=completed) NOT searchparsetmp) OR (REST control OR acl OR export)   | rex "\s\/.*?\/jobs\/.*?\/(events|results)\/(?&lt;exported&gt;export)\]" | stats values(actualsearch) as actualsearch  sum(result_count) as sumresultcount count(eval(exported="export")) as NumExports by user, searchid | stats values(actualsearch) as Search  count as "Number of Users who Viewed" sum(sumresultcount) as "Number of Results" list(eval(if(NumExports&gt;0,NumExports,null))) as "Number of Exports" list(eval(if(NumExports&gt;0,user,null))) as "Users Who Exported"  by searchid | sort - NumExports, NumberOfUsersViewed | table searchid  "Number of Results" "Users Who Exported" "Number of Exports" Search</searchString>
@@ -390,6 +417,8 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
+    <panel>
       <table>
         <title>Shared Search Results History</title>
         <searchString>[| tstats local=t count from `SA_SearchHistory` where WasShared=yes user=$user$ groupby searchid | fields searchid ] `auditindex` `auditsourcetype`   action=search info=granted (REST OR search=*) | rex "\s\/.*?\/jobs\/(?&lt;searchid&gt;.*?)\/(events|results)\/(?&lt;exported&gt;export)\]"  | stats values(actualsearch) as actualsearch count(eval(exported="export")) as NumExports by user, searchid | eval user=if(NumExports&gt;0,user . " (exported)",user)| stats values(actualsearch) as actualsearch  count as NumberOfUsersViewed  list(eval(if(NumExports&gt;0,NumExports,null))) as NumExports list(eval(if(NumExports&gt;0,user,null))) as UsersWhoExported values(user) as Users by searchid | sort - NumExports, NumberOfUsersViewed | table searchid NumberOfUsersViewed Users Users actualsearch</searchString>
@@ -401,14 +430,18 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <chart>
         <title>Logins by Hour of Day</title>
         <searchString>| tstats local=t  count from `SA_Events` where type=login user=$user$ groupby date_hour | chart sum(count) as "Number of Logins" by date_hour | rename date_hour as "Hour of Day"</searchString>
         <earliestTime>$field1.earliest$</earliestTime>
         <latestTime>$field1.latest$</latestTime>
       </chart>
+    </panel>
+    <panel>
       <table>
         <title>System Configuration Changes</title>
         <searchString>| tstats local=t  count from `SA_Events` where type=manager user=$user$ groupby _time uri_path | sort - _time | fields - count</searchString>
@@ -420,14 +453,18 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <html>
       <h1>Search Performance Detail</h1>
         <p>Credit for the below searches goes to the SOS team!</p>
     </html>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Questionable Search Strings</title>
         <searchString>
@@ -441,8 +478,10 @@
         <option name="dataOverlayMode">none</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Common Search Commands</title>
         <searchTime>
@@ -456,6 +495,8 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
+    <panel>
       <table>
         <title>Search Commands Associated with Expensive Searches</title>
         <searchTime>
@@ -476,8 +517,10 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Aggregate Search Performance by Fuzzy Grouping (cluster)</title>
         <searchString>
@@ -492,6 +535,8 @@
         <option name="count">10</option>
         <fields>["# Similar Searches","Median Run Time","Avg Result Count","Representative Search String"]</fields>
       </table>
+    </panel>
+    <panel>
       <table>
         <title>Expensive Searches</title>
         <searchString>
@@ -509,8 +554,10 @@
         <option name="drilldown">cell</option>
         <fields>["_time","Search Run Time","Result Count","search"]</fields>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <chart>
         <title>User Search Concurrency</title>
         <searchString>| tstats local=t  prestats=t avg(active_hist_searches) avg(active_realtime_searches) from `SA_Events` where type=search_concurrency user=$user$ groupby _time span=1d | timechart bins=50 avg(active_hist_searches) as "Avg Historical Search Count" avg(active_realtime_searches) as "Avg Realtime Search Count"</searchString>
@@ -535,6 +582,8 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
       </chart>
+    </panel>
+    <panel>
       <chart>
         <title>Search Performance Metrics Compared to Average</title>
         <searchString>| tstats local=t sum(total_run_time) as total_run_time avg(accuracy) as accuracy sum(result_count) as result_count sum(event_count) as event_count sum(scan_count) as scan_count sum(searchspan_m) as searchspan_m  from `SA_SearchHistory` where user=$user$ groupby _time | eval EventsPerSecond=event_count / total_run_time | eval ScannedPerSecond=scan_count / total_run_time| timechart span=1d avg(accuracy) as accuracy avg(*PerSecond) as *PerSecond avg(searchspan_m) as searchspan_m  avg(result_count) as result_count  | eventstats avg(accuracy) as avgaccuracy avg(EventsPerSecond) as avgEventsPerSecond avg(ScannedPerSecond) as avgScannedPerSecond avg(searchspan_m) as avgsearchspan_m avg(result_count) as avgresult_count | eval accuracy=round(100*(accuracy/avgaccuracy)) | eval EventsPerSecond=round(100*(EventsPerSecond/avgEventsPerSecond)) | eval ScannedPerSecond=round(100*(ScannedPerSecond/avgScannedPerSecond)) | eval searchspan_m=round(100*(searchspan_m/avgsearchspan_m)) | eval result_count=round(100*(result_count/avgresult_count)) | fields - avg* | rename accuracy AS "Accuracy (% Delta)" EventsPerSecond as "Events/Second (% Delta)" ScannedPerSecond as "Scanned/Second (% Delta)" searchspan_m as "Timespan (% Delta)" result_count as "# Results (% Delta)" | timechart bins=50 avg(*) as *</searchString>
@@ -559,8 +608,10 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
         <option name="charting.legend.placement">right</option>
       </chart>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Average Search Time Span</title>
         <searchString>| tstats local=t avg(searchspan_m) as searchspan_m  avg(searchspan_h) as searchspan_h avg(searchspan_d) as searchspan_d   from `SA_SearchHistory` where user=$user$ groupby user | where user!="n/a" | rename searchspan_m as "Search Timespan (min)" searchspan_d as "Search Timespan (day)" searchspan_h as "Search Timespan (hour)"</searchString>
@@ -571,14 +622,18 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <html>
       <h1>Troubleshooting</h1>
         <p>The below provide very general troubleshooting guidelines:</p>
     </html>
+    </panel>
   </row>
   <row>
+    <panel>
       <chart>
         <title>Failed Searches</title>
         <searchString>| tstats local=t prestats=t count  from `SA_SearchHistory` where user=$user$ search_status=failed groupby user search_status _time span=1d  | timechart bins=50 count</searchString>
@@ -603,6 +658,8 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
       </chart>
+    </panel>
+    <panel>
       <chart>
         <title>Skipped Scheduled Searches</title>
         <searchString>| tstats local=t prestats=t count from `SA_Events` where type=scheduler user=$user$ status=skipped groupby status _time span=1d | timechart bins=50 count by status</searchString>
@@ -627,8 +684,10 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
       </chart>
+    </panel>
   </row>
   <row>
+    <panel>
       <chart>
         <title>Failed Searches with Runtime &gt; 0 seconds</title>
         <searchString>| tstats local=t prestats=t count  from `SA_SearchHistory` where search_status=failed total_run_time&gt;0 user=$user$ groupby _time span=1d | timechart bins=50 count</searchString>
@@ -653,12 +712,16 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
       </chart>
+    </panel>
+    <panel>
       <html>
         <h3>Important</h3>
         <p>While these assist you in understanding the user experience due to system isaes, they are not a substitute for real troubleshooting. It is highly recommended that you leverage SOS (Splunk on Splunk®) to do real troubleshooting. Please find it on apps.splunk.com, <a href="http://apps.splunk.com/app/748/">here</a>.  </p>
     </html>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Failed or Skipped Searches</title>
         <searchString>
@@ -672,8 +735,10 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Recent Searches (Last 7 Days) - $user$</title>
         <searchString>
@@ -693,5 +758,6 @@
         <option name="drilldown">cell</option>
         <fields>["_time","status","search"]</fields>
       </table>
+    </panel>
   </row>
 </form>

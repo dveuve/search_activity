@@ -84,22 +84,22 @@ kwargs_blockingsearch_30days = {"exec_mode": "blocking", "app": "search_activity
 
 #### MY Queries
 #System Information
-SearchSystemInfo = '| rest "/services/server/settings" | append [|rest "/services/server/info"] | append [| rest "/services/apps/local" | search details="*apps.splunk.com*" | eval app=if(isnull(label),"",label) . ";|;" . if(isnull(version),"",version) . ";|;" . if(isnull(build),"",build) . ";|;" . if(isnull(check_for_updates),"",check_for_updates) . ";|;" . if(isnull(configured),"",configured) . ";|;" . if(isnull(disabled),"",disabled) | stats values(app) as app| eval app=mvjoin(app, "-|-") ]| stats values(activeLicenseGroup) as activeLicenseGroup values(SPLUNK_HOME) as SPLUNK_HOME values(app) as apps_installed values(build) as build values(cpu_arch) as cpu_arch values(guid) as guid values(master_guid) as master_guid values(version) as version values(product_type) as product_type | eval masterkey = sha512(master_guid) | eval installkey = sha512(guid) | fields - master_guid guid'
+SearchSystemInfo = '| rest splunk_server=local "/services/server/settings" | append [|rest splunk_server=local  "/services/server/info"] | append [| rest splunk_server=local "/services/apps/local" | search details="*apps.splunk.com*" | eval app=if(isnull(label),"",label) . ";|;" . if(isnull(version),"",version) . ";|;" . if(isnull(build),"",build) . ";|;" . if(isnull(check_for_updates),"",check_for_updates) . ";|;" . if(isnull(configured),"",configured) . ";|;" . if(isnull(disabled),"",disabled) | stats values(app) as app| eval app=mvjoin(app, "-|-") ]| stats values(activeLicenseGroup) as activeLicenseGroup values(SPLUNK_HOME) as SPLUNK_HOME values(app) as apps_installed values(build) as build values(cpu_arch) as cpu_arch values(guid) as guid values(master_guid) as master_guid values(version) as version values(product_type) as product_type | eval masterkey = sha512(master_guid) | eval installkey = sha512(guid) | fields - master_guid guid'
 
 #TSIDX Data Size
-SearchTSIDXSize = '| rest "/services/server/settings" | map search="|listsanamespaces SPLUNK_HOME=\\"$SPLUNK_HOME$\\"" | eval "Size (MB)" = size/1024/1024 | fields namespace "Size (MB)"'
+SearchTSIDXSize = '| rest splunk_server=local "/services/server/settings" | map search="|listsanamespaces SPLUNK_HOME=\\"$SPLUNK_HOME$\\"" | eval "Size (MB)" = size/1024/1024 | fields namespace "Size (MB)"'
 
 #TSIDX Event Count
 SearchTSIDXCount = '| tstats local=t count as SHCount from `SA_SearchHistory` groupby _time span=1d | append [| tstats local=t count as ECount from `SA_Events` groupby _time span=1d] | stats sum(*) as * by _time | fillnull value=0'
 
 #Macro Configuration
-SearchMacro = '| rest "/servicesNS/-/search_activity/properties/macros" | rex field=id "(?<trimmedpath>\/servicesNS.*)"| map maxsearches=50   search="| rest \\"$trimmedpath$/definition\\" | eval title=\\"$title$\\"" | eval value=if(title="AdminEmailAddress" OR title="SA-LDAPSearch-Domain",replace(value, "^(.{5}).*", "\1[...]"),value)'
+SearchMacro = '| rest splunk_server=local "/servicesNS/-/search_activity/properties/macros" | rex field=id "(?<trimmedpath>\/servicesNS.*)"| map maxsearches=50   search="| rest splunk_server=local \\"$trimmedpath$/definition\\" | eval title=\\"$title$\\"" | eval value=if(title="AdminEmailAddress" OR title="SA-LDAPSearch-Domain",replace(value, "^(.{5}).*", "\1[...]"),value)'
 
 #Status of Inputs
-SearchInputStatus = '| rest "/servicesNS/-/search_activity/properties/inputs"| rex field=id "(?<trimmedpath>\/servicesNS.*)"| map maxsearches=50   search="| rest \\"$trimmedpath$/disabled\\" | rename value as disabled | append [| rest \\"$trimmedpath$/interval\\"] | rename value as interval | append [| rest \\"$trimmedpath$/passAuth\\"] | rename value as passAuth | eval title=\\"$title$\\"" | stats values(*) as * by title'
+SearchInputStatus = '| rest splunk_server=local "/servicesNS/-/search_activity/properties/inputs"| rex field=id "(?<trimmedpath>\/servicesNS.*)"| map maxsearches=50   search="| rest splunk_server=local \\"$trimmedpath$/disabled\\" | rename value as disabled | append [| rest splunk_server=local \\"$trimmedpath$/interval\\"] | rename value as interval | append [| rest splunk_server=local \\"$trimmedpath$/passAuth\\"] | rename value as passAuth | eval title=\\"$title$\\"" | stats values(*) as * by title'
 
 #Logs of Inputs
-SearchInputLogs = '| rest "/servicesNS/-/search_activity/properties/inputs"| rex field=id "(?<trimmedpath>\/servicesNS.*)"| map maxsearches=50   search="| rest \\"$trimmedpath$/sourcetype\\" | eval title=\\"$title$\\"" | map search="search index=* source=SA-*-ParseData sourcetype=$value$ "'
+SearchInputLogs = '| rest splunk_server=local "/servicesNS/-/search_activity/properties/inputs"| rex field=id "(?<trimmedpath>\/servicesNS.*)"| map maxsearches=50   search="| rest splunk_server=local \\"$trimmedpath$/sourcetype\\" | eval title=\\"$title$\\"" | map search="search index=* source=SA-*-ParseData sourcetype=$value$ "'
 
 #User Activity
 SearchSAUserActivity = '| tstats count from `SA_Events` where myapp="search_activity" groupby myapp myview user _time span=1s  | sort user | streamstats count as UserUnique by user | eval UserUnique=if(UserUnique>1,null,1) | streamstats sum(eval(if(UserUnique>0,UserUnique,null)))  as UserUnique | fields - user'

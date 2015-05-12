@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Newsletter | Splunk</title>
+    <link rel="shortcut icon" href="{{SPLUNKWEB_URL_PREFIX}}/static/img/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="/en-US/static/@237341.26/css/build/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="/en-US/static/@237341.26/css/build/pages/dashboard-simple-bootstrap.min.css" />
+    <!--[if IE 7]><link rel="stylesheet" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/sprites-ie7.css" /><![endif]-->
+    <style>
+
+
+
+    .modal {
+        position: fixed;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+        visibility: hidden;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: all .3s;
+    }
+    .modal-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,.8);
+    }
+    .modal.open {
+        visibility: visible;
+        opacity: 1;
+    }
+    .modal-inner {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translateY(-50%);
+        width: 200px;
+        margin-left: -100px;
+        background-color: white;
+        padding: 1em 3em; 
+        border-radius: 10px;
+        border: 1px solid #eee;
+    }
+
+
+#NavMenuContainer {
+    position:absolute;
+    top:130px;
+    left: 5px;
+
+    width:115px;
+}
+#NavMenu ul {
+    margin-bottom:20px;
+    list-style-type: none;
+}
+#NavMenu ul li a {
+    display:block;
+    border:1px solid #999;
+    background-color:#222;
+    border-left:6px solid #999;
+    text-decoration:none;
+    color:#ccc;
+    padding:5px 5px 5px 25px;
+    list-style-type: none;
+}
+
+    .not-relevant {
+        opacity: .4;
+    }
+
+
+.SpotlightEntry {width:45%; display: inline-block;}
+.SpotlightEntry h3 {font-size: 1em;}
+.SpotlightEntry p {font-size: 1em;}
+
+
+  .skeletonformatting    .column,
+  .columns {
+    margin-left: 4%; }
+  .skeletonformatting .column:first-child,
+  .columns:first-child {
+    margin-left: 0; }
+.skeletonformatting  .one-half.column                { width: 45%; }
+  .skeletonformatting .one.column,
+  .skeletonformatting .one.columns                    { width: 4.66666666667%; }
+  .skeletonformatting .two.columns                    { width: 13.3333333333%; }
+  .skeletonformatting .three.columns                  { width: 22%;            }
+  .skeletonformatting .four.columns                   { width: 30.6666666667%; }
+
+.skeletonformatting   .column,
+.columns {
+  width: 100%;
+  float: left;
+  box-sizing: border-box; }
+.skeletonformatting .button,
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  display: inline-block;
+  height: 38px;
+  padding: 0 30px;
+  color: #555;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px solid #bbb;
+  cursor: pointer;
+  box-sizing: border-box; }
+.skeletonformatting .button:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover,
+.button:focus,
+button:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus,
+input[type="button"]:focus {
+  color: #333;
+  border-color: #888;
+  outline: 0; }
+.skeletonformatting .button.button-primary,
+button.button-primary,
+input[type="submit"].button-primary,
+input[type="reset"].button-primary,
+input[type="button"].button-primary {
+  color: #FFF;
+  background-color: #33C3F0;
+  border-color: #33C3F0; }
+.skeletonformatting .button.button-primary:hover,
+button.button-primary:hover,
+input[type="submit"].button-primary:hover,
+input[type="reset"].button-primary:hover,
+input[type="button"].button-primary:hover,
+.button.button-primary:focus,
+button.button-primary:focus,
+input[type="submit"].button-primary:focus,
+input[type="reset"].button-primary:focus,
+input[type="button"].button-primary:focus {
+  color: #FFF;
+  background-color: #1EAEDB;
+  border-color: #1EAEDB; }
+
+
+/* Forms
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.skeletonformatting input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+textarea,
+select {
+  height: 38px;
+  padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
+  background-color: #fff;
+  border: 1px solid #D1D1D1;
+  border-radius: 4px;
+  box-shadow: none;
+  box-sizing: border-box; }
+/* Removes awkward default styles on some inputs for iOS */
+.skeletonformatting input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+textarea {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none; }
+.skeletonformatting textarea {
+  min-height: 65px;
+  padding-top: 6px;
+  padding-bottom: 6px; }
+.skeletonformatting input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid #33C3F0;
+  outline: 0; }
+.skeletonformatting label,
+legend {
+  display: block;
+  margin-bottom: .5rem;
+  font-weight: 600; }
+.skeletonformatting fieldset {
+  padding: 0;
+  border-width: 0; }
+.skeletonformatting input[type="checkbox"],
+input[type="radio"] {
+  display: inline; }
+.skeletonformatting label > .label-body {
+  display: inline-block;
+  margin-left: .5rem;
+  font-weight: normal; }
+
+
+/* Lists
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.skeletonformatting ul {
+  list-style: circle inside; }
+.skeletonformatting ol {
+  list-style: decimal inside; }
+.skeletonformatting ol, ul {
+  padding-left: 0;
+  margin-top: 0; }
+.skeletonformatting ul ul,
+ul ol,
+ol ol,
+ol ul {
+  margin: 1.5rem 0 1.5rem 3rem;
+  font-size: 90%; }
+.skeletonformatting li {
+  margin-bottom: 1rem; }
+
+
+/* Code
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.skeletonformatting code {
+  padding: .2rem .5rem;
+  margin: 0 .2rem;
+  font-size: 90%;
+  white-space: nowrap;
+  background: #F1F1F1;
+  border: 1px solid #E1E1E1;
+  border-radius: 4px; }
+.skeletonformatting pre > code {
+  display: block;
+  padding: 1rem 1.5rem;
+  white-space: pre; }
+
+
+/* Tables
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.skeletonformatting th,
+td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #E1E1E1; }
+.skeletonformatting  th:first-child,
+td:first-child {
+  padding-left: 0; }
+.skeletonformatting th:last-child,
+td:last-child {
+  padding-right: 0; }
+
+
+/* Spacing
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.skeletonformatting button,
+.button {
+  margin-bottom: 1rem; }
+.skeletonformatting input,
+textarea,
+select,
+fieldset {
+  margin-bottom: 1.5rem; }
+.skeletonformatting pre,
+blockquote,
+dl,
+figure,
+table,
+p,
+ul,
+ol,
+form {
+  margin-bottom: 2.5rem; }
+
+
+/* Utilities
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.u-full-width {
+  width: 100%;
+  box-sizing: border-box; }
+.u-max-full-width {
+  max-width: 100%;
+  box-sizing: border-box; }
+.u-pull-right {
+  float: right; }
+.u-pull-left {
+  float: left; }
+
+
+/* Misc
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.skeletonformatting hr {
+  margin-top: 3rem;
+  margin-bottom: 3.5rem;
+  border-width: 0;
+  border-top: 1px solid #E1E1E1; }
+
+
+/* Clearing
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+/* Self Clearing Goodness */
+.container:after,
+.row:after,
+.u-cf {
+  content: "";
+  display: table;
+  clear: both; }
+
+
+
+    </style>
+
+</head>
+<body class="simplexml preload locale-en">
+<!-- 
+BEGIN LAYOUT
+This section contains the layout for the dashboard. Splunk uses proprietary
+styles in <div> tags, similar to Bootstrap's grid system. 
+-->
+<a class="navSkip" href="#navSkip" tabindex="1">Screen reader users, click here to skip the navigation bar</a>
+<div class="header splunk-header">
+        <div id="placeholder-splunk-bar">
+            <a href="{{SPLUNKWEB_URL_PREFIX}}/app/launcher/home" class="brand" title="splunk &gt; listen to your data">splunk<strong>&gt;</strong></a>
+        </div>
+            <div id="placeholder-app-bar"></div>
+</div>
+<a id="navSkip"></a>
+<div class="dashboard-body container-fluid main-section-body" data-role="main">
+    <div class="dashboard-header clearfix">
+        <h2>Newsletter</h2>
+        <p class="description"></p>
+    </div>
+    
+    <div id="NavMenuContainer">
+
+
+        <div id="row00" class="dashboard-row dashboard-row00">
+            <div id="panel00" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element00" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Navigation</h3>
+                            </div> 
+                            <div class='panel-body'>
+            <ul class="NavMenu">
+                <h3>Mechanics</h3>
+                <li><a href="#Intro">Introduction</a></li>
+                <li><a href="#ContentSelector">Content Selector</a></li>
+                <li><a href="#ContentSelector">User Selector</a></li>
+                <h3>Content</h3>
+                <li><a href="#Intro">Introduction</a></li>
+                <li><a href="#TopUsers">User Stats</a></li>
+                <li><a href="#Stats">System Stats</a></li>
+                <li><a href="#Events">Events</a></li>
+                <li><a href="#Blogs">Blogs</a></li>
+                <li><a href="#Answers">Splunk Answers</a></li>
+                <li><a href="#SPL">Search Commands</a></li>
+                <li><a href="#HTMLCode">HTML</a></li>
+                <li><a href="#Preview">Preview</a></li>
+                <h3>Send</h3>
+                <li><a href="#Emails">Addresses (Copy/Paste)</a></li>
+                <li><a href="#Preview">Send Via Splunk</a></li>
+                <div id="buttons"></div>
+
+            </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div id="NavMenu" class="panel-element-row dashboard-row dashboard-cell dashboard-element table clearfix dashboard-panel dashboard-row00 panel-body">
+        </div> -->
+
+    </div>
+    <div id="shim" style="width: 115px;;float:left;">&nbsp;</div>
+    <div id="content" style="width: 85%; float:left;">
+        <div id="row00" class="dashboard-row dashboard-row00">
+            <div id="panel00" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element00" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Introduction</h3>
+                            </div> 
+                            <div class='panel-body'>
+                                <p>Newsletters are a great way to inform your users and get them excited. You can share interesting news stories, upcoming events (either Splunk official or your team), you can even share stats about your Splunk organization such as who are the top users!</p>
+                                <p>This dashboard will help you build a Newsletter, and then let you distribute it to your user community via Splunk. Select from interesting metrics from your environment to include, Splunk Answers posts or Blog posts, even include upcoming SplunkLive! or conference events where your users can connect with Splunk. And of course, you can add your own stories, to highlight the accomplishments of your users, improvements to your environment, or anything else your users would find interesting!</p>
+                                <p>Experiment with the below, and if you have any questions or issues, please don't hesistate to reach out via <a href="/app/search_activity/support_request">Search Activity Support</a> or Splunk Answers.</p>
+
+                                <div id="config"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a name="ContentSelector"></a>
+        <div id="row02" class="dashboard-row dashboard-row02">
+            <div id="panel02" class="dashboard-cell" style="width: 50%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element02" class="dashboard-element table" style="width: 100%;">
+                            <div class="panel-head">
+                                <h3>Users</h3>
+                            </div> 
+                            <div class='panel-body'>
+                                <form>
+                                <p>How do you want to select users?:</p>
+                                <ul>
+                                    <li><input type="radio" name="usersselect" id="Radio_AllUsers" onclick="UpdateUsers()" checked="checked" /> All Users</li>
+                                    <li><input type="radio" name="usersselect" id="Radio_TestMode" onclick="UpdateUsers()" /> Test Mode (One Email)</li>
+                                    <div id="Radio_TestMode_UserText_Div" style="display:none; margin-left: 15px;">Provide Email Address: <input type="text" id="Radio_TestMode_UserText" /></div>
+                                    <li><input type="radio" name="usersselect" id="Radio_SelectUsers" onclick="UpdateUsers()" /> Select Users</li>
+                                    <div id="Radio_SelectUsers_Div" style="display:none; margin-left: 15px;">
+                                        <p><input type="checkbox" id="Radio_SelectUsers_Users" onclick="UpdateUsers()" /> Select Users Based on Org / Location</p>
+                                        <p><input type="checkbox" id="Radio_SelectUsers_UsersAvgCriteria" onclick="UpdateUsers()" /> Select Users Based on Average Search Criteria</p>
+                                        <p><input type="checkbox" id="Radio_SelectUsers_UsersBySearch" onclick="UpdateUsers()" /> Find Individual Searches and Select Users Who Ran Them</p>
+                                    </div>
+                                    <li><input type="radio" name="usersselect" id="Radio_NoSend" onclick="UpdateUsers()" /> Don't Send Via Splunk (will copy-paste to email)</li>
+                                </ul>
+                                </form>
+
+                            <div id="TimeRangeSelector" class="fieldset">
+                                <h3>Time Range</h3>
+                                <div class="input input-timerangepicker" id="input1">
+                                    <label>&nbsp;</label>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="panel011" class="dashboard-cell" style="width: 50%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element011" class="dashboard-element table" style="width: 50%; display:inline;">
+                            <div class="panel-head">
+                                <h3>Panels</h3>
+                            </div> 
+                            <div class='panel-body'>
+                                <form>
+                                <p>What panels do you want to include?</p>
+                                <ul>
+                                    <li><input type="checkbox" id="Panels_Introduction" onclick="UpdatePanels()" checked /> Introduction</li>
+                                    <li><input type="checkbox" id="Panels_TopUsers" onclick="UpdatePanels()" checked /> Top Users</li>
+                                    <li><input type="checkbox" id="Panels_Statistics" onclick="UpdatePanels()" checked /> System Statistics</li>
+                                    <li><input type="checkbox" id="Panels_Events" onclick="UpdatePanels()" checked /> Splunk Events</li>
+                                    <li><input type="checkbox" id="Panels_Blogs" onclick="UpdatePanels()" checked /> Splunk Blogs</li>
+                                    <li><input type="checkbox" id="Panels_Answers" onclick="UpdatePanels()" checked /> Highlighted Splunk Answers</li>
+                                    <li><input type="checkbox" id="Panels_SPL" onclick="UpdatePanels()" checked /> Interesting Seach Commands</li>
+                                </ul>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a name="Users"></a>
+        <div id="row0" class="dashboard-row dashboard-row0" style="display:none;">
+            <div id="panel0" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element0" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Select Users Based on Location or Org Elements</h3>
+                            </div> 
+
+                            <div class="fieldset">
+                                <div class="input input-dropdown" id="input8">
+                                    <label>State</label>
+                                </div>
+                                <div class="input input-dropdown" id="input9">
+                                    <label>City</label>
+                                </div>
+                                <div class="input input-text" id="input10">
+                                    <label>Username (Wildcards Supported)</label>
+                                </div>
+                                <div class="input input-dropdown" id="input11">
+                                    <label>Management Chain Includes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+        <div id="row04" class="dashboard-row dashboard-row04" style="display:none;">
+            <div id="panel04" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element04" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Select Users Based on Their Average Search Criteria</h3>
+                            </div> 
+                            <div class="fieldset">
+                                <div class="input input-text" id="input3">
+                                    <label>Average Total Run Time &gt;=</label>
+                                </div>
+                                <div class="input input-text" id="input4">
+                                    <label>Average Result Count &gt;=</label>
+                                </div>
+                                <div class="input input-text" id="input5">
+                                    <label>Average Scan Count &gt;=</label>
+                                </div>
+                                <div class="input input-multiselect" id="input6">
+                                    <label>Average Search Type(s)</label>
+                                </div>
+                                <div class="input input-dropdown" id="input111">
+                                    <label>Average Number of Searches Per Day</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="row01" class="dashboard-row dashboard-row01" style="display:none;">
+            <div id="panel01" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element01" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Find specific searches, and select the Users who wrote themrite</h3>
+                            </div> 
+                            <div class="fieldset">
+
+                                <div class="input input-dropdown" id="input12">
+                                    <label>Was Shared</label>
+                                </div>
+                                <div class="input input-text" id="input13">
+                                    <label>Total Run Time &gt;=</label>
+                                </div>
+                                <div class="input input-text" id="input14">
+                                    <label>Result Count &gt;=</label>
+                                </div>
+                                <div class="input input-text" id="input15">
+                                    <label>Scan Count &gt;=</label>
+                                </div>
+                                <div class="input input-multiselect" id="input16">
+                                    <label>Search Type(s)</label>
+                                </div>
+                                <div class="input input-dropdown" id="input17">
+                                    <label>Search Commands</label>
+                                </div>
+                                <div class="input input-text" id="input18">
+                                    <label>Username (Wildcards Supported)</label>
+                                </div>
+                                <div class="input input-radio" id="input19">
+                                    <label>Questionable Searches</label>
+                                </div>
+                                <div class="input input-multiselect" id="input20">
+                                    <label>Search Head</label>
+                                </div>
+                                <div class="input input-text" id="input21">
+                                    <label>Search Keywords (Inclusive Only)</label>
+                                </div>
+                                <div class="form-submit" id="search_btn">
+                                    <button class="btn btn-primary submit">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="row1" class="dashboard-row dashboard-row1">
+            <div id="panel1" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element1" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Results</h3>
+                            </div>
+                            <div class="panel-body"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<a name="Intro"></a>
+        <div id="row10" class="dashboard-row dashboard-row10">
+            <div id="panel10" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element10" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Content: Introduction</h3>
+                            </div>
+                            <div class="panel-body" id="IntroductionDiv" style="display:block;">
+                                        <form class="skeletonformatting" >
+                <div className="row">
+                    <label>
+                        Date String
+                        <input type="text" id="intro_date" className="u-full-width"/>
+                    </label>
+                </div>
+                <div className="row">
+                    <div className="row">
+                        <label>
+                            Title
+                            <input id="intro_title"  type="text" value="Splunk Monthly Newsletter" className="u-full-width"/>
+                        </label>
+                    </div>
+                    <div className="row">
+                        <label>
+                            Body
+                            <textarea rows="8" cols="80" style="width:400px !important; height:100px !important;" id="intro_body"  type="text" className="u-full-width">As a way to stay in touch, we wanted to update you on the latest hot topics, help expand your Splunk network, and inspire you to use Splunk in new ways.</textarea>
+                        </label>
+                    </div>
+                </div>
+                <div className="row">
+                    <label>
+                        From
+                        <input type="text" id="intro_from" value="Your Splunk Team" className="u-full-width"/>
+                    </label>
+                </div>
+                <input type="button" className="button-primary" onclick="UpdateHTML()" value="Update" />
+            </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<a name="TopUsers"></a>
+        <div id="row11" class="dashboard-row dashboard-row11">
+            <div id="panel11" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element11" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Content: Top Users</h3>
+                            </div>
+                            <div class="panel-body" id="TopUsersDiv" style="display:none;">
+                            <p>To be built</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<a name="Stats"></a>
+        <div id="row12" class="dashboard-row dashboard-row12">
+            <div id="panel12" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element12" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Content: System Stats</h3>
+                            </div>
+                            <div class="panel-body" id="SystemStatsDiv" style="display:none;">
+                            <p>To be built</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<a name="Spotlight"></a>
+        <div id="row122" class="dashboard-row dashboard-row122">
+            <div id="panel122" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element122" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Content: Spotlight on Users - <span id="NumSpotlights">0</span> Added</h3>
+                    <a href="javascript:Toggle('SpotlightsDiv', 'HideSelectSpotlights','Show Spotlights Selector','Hide Spotlights Selector');" id="HideSelectSpotlights">Show Spotlights Selector</a>
+                            </div>
+                            <div class="panel-body skeletonformatting" id="SpotlightsDiv" style="display:none;">
+        <div id="SpotlightsForm"></div>
+        
+        <!-- <link rel="stylesheet" href="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/styles/skeleton.css"> -->
+    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<a name="Events"></a>
+        <div id="row13" class="dashboard-row dashboard-row13">
+            <div id="panel13" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element13" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Content: Splunk Events - <span id="NumEvents">0</span> Selected</h3>
+                    <a href="javascript:Toggle('EventsDiv', 'HideSelectEvents','Show Events Selector','Hide Events Selector');" id="HideSelectEvents">Show Events Selector</a>
+                            </div>
+                            <div class="panel-body skeletonformatting" id="EventsDiv" style="display:none;">
+        <div id="EventsForm"></div>
+        <link rel="stylesheet" href="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/styles/normalize.css">
+        <!-- <link rel="stylesheet" href="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/styles/skeleton.css"> -->
+    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+ <a name="Blogs"></a>
+        <div id="row14" class="dashboard-row dashboard-row14">
+            <div id="panel14" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element14" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Content: Splunk Blogs - <span id="NumBlogs">0</span> Selected</h3>
+                                <a href="javascript:Toggle('BlogsDiv', 'HideSelectBlogs','Show Blogs Selector','Hide Blogs Selector');" id="HideSelectBlogs">Show Blogs Selector</a>
+                            </div>
+                            <div class="panel-body skeletonformatting" id="BlogsDiv" style="display:none;">
+                             <div id="BlogsForm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<a name="Answers"></a>
+        <div id="row15" class="dashboard-row dashboard-row15">
+            <div id="panel15" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element15" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Content: Featured Splunk Answers - <span id="NumAnswers">0</span> Selected</h3>
+                                <a href="javascript:Toggle('AnswersDiv', 'HideSelectAnswers','Show Answers Selector','Hide Answers Selector');" id="HideSelectAnswers">Show Answers Selector</a>
+                            </div>
+                            <div class="panel-body" id="AnswersDiv" style="display:none;">
+                             <div id="AnswersForm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<a name="SPL"></a>
+        <div id="row16" class="dashboard-row dashboard-row16">
+            <div id="panel16" class="dashboard-cell" style="width: 100%;">
+                <div class="dashboard-panel clearfix">
+                    
+                    <div class="panel-element-row">
+                        <div id="element16" class="dashboard-element table" style="width: 100%">
+                            <div class="panel-head">
+                                <h3>Content: Featured Search Commands - <span id="NumSPLs">0</span> Selected</h3>
+                                 <a href="javascript:Toggle('SPLsDiv', 'HideSelectSPLs','Show SPLs Selector','Hide SPLs Selector');" id="HideSelectSPLs">Show SPLs Selector</a>
+                            </div>
+                            <div class="panel-body" id="SPLsDiv" style="display:none;">
+                            <p>To be built</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<a name="HTMLCode"></a>
+    <div id="row2" class="dashboard-row dashboard-row2">
+        
+        <div id="panel2" class="dashboard-cell" style="width: 100%;">
+            <div class="dashboard-panel clearfix">
+                
+                <div class="panel-element-row">
+                    <div id="element2" class="dashboard-element table" style="width: 100%">
+                        <div class="panel-head">
+                            <h3>HTML Code</h3>
+                        </div>
+                        <div class="panel-body">
+                <textarea id="HTMLCode" style="display: inline; clear:top; width: 800px !important; height: 400px !important;"></textarea> <input type="button" value="Update HTML" onclick="UpdateHTML()" />
+            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<a name="Preview"></a>
+    <div id="row3" class="dashboard-row dashboard-row3">
+        <div id="panel3" class="dashboard-cell" style="width: 100%;">
+            <div class="dashboard-panel clearfix">
+                
+                <div class="panel-element-row">
+                    <div id="element3" class="dashboard-element table" style="width: 100%">
+                        <div class="panel-head">
+                            <h3>Preview</h3>
+                        </div>
+                        <div class="panel-body">
+                         <iframe style="width:850px;height:800px;" id="MyContent"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+
+
+<!-- Hidden Form elements serve as easy global variables because I should do better with my life. -->
+<form name="hiddenstorage" id="hiddenstorage">
+    <input name="eventtext" type="hidden" id="eventtext" value=""/>
+    <input name="blogtext" type="hidden" id="blogtext" value=""/>
+    <input name="answertext" type="hidden" id="answertext" value=""/>
+    <input name="spotlighttext" type="hidden" id="spotlighttext" value=""/>
+    <input name="spltext" type="hidden" id="spltext" value=""/>
+</form>
+
+<div class="footer"></div>
+
+<!-- 
+END LAYOUT
+-->
+
+<script src="{{SPLUNKWEB_URL_PREFIX}}/config?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/i18n.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/i18ncatalog?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/build/simplexml.min/config.js"></script>
+    <script src="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/bundle.js"></script>
+    <!-- <script src="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/script.js"></script> -->
+    <!-- <script src="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/jquery-1.11.2.min.js"></script> -->
+     <!-- <script src="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/jquery.dimensions.js"></script> -->
+<script type="text/javascript">
+
+require.config({
+    baseUrl: "{{SPLUNKWEB_URL_PREFIX}}/static/js",
+    waitSeconds: 0 // Disable require.js load timeout
+});
+
+
+
+renderButtons(
+    document.getElementById('buttons'),
+    function (data) {
+        console.log('the whole state changed', data);
+    }
+);
+
+renderConfig(
+    document.getElementById('config')
+);
+
+if(document.getElementById("intro_date").value==""){
+    var d = new Date(); 
+    var month = new Array();
+    month[0] = "January";month[1] = "February";month[2] = "March";month[3] = "April";month[4] = "May";month[5] = "June";month[6] = "July";month[7] = "August";month[8] = "September";month[9] = "October";month[10] = "November";month[11] = "December"; 
+    document.getElementById("intro_date").value = month[d.getMonth()] + " " + (parseInt(d.getYear()) + 1900)
+}
+function DVScrollTo(element){
+    require([
+    "jquery"
+    ],
+    function(
+        
+        $
+    ){
+        $.getScript("{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/jquery-scrollto.js", function(){
+            var x = $(element).position();
+            console.log("Trying for position of ", element, ": ", x)
+            alert("Top: " + x.top + " Left: " + x.left);
+                //$(element).ScrollTo();
+
+        });
+    });
+}
+
+
+
+
+renderTable('spotlights', document.getElementById("SpotlightsDiv"), [],
+                    function (mydata) {
+                        var output = ""
+                        var count = 0
+                        if(mydata.length>0){
+                            output += '<tr>\
+                                        <td class="heading">Spotlight</td>\
+                                        </tr>\
+                                        <tr><td>'
+                        }
+                        for(var i = 0; i < mydata.length; i++){
+                            
+                            if(mydata[i].relevant == true){
+                                count++
+                                output += '<div class="SpotlightEntry"><h3>' + mydata[i].title + '</h3>\n'
+                                if(mydata[i].img.length>0){ 
+                                    output += '<img class="spotlight" src="' + mydata[i].img  + '" alt="" />'
+                                }
+                                output += '<p>'+ mydata[i].description +' <br />\
+                                        <a href="' + mydata[i].url + '">&gt; Read on</a>\
+                                        </p>\
+                                        </div>'
+                            }
+                        }
+                        if(mydata.length>0){
+                            output += '</td></tr>'
+                        }
+                        document.getElementById("spotlighttext").value = output
+                        document.getElementById("NumSpotlights").innerHTML = count
+                        console.log(mydata, count, output);
+                        UpdateHTML()
+                    }
+                );
+            
+var OutOfTheBoxSPL = [{'title': 'Cluster', 'description': 'The cluster command is probably the most powerful and most underutilized Splunk search command. Nearing its eigth birthday within Splunk, it is a great example of unsupervised machine learning that you can access just by adding the word cluster to the end of your search! The result? Quick and concise insights into all types of data.', 'url': 'http://blogs.splunk.com/2014/07/28/splunk-command-cluster/'},{'title': 'Replace', 'description': 'When digging into data, finding the details and breaking those out part by part is a great use case for Splunk.  But what about when you need to see a more consolidated view at a higher level and just know all the little details as one line item detail?  Enter the replace command.', 'url': 'http://blogs.splunk.com/2014/05/22/using-the-replace-command-granular-details-are-great-but-i-need-a-consolidated-view/'},{'title': 'Stats, Streamstats, Eventstats', 'description': 'It never ceases to amaze how many Splunkers are stuck in the “super grep” stage. They just use Splunk to search (happily!) for keywords and phrases over many sources of machine data. The stats commands provide easy and incredibly effective large scale analysis of homogenous and diverse datasets. Start your reading to learn how they differ from eachother, and how you can use them to move your Splunk game forward!', 'url': 'http://blogs.splunk.com/2014/04/01/search-command-stats-eventstats-and-streamstats-2/'}]
+
+renderTable('spls', document.getElementById("SPLsDiv"),OutOfTheBoxSPL,
+                    function (mydata) {
+                        var output = ""
+                        var count = 0
+                        if(mydata.length>0){
+                            output += '<tr>\
+         <td class="heading">SPL Command of the Month</td>\
+        </tr>\
+        <tr>\
+         <td class="content">'
+                        }
+
+          
+                        for(var i = 0; i < mydata.length; i++){
+                            
+                            if(mydata[i].relevant == true){
+                                count++
+                                output += '<div class="SPLEntry"><h3>' + mydata[i].title + '</h3>\n'
+                               
+                                output += '<p>'+ mydata[i].description +' <br />\
+                                        <a href="' + mydata[i].url + '">&gt; Read on</a>\
+                                        </p>\
+                                        </div>'
+                            }
+                        }
+                        if(mydata.length>0){
+                            output += '<ul>\
+                                        <li><a href="http://docs.splunk.com/Documentation/Splunk/6.2.2/SearchReference/ListOfPopularSearchCommands">Popular search commands</a></li>\
+                                        <li><a href="http://docs.splunk.com/Documentation/Splunk/6.2.2/SearchReference/SearchCheatsheet">Search command cheatsheet</a></li>\
+                                        <li><a href="http://docs.splunk.com/Documentation/Splunk/6.2.2/SearchReference/ListOfSearchCommands">All search commands</a></li>\
+                                        </ul>\
+                                        </td>\
+                                        </tr>'
+                        }
+                        document.getElementById("spltext").value = output
+                        document.getElementById("NumSPLs").innerHTML = count
+                        console.log(mydata, count, output);
+                        UpdateHTML()
+                    }
+                );
+
+//Radio_AllUsers
+//Radio_TestMode
+//Radio_TestMode_UserText_Div
+//Radio_SelectUsers
+//Radio_SelectUsers_Div
+//Radio_SelectUsers_Users
+//Radio_SelectUsers_UsersAvgCriteria
+//Radio_SelectUsers_UsersBySearch
+function UpdateUsers(){
+    if(document.getElementById("Radio_AllUsers").checked){
+        document.getElementById("Radio_TestMode_UserText_Div").style.display = "none"
+        document.getElementById("Radio_SelectUsers_Div").style.display = "none"
+        document.getElementById("row1").style.display = "block"
+        document.getElementById("TimeRangeSelector").style.display = "block"
+        document.getElementById("row0").style.display = "none"
+        document.getElementById("row04").style.display = "none"
+        document.getElementById("row01").style.display = "none"
+    }else if(document.getElementById("Radio_NoSend").checked){
+        document.getElementById("Radio_TestMode_UserText_Div").style.display = "none"
+        document.getElementById("row1").style.display = "none"
+        document.getElementById("TimeRangeSelector").style.display = "none"
+        document.getElementById("Radio_SelectUsers_Div").style.display = "none"
+        document.getElementById("row0").style.display = "none"
+        document.getElementById("row04").style.display = "none"
+        document.getElementById("row01").style.display = "none"
+    }else if(document.getElementById("Radio_TestMode").checked){
+        document.getElementById("Radio_TestMode_UserText_Div").style.display = "block"
+        document.getElementById("Radio_SelectUsers_Div").style.display = "none"
+        document.getElementById("row1").style.display = "none"
+        document.getElementById("TimeRangeSelector").style.display = "none"
+        document.getElementById("row0").style.display = "none"
+        document.getElementById("row04").style.display = "none"
+        document.getElementById("row01").style.display = "none"
+    }else if(document.getElementById("Radio_SelectUsers").checked){
+        document.getElementById("Radio_TestMode_UserText_Div").style.display = "none"
+        document.getElementById("row1").style.display = "block"
+        document.getElementById("TimeRangeSelector").style.display = "block"
+        document.getElementById("Radio_SelectUsers_Div").style.display = "block"
+        if(document.getElementById("Radio_SelectUsers_Users").checked){
+            document.getElementById("row0").style.display = "block"    
+        }else{
+            document.getElementById("row0").style.display = "none"    
+        }
+        
+        if(document.getElementById("Radio_SelectUsers_UsersAvgCriteria").checked){
+            document.getElementById("row04").style.display = "block"    
+        }else{
+            document.getElementById("row04").style.display = "none"    
+        }
+
+        
+        if(document.getElementById("Radio_SelectUsers_UsersBySearch").checked){
+            document.getElementById("row01").style.display = "block"    
+        }else{
+            document.getElementById("row01").style.display = "none"    
+        }
+
+    }
+
+}
+
+
+
+//Toggle('EventsDiv', 'HideSelectEvents','Show Events Selector','Hide Events Selector')
+function Toggle(DivToModify, DivToLink, ShowText, HideText){
+	if(document.getElementById(DivToModify).style.display == "none"){
+		document.getElementById(DivToModify).style.display = "block";
+		document.getElementById(DivToLink).innerHTML = HideText;
+	}else{
+		document.getElementById(DivToModify).style.display = "none";
+		document.getElementById(DivToLink).innerHTML = ShowText;
+	}
+	return false;
+}
+
+
+function UpdateHTML(){
+	var RawHTML = '<html xmlns="http://www.w3.org/1999/xhtml">\
+ <head>\
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\
+  <title>Splunk> Get Inspired</title>\
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>\
+  <style type="text/css">\
+   body {\
+    margin: 0; \
+    padding: 0;\
+   }\
+   td {\
+    color: #153643; \
+    font-family: Arial, sans-serif;\
+   }\
+   td.banner {\
+    color: #BDBDBD; \
+    padding: 0 0 0 0;\
+   }\
+   td.month {\
+    font-size: 14px;\
+    text-align: center;\
+    padding: 0 0 0 0;\
+   }\
+   td.heading {\
+    font-size: 15px;\
+    font-weight: bold;\
+    padding: 0 0 0 0;\
+   }\
+   td.note {\
+    padding: 3px 0 15px 0; \
+    font-size: 12px; \
+    line-height: 16px;\
+   }   \
+   td.content {\
+    padding: 10px 0 15px 0; \
+    font-size: 12px; \
+    line-height: 16px;\
+   }\
+   td.event {\
+    padding: 0 0 0 5px;\
+    font-weight: bold;\
+   }\
+   td.eventimg {\
+    text-align: right;\
+    padding: 0 5px 0 0;\
+   }\
+   hr.bannert {\
+    display: block; \
+    margin-top: 0; \
+    margin-bottom: 0.35em; \
+    margin-left: auto; \
+    margin-right: auto; \
+    border-style: solid; \
+    border-width: 1px;\
+   }\
+   hr.bannerb {\
+    display: block; \
+    margin-top: 0.30em; \
+    margin-bottom: 0; \
+    margin-left: auto; \
+    margin-right: auto; \
+    border-style: solid; \
+    border-width: 1px;\
+   }\
+   img.spotlight {\
+    border-width: 1px; \
+    display: block; \
+    width: 100%;\
+    height: 70px;\
+    padding: 5px 0 0 0;\
+   }\
+   img.blog {\
+    border-width: 1px; \
+    display: block; \
+    width: 100%;\
+    height: 70px;\
+    padding: 5px 0 0 0;\
+   }\
+   p.note {\
+    padding: 0 0 0 0;\
+    text-align: right;\
+   }\
+   p.answers {\
+    text-indent: 20px;\
+   }\
+   dl.splunkers {\
+    padding: 0 0 0 0; \
+    color: #153643; \
+    font-family: Arial, sans-serif; \
+    font-size: 12px; \
+    line-height: 16px;\
+   }   \
+   </style>\
+ </head>\
+<body>\
+ <table border="0" cellpadding="0" cellspacing="0" width="100%">\
+  <tr>\
+   <td style="padding: 20px 0 30px 0;">\
+    <table align="center" cellpadding="0" cellspacing="0" width="600" style="border: 1px solid #cccccc;">\
+     <tr>\
+      <td align="center" bgcolor="#ffffff" width="600" height="124" style="padding: 0 0 0 0; background-size: 466px 350px; background-repeat: no-repeat; background-image: url(http://blogs.splunk.com/wp-content/uploads/2015/03/splunk_Logo.jpg); background-position: center; " colspan="2">\
+       &nbsp;\
+      </td>\
+     </tr>\
+     <tr><td class="banner" colspan="2"><hr class="bannert"></hr></td></tr>\
+     <tr>\
+      <td class="month" align="center" colspan="2"><!--PLACEHOLDER_DATE--></td>\
+     </tr>\
+     <tr><td class="banner" colspan="2"><hr class="bannerb"></hr></td></tr>\
+     <tr>\
+      <td bgcolor="#ffffff" valign="top" width="375px" style="padding: 15px 10px 15px 15px;">\
+       <table border="0" cellpadding="0" cellspacing="0" width="100%">\
+        <tr>\
+         <td class="heading"><!--PLACEHOLDER_TITLE--></td>\
+        </tr>\
+        <tr>\
+         <td class="note"><!--PLACEHOLDER_BODY--> <br /><br />\
+          This month, we would like to discuss ... Happy reading!\
+          <p class="note">~ <!--PLACEHOLDER_FROM--></p>\
+         </td>\
+        </tr>      \
+        <tr>\
+         <td>\
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">\
+           <!--PLACEHOLDER_SPOTLIGHTTEXT-->\
+          </table>\
+         </td>\
+        </tr> \
+        <!--PLACEHOLDER_BLOGTEXT-->\
+        <!--PLACEHOLDER_ANSWERTEXT-->\
+        <!--PLACEHOLDER_SPLTEXT-->\
+       </table>\
+      </td>\
+      <td valign="top" width="225px" style="padding: 15px 15px 15px 15px; color: #153643; font-family: Arial, sans-serif; font-size: 10px; line-height: 14px;">\
+       <table style="border: 1px solid #cccccc;" >\
+        <tr>\
+         <td align="center" colspan="2" style="padding: 7px 0 7px 0; background-color:#76B247; color: #FFFFFF; font-size: 12px">Upcoming Events</td>\
+        </tr>        \
+        <!--<tr>\
+         <td class="event"><a href="http://ignite.microsoft.com/#fbid=tNYQctqKUHN">Microsoft Ignite</a><br />\
+             May 4-8, 2015<br />\
+             Chicago, IL\
+         </td>\
+         <td class="eventimg"><img src="images/microsoft-ignite-logo.png" width="80" alt="" /></td>\
+        </tr>\
+        <tr>\
+         <td colspan="2"><hr />\
+         </td>\
+        </tr>\
+        <tr>-->\
+      <!--PLACEHOLDER_EVENTTEXT-->\
+        </tr>\
+       </table>\
+      </td>\
+     </tr>\
+     <tr>\
+      <td bgcolor="#000000" style="padding: 12px 12px 12px 12px;" colspan="2">\
+       <table border="0" cellpadding="0" cellspacing="0" width="100%">\
+        <tr>\
+         <td style="color: #ffffff; font-family: Arial, sans-serif; font-size: 13px;">\
+          &copy; 2005-2015 Splunk Inc. All rights reserved.<br/>\
+         </td>\
+         <td align="right">\
+          <table border="0" cellpadding="0" cellspacing="0">\
+           <tr>\
+            <td>\
+             <a href="http://www.twitter.com/splunk">\
+              <img src="https://www.splunk.com/content/dam/splunk2/images/social/twit-icon.png" alt="Twitter" width="28" height="28" style="display: block;" border="0" />\
+             </a>\
+            </td>\
+            <td style="font-size: 0; line-height: 0;" width="7">&nbsp;</td>\
+            <td>\
+             <a href="http://www.facebook.com/splunk">\
+              <img src="https://www.splunk.com/content/dam/splunk2/images/social/fb-icon.png" alt="Facebook" width="28" height="28" style="display: block;" border="0" />\
+             </a>\
+            </td>\
+            <td style="font-size: 0; line-height: 0;" width="7">&nbsp;</td>\
+            <td>\
+             <a href="http://www.linkedin.com/company/splunk">\
+              <img src="https://www.splunk.com/content/dam/splunk2/images/social/linkedin-icon.png" alt="LinkedIn" width="28" height="28" style="display: block;" border="0" />\
+             </a>\
+            </td>\
+            <td style="font-size: 0; line-height: 0;" width="7">&nbsp;</td>            \
+            <td>\
+             <a href="http://www.youtube.com/user/splunkvideos">\
+              <img src="https://www.splunk.com/content/dam/splunk2/images/social/youtube.png" alt="Youtube" width="28" height="28" style="display: block;" border="0" />\
+             </a>\
+            </td>\
+            <td style="font-size: 0; line-height: 0;" width="7">&nbsp;</td>            \
+            <td>\
+             <a href="http://blogs.splunk.com/feed/">\
+              <img src="https://www.splunk.com/content/dam/splunk2/images/social/RSS-icon.png" alt="RSS" width="28" height="28" style="display: block;" border="0" />\
+             </a>\
+            </td>\
+           </tr>\
+          </table>\
+         </td>\
+        </tr>\
+       </table>\
+      </td>\
+     </tr>\
+    </table>\
+   </td>\
+  </tr>\
+ </table>\
+</body>\
+</html>'
+
+	console.log("Got My RawHTML", RawHTML);
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_EVENTTEXT-->", document.getElementById("eventtext").value)
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_BLOGTEXT-->", document.getElementById("blogtext").value)
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_ANSWERTEXT-->", document.getElementById("answertext").value)
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_DATE-->", document.getElementById("intro_date").value)
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_SPOTLIGHTTEXT-->", document.getElementById("spotlighttext").value)
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_TITLE-->", document.getElementById("intro_title").value)
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_BODY-->", document.getElementById("intro_body").value)
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_FROM-->", document.getElementById("intro_from").value)
+    RawHTML = RawHTML.replace("<!--PLACEHOLDER_SPLTEXT-->", document.getElementById("spltext").value)
+	console.log("Got My FinalHTML", RawHTML);
+	document.getElementById("HTMLCode").innerHTML = RawHTML;
+
+                var target=document.getElementById("MyContent").contentDocument
+                target.open()
+                target.write(RawHTML)
+                
+                target.close()
+
+}
+//
+// LIBRARY REQUIREMENTS
+//
+// In the require function, we include the necessary libraries and modules for
+// the HTML dashboard. Then, we pass variable names for these libraries and
+// modules as function parameters, in order.
+// 
+// When you add libraries or modules, remember to retain this mapping order
+// between the library or module and its function parameter. You can do this by
+// adding to the end of these lists, as shown in the commented examples below.
+
+require([
+    "splunkjs/mvc",
+    "splunkjs/mvc/utils",
+    "splunkjs/mvc/tokenutils",
+    "underscore",
+    "jquery",
+    "splunkjs/mvc/simplexml",
+    "splunkjs/mvc/headerview",
+    "splunkjs/mvc/footerview",
+    "splunkjs/mvc/simplexml/dashboardview",
+    "splunkjs/mvc/simplexml/dashboard/panelref",
+    "splunkjs/mvc/simplexml/element/chart",
+    "splunkjs/mvc/simplexml/element/event",
+    "splunkjs/mvc/simplexml/element/html",
+    "splunkjs/mvc/simplexml/element/list",
+    "splunkjs/mvc/simplexml/element/map",
+    "splunkjs/mvc/simplexml/element/single",
+    "splunkjs/mvc/simplexml/element/table",
+    "splunkjs/mvc/simpleform/formutils",
+    "splunkjs/mvc/simplexml/eventhandler",
+    "splunkjs/mvc/simpleform/input/dropdown",
+    "splunkjs/mvc/simpleform/input/radiogroup",
+    "splunkjs/mvc/simpleform/input/multiselect",
+    "splunkjs/mvc/simpleform/input/checkboxgroup",
+    "splunkjs/mvc/simpleform/input/text",
+    "splunkjs/mvc/simpleform/input/timerange",
+    "splunkjs/mvc/simpleform/input/submit",
+    "splunkjs/mvc/searchmanager",
+    "splunkjs/mvc/savedsearchmanager",
+    "splunkjs/mvc/postprocessmanager",
+    "splunkjs/mvc/simplexml/urltokenmodel"
+    // Add comma-separated libraries and modules manually here, for example:
+    // ..."splunkjs/mvc/simplexml/urltokenmodel",
+    // "splunkjs/mvc/checkboxview"
+    ],
+    function(
+        mvc,
+        utils,
+        TokenUtils,
+        _,
+        $,
+        DashboardController,
+        HeaderView,
+        FooterView,
+        Dashboard,
+        PanelRef,
+        ChartElement,
+        EventElement,
+        HtmlElement,
+        ListElement,
+        MapElement,
+        SingleElement,
+        TableElement,
+        FormUtils,
+        EventHandler,
+        DropdownInput,
+        RadioGroupInput,
+        MultiSelectInput,
+        CheckboxGroupInput,
+        TextInput,
+        TimeRangeInput,
+        SubmitButton,
+        SearchManager,
+        SavedSearchManager,
+        PostProcessManager,
+        UrlTokenModel
+
+        // Add comma-separated parameter names here, for example: 
+        // ...UrlTokenModel, 
+        // CheckboxView
+        ) {
+
+
+
+        var pageLoading = true;
+
+
+
+$(document).ready(function(){
+    $.getScript("{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/jquery.dimensions.js", function(){
+        var name = "#NavMenuContainer";
+        var menuYloc = null;
+         
+        $(document).ready(function(){
+            menuYloc = parseInt($(name).css("top").substring(0,$(name).css("top").indexOf("px")))
+            $(window).scroll(function () { 
+                var offset = menuYloc+$(document).scrollTop()+"px";
+                if($(document).scrollTop()<=130){
+                    offset = "130px"
+                }else{
+                    offset = (menuYloc+$(document).scrollTop()-125)+"px";
+                }
+                
+                $(name).animate({top:offset},{duration:300,queue:false});
+            });
+        });
+    });
+});
+
+
+        // 
+        // TOKENS
+        //
+        
+        // Create token namespaces
+        var urlTokenModel = new UrlTokenModel();
+        mvc.Components.registerInstance('url', urlTokenModel);
+        var defaultTokenModel = mvc.Components.getInstance('default', {create: true});
+        var submittedTokenModel = mvc.Components.getInstance('submitted', {create: true});
+
+        urlTokenModel.on('url:navigate', function() {
+            defaultTokenModel.set(urlTokenModel.toJSON());
+            if (!_.isEmpty(urlTokenModel.toJSON()) && !_.all(urlTokenModel.toJSON(), _.isUndefined)) {
+                submitTokens();
+            } else {
+                submittedTokenModel.clear();
+            }
+        });
+
+        // Initialize tokens
+        defaultTokenModel.set(urlTokenModel.toJSON());
+
+        function submitTokens() {
+            // Copy the contents of the defaultTokenModel to the submittedTokenModel and urlTokenModel
+            FormUtils.submitForm({ replaceState: pageLoading });
+        }
+
+        function setToken(name, value) {
+            defaultTokenModel.set(name, value);
+            submittedTokenModel.set(name, value);
+        }
+
+        function unsetToken(name) {
+            defaultTokenModel.unset(name);
+            submittedTokenModel.unset(name);
+        }
+
+        
+        
+        //
+        // SEARCH MANAGERS
+        //
+
+        var search1 = new SearchManager({
+            "id": "search1",
+            "search": "| tstats local=t  count sum(total_run_time) as total_run_time sum(NumExports) as NumExports from `SA_SearchHistory` where * $wasshared$ $total_run_time_gt$ $result_count_gt$ $scan_count_gt$ $searchtype$ $searchcommands$ $state$ $searchString$ $wasshared$    $sh_clause$  $user$  $shouldinvestigate$ groupby _time user span=1d | stats sum(count) as count sparkline(sum(count)) as UsageSparkline sum(total_run_time) as HoursOfSearchTime sum(NumExports) as NumberOfExports by user | where user!=\"splunk-system-user\" | eval HoursOfSearchTime = round(HoursOfSearchTime/3600,2) | sort - count | lookup LDAPSearch sAMAccountName as user OUTPUTNEW name mail telephoneNumber  | lookup LDAPMgmtChain sAMAccountName as user OUTPUT ManagementChain| makemv delim=\"|\" ManagementChain | eval ManagementChain=if(isnull(ManagementChain),\" \",ManagementChain) | search $username$ $management$",
+            "status_buckets": 0,
+            "cancelOnUnload": true,
+            "latest_time": "$field1.latest$",
+            "earliest_time": "$field1.earliest$",
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+        new SearchManager({
+            "id": "search2",
+            "search": "| tstats local=t count from `SA_SearchHistory` groupby searchcommands  | where searchcommands!=\"search\"",
+            "status_buckets": 0,
+            "cancelOnUnload": true,
+            "earliest_time": null,
+            "latest_time": null,
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true});
+
+        new SearchManager({
+            "id": "search3",
+            "search": "| tstats local=t  count  from `SA_SearchHistory` groupby state | eval value=\"state=\" . state",
+            "status_buckets": 0,
+            "cancelOnUnload": true,
+            "earliest_time": null,
+            "latest_time": null,
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true});
+
+        new SearchManager({
+            "id": "search4",
+            "search": "| tstats local=t  count  from `SA_SearchHistory` where * $state$ groupby city  | eval value=\"city=\" . city",
+            "status_buckets": 0,
+            "cancelOnUnload": true,
+            "earliest_time": null,
+            "latest_time": null,
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true});
+
+        new SearchManager({
+            "id": "search5",
+            "search": "| tstats local=t  count sum(total_run_time) as total_run_time sum(NumExports) as NumExports from `SA_SearchHistory` groupby _time user searchtype span=1d  | stats sum(count) as NumSearches sum(eval(if(searchtype=\"adhoc\",count,0))) as NumAdHocSearches sparkline(sum(count)) as UsageTrend sum(total_run_time) as HoursOfSearchTime sum(eval(if(searchtype=\"adhoc\",total_run_time,0))) as HoursOfAdHocSearchTime sum(NumExports) as NumberOfExports by user| where user!=\"splunk-system-user\" | eval HoursOfSearchTime = round(HoursOfSearchTime/3600,2) | eval HoursOfAdHocSearchTime = round(HoursOfAdHocSearchTime/3600,2) | sort - NumSearches | lookup LDAPMgmtChain sAMAccountName as user | makemv delim=\"|\" ManagementChain | where ManagementChain!=\"\" | stats count by ManagementChain",
+            "status_buckets": 0,
+            "cancelOnUnload": true,
+            "earliest_time": null,
+            "latest_time": null,
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true});
+
+        new SearchManager({
+            "id": "search6",
+            "search": "| tstats local=t count from `SA_SearchHistory` groupby searchcommands  | where searchcommands!=\"search\"",
+            "status_buckets": 0,
+            "cancelOnUnload": true,
+            "earliest_time": null,
+            "latest_time": null,
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true});
+
+
+
+        //
+        // SPLUNK HEADER AND FOOTER
+        //
+
+        new HeaderView({
+            id: 'header',
+            section: 'dashboards',
+            el: $('.header'),
+            acceleratedAppNav: true,
+            useSessionStorageCache: true,
+            splunkbar: true,
+            appbar: true,
+            litebar: false,
+        }, {tokens: true}).render();
+
+        new FooterView({
+            id: 'footer',
+            el: $('.footer')
+        }, {tokens: true}).render();
+
+
+        //
+        // DASHBOARD EDITOR
+        //
+
+        new Dashboard({
+            id: 'dashboard',
+            el: $('.dashboard-body'),
+            showTitle: true,
+            editable: true
+        }, {tokens: true}).render();
+
+
+        //
+        // VIEWS: VISUALIZATION ELEMENTS
+        //
+
+        var element1 = new TableElement({
+            "id": "element1",
+            "count": 10,
+            "dataOverlayMode": "none",
+            "drilldown": "cell",
+            "rowNumbers": "false",
+            "wrap": "true",
+            "managerid": "search1",
+            "el": $('#element1')
+        }, {tokens: true, tokenNamespace: "submitted"}).render();
+
+        element1.on("click", function(e) {
+            if (e.field !== undefined) {
+                e.preventDefault();
+                var url = TokenUtils.replaceTokenNames("{{SPLUNKWEB_URL_PREFIX}}/app/search_activity/per_user_dashboard?form.user=$row.user$", _.extend(submittedTokenModel.toJSON(), e.data), TokenUtils.getEscaper('url'));
+                utils.redirect(url);
+            }
+        });
+        
+
+
+
+
+        var PullSplunkEvents = new SearchManager({
+            "id": "PullSplunkEvents",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | findevents | eval relevant=if(match("SplunkLive", title),"true","false")',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        var PullSplunkEventsSearch = splunkjs.mvc.Components.getInstance("PullSplunkEvents");
+        var PullSplunkEventsResults = PullSplunkEventsSearch.data('results', { output_mode:'json', count:0 });
+
+        PullSplunkEventsSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+
+
+
+            if(PullSplunkEventsSearch.attributes.data.resultCount == 0) {
+              return;
+            }       
+
+            PullSplunkEventsResults.on("data", function() {
+                var data = PullSplunkEventsResults.data().results;
+                console.log("Here are my events results: ", data)         
+                //RenderTable(data, "app")  
+                renderTable(
+                  'events',
+                    document.getElementById('EventsForm'),
+                    data,
+                    function (mydata) {
+                        var output = ""
+                        var count = 0
+                        for(var i = 0; i < mydata.length; i++){
+                            if(mydata[i].relevant == true){
+                                count++
+                                output += '<tr>\
+                                             <td class="event"><a href="' + mydata[i].url + '">' + mydata[i].title + '</a><br />\
+                                                 ' + mydata[i].date + '<br />\
+                                                 ' + mydata[i].location + '\
+                                             </td>\
+                                             <td class="eventimg"><img src="' + mydata[i].img + '" width="80" alt="" /></td>\
+                                            </tr>'
+                                if(i != mydata.length-1){
+                                output += '<tr>\
+                                             <td colspan="2"><hr />\
+                                             </td>\
+                                            </tr>\
+                                            <tr>'
+                                }
+                            }
+                        }
+                        document.getElementById("eventtext").value = output
+                        document.getElementById("NumEvents").innerHTML = count
+                        console.log(mydata, count, output);
+                        UpdateHTML()
+                    }
+                );
+            });
+          });
+
+
+        var PullSplunkBlogs = new SearchManager({
+            "id": "PullSplunkBlogs",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | findblogs ',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        var PullSplunkBlogsSearch = splunkjs.mvc.Components.getInstance("PullSplunkBlogs");
+        var PullSplunkBlogsResults = PullSplunkBlogsSearch.data('results', { output_mode:'json', count:0 });
+
+        PullSplunkBlogsSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+
+
+
+            if(PullSplunkBlogsSearch.attributes.data.resultCount == 0) {
+              return;
+            }       
+
+            PullSplunkBlogsResults.on("data", function() {
+                var data = PullSplunkBlogsResults.data().results;
+                console.log("Here are my Blogs results: ", data)         
+                //RenderTable(data, "app")  
+                renderTable('blogs',
+                    document.getElementById('BlogsForm'),
+                    data,
+                    function (mydata) {
+                        var output = ""
+                        var count = 0
+                        for(var i = 0; i < mydata.length; i++){
+                            if(mydata[i].relevant == true){
+                                count++
+
+
+
+
+
+
+                                output += '<tr>\
+         <td class="heading">Featured splunk<font color="#ADAFB1">&gt;</font>blog</td>\
+        </tr>\
+        <tr>\
+         <td>\
+          <img class="blog" src="' + mydata[i].img  + '" alt="" />\
+         </td>\
+        </tr>\
+        <tr>\
+         <td class="content">\
+          '+ mydata[i].title +' <br />\
+          <a href="' + mydata[i].url + '">&gt; Read on</a>\
+         </td>\
+        </tr>'
+                              
+                            }
+                        }
+                        document.getElementById("blogtext").value = output
+                        document.getElementById("NumBlogs").innerHTML = count
+                        console.log(mydata, count, output);
+                        UpdateHTML()
+                    }
+                );
+            });
+          });
+
+
+        var PullSplunkAnswers = new SearchManager({
+            "id": "PullSplunkAnswers",
+            "cancelOnUnload": true,
+            "latest_time": "",
+            "status_buckets": 0,
+            "earliest_time": "0",
+            "search": ' | findanswers ',
+            "app": utils.getCurrentApp(),
+            "auto_cancel": 90,
+            "preview": true,
+            "runWhenTimeIsUndefined": false
+        }, {tokens: true, tokenNamespace: "submitted"});
+
+
+
+        var PullSplunkAnswersSearch = splunkjs.mvc.Components.getInstance("PullSplunkAnswers");
+        var PullSplunkAnswersResults = PullSplunkAnswersSearch.data('results', { output_mode:'json', count:0 });
+
+        PullSplunkAnswersSearch.on('search:done', function(properties) {
+            // clear div elements of previous result
+
+
+
+            if(PullSplunkAnswersSearch.attributes.data.resultCount == 0) {
+              return;
+            }       
+
+            PullSplunkAnswersResults.on("data", function() {
+                var data = PullSplunkAnswersResults.data().results;
+                console.log("Here are my Answers results: ", data)         
+                //RenderTable(data, "app")  
+                renderTable('answers',
+                    document.getElementById('AnswersForm'),
+                    data,
+                    function (mydata) {
+                        var output = ""
+                        var count = 0
+                        if(mydata.length>0){
+                            output += '<tr>\
+         <td class="heading">Smart AnSwerS</td>\
+        </tr>\
+        <tr>\
+         <td class="content"> If you are not familiar with <a href="http://answers.splunk.com">Splunk Answers</a>, it serves as the Q&amp;A forum for Splunk users to find, well, answers to their common and not-so-common questions about deploying, managing, and using Splunk products. Contributors of all backgrounds and levels of expertise come to the site seeking solutions to their head-scratchers, and to help others tackle their own Splunk puzzlers. Most questions are answered within a day, 25% within an hour!<br />\
+           <p class="answers">Featured Answers:</p>'
+                        }
+                        for(var i = 0; i < mydata.length; i++){
+                            if(mydata[i].relevant == true){
+                                count++
+                                output += '<p class="answers"><a href="' + mydata[i].url + '">' + mydata[i].title + '</a></p>'
+                                
+                            }
+                        }
+
+                        if(mydata.length>0){
+                            output += '</td></tr>'
+                        }
+                        document.getElementById("answertext").value = output
+                        document.getElementById("NumAnswers").innerHTML = count
+                        console.log(mydata, count, output);
+                        UpdateHTML()
+                    }
+                );
+            });
+          });
+
+
+        //
+        // VIEWS: FORM INPUTS
+        //
+        var input1 = new TimeRangeInput({
+            "id": "input1",
+            "default": {"latest_time": "now", "earliest_time": "-30d@d"},
+            "earliest_time": "$form.field1.earliest$",
+            "latest_time": "$form.field1.latest$",
+            "el": $('#input1')
+        }, {tokens: true}).render();
+
+        input1.on("change", function(newValue) {
+            FormUtils.handleValueChange(input1);
+        });
+
+    
+        var input2 = new DropdownInput({
+            "id": "input2",
+            "choices": [
+                {"value": "yes OR wasshared=no", "label": "Either"},
+                {"value": "yes", "label": "Yes"},
+                {"value": "no", "label": "No"}
+            ],
+            "prefix": "WasShared=",
+            "default": "yes OR wasshared=no",
+            "searchWhenChanged": true,
+            "selectFirstChoice": false,
+            "showClearButton": true,
+            "value": "$form.wasshared$",
+            "el": $('#input2')
+        }, {tokens: true}).render();
+
+        input2.on("change", function(newValue) {
+            FormUtils.handleValueChange(input2);
+        });
+
+    
+        var input3 = new TextInput({
+            "id": "input3",
+            "prefix": "total_run_time>=",
+            "default": "0",
+            "value": "$form.total_run_time_gt$",
+            "el": $('#input3')
+        }, {tokens: true}).render();
+
+        input3.on("change", function(newValue) {
+            FormUtils.handleValueChange(input3);
+        });
+
+    
+        var input4 = new TextInput({
+            "id": "input4",
+            "prefix": "result_count>=",
+            "default": "0",
+            "value": "$form.result_count_gt$",
+            "el": $('#input4')
+        }, {tokens: true}).render();
+
+        input4.on("change", function(newValue) {
+            FormUtils.handleValueChange(input4);
+        });
+
+    
+        var input5 = new TextInput({
+            "id": "input5",
+            "prefix": "scan_count>=",
+            "default": "0",
+            "value": "$form.scan_count_gt$",
+            "el": $('#input5')
+        }, {tokens: true}).render();
+
+        input5.on("change", function(newValue) {
+            FormUtils.handleValueChange(input5);
+        });
+
+    
+        var input6 = new MultiSelectInput({
+            "id": "input6",
+            "choices": [
+                {"value": "adhoc", "label": "Adhoc"},
+                {"value": "scheduled", "label": "Scheduled"},
+                {"value": "summarization", "label": "Summarization"},
+                {"value": "realtime", "label": "Realtime"},
+                {"value": "dashboard", "label": "Dashboard"}
+            ],
+            "delimiter": " OR ",
+            "valueSuffix": "*",
+            "default": ["adhoc", "summarization", "scheduled", "realtime", "dashboard"],
+            "valuePrefix": "searchtype=",
+            "value": "$form.searchtype$",
+            "el": $('#input6')
+        }, {tokens: true}).render();
+
+        input6.on("change", function(newValue) {
+            FormUtils.handleValueChange(input6);
+        });
+
+    
+        var input7 = new DropdownInput({
+            "id": "input7",
+            "choices": [
+                {"value": "*", "label": "Any"}
+            ],
+            "prefix": "searchcommands=",
+            "valueField": "searchcommands",
+            "selectFirstChoice": false,
+            "labelField": "searchcommands",
+            "showClearButton": true,
+            "default": "*",
+            "value": "$form.searchcommands$",
+            "managerid": "search2",
+            "el": $('#input7')
+        }, {tokens: true}).render();
+
+        input7.on("change", function(newValue) {
+            FormUtils.handleValueChange(input7);
+        });
+
+    
+        var input8 = new DropdownInput({
+            "id": "input8",
+            "choices": [
+                {"value": "*", "label": "All"}
+            ],
+            "valueField": "value",
+            "default": "*",
+            "selectFirstChoice": false,
+            "labelField": "state",
+            "showClearButton": true,
+            "value": "$form.state$",
+            "managerid": "search3",
+            "el": $('#input8')
+        }, {tokens: true}).render();
+
+        input8.on("change", function(newValue) {
+            FormUtils.handleValueChange(input8);
+        });
+
+    
+        var input9 = new DropdownInput({
+            "id": "input9",
+            "choices": [
+                {"value": "*", "label": "All"}
+            ],
+            "valueField": null,
+            "default": "*",
+            "selectFirstChoice": false,
+            "labelField": null,
+            "showClearButton": true,
+            "value": "$form.city$",
+            "managerid": "search4",
+            "el": $('#input9')
+        }, {tokens: true}).render();
+
+        input9.on("change", function(newValue) {
+            FormUtils.handleValueChange(input9);
+        });
+
+    
+        var input10 = new TextInput({
+            "id": "input10",
+            "prefix": "`UserOrName`=",
+            "default": "*",
+            "value": "$form.username$",
+            "el": $('#input10')
+        }, {tokens: true}).render();
+
+        input10.on("change", function(newValue) {
+            FormUtils.handleValueChange(input10);
+        });
+
+    
+        var input11 = new DropdownInput({
+            "id": "input11",
+            "choices": [
+                {"value": "*", "label": "Any"}
+            ],
+            "prefix": "ManagementChain=\"",
+            "valueField": "ManagementChain",
+            "selectFirstChoice": false,
+            "labelField": "ManagementChain",
+            "suffix": "\"",
+            "default": "*",
+            "showClearButton": true,
+            "value": "$form.management$",
+            "managerid": "search5",
+            "el": $('#input11')
+        }, {tokens: true}).render();
+
+        input11.on("change", function(newValue) {
+            FormUtils.handleValueChange(input11);
+        });
+
+    
+        var input12 = new DropdownInput({
+            "id": "input12",
+            "choices": [
+                {"value": "yes OR wasshared=no", "label": "Either"},
+                {"value": "yes", "label": "Yes"},
+                {"value": "no", "label": "No"}
+            ],
+            "prefix": "WasShared=",
+            "default": "yes OR wasshared=no",
+            "searchWhenChanged": false,
+            "selectFirstChoice": false,
+            "showClearButton": true,
+            "value": "$form.wasshared$",
+            "el": $('#input12')
+        }, {tokens: true}).render();
+
+        input12.on("change", function(newValue) {
+            FormUtils.handleValueChange(input12);
+        });
+
+    
+        var input13 = new TextInput({
+            "id": "input13",
+            "prefix": "total_run_time>=",
+            "default": "0",
+            "value": "$form.total_run_time_gt$",
+            "el": $('#input13')
+        }, {tokens: true}).render();
+
+        input13.on("change", function(newValue) {
+            FormUtils.handleValueChange(input13);
+        });
+
+    
+        var input14 = new TextInput({
+            "id": "input14",
+            "prefix": "result_count>=",
+            "default": "0",
+            "value": "$form.result_count_gt$",
+            "el": $('#input14')
+        }, {tokens: true}).render();
+
+        input14.on("change", function(newValue) {
+            FormUtils.handleValueChange(input14);
+        });
+
+    
+        var input15 = new TextInput({
+            "id": "input15",
+            "prefix": "scan_count>=",
+            "default": "0",
+            "value": "$form.scan_count_gt$",
+            "el": $('#input15')
+        }, {tokens: true}).render();
+
+        input15.on("change", function(newValue) {
+            FormUtils.handleValueChange(input15);
+        });
+
+    
+        var input16 = new MultiSelectInput({
+            "id": "input16",
+            "choices": [
+                {"value": "adhoc", "label": "Adhoc"},
+                {"value": "scheduled", "label": "Scheduled"},
+                {"value": "summarization", "label": "Summarization"},
+                {"value": "realtime", "label": "Realtime"},
+                {"value": "dashboard", "label": "Dashboard"}
+            ],
+            "delimiter": " OR ",
+            "valueSuffix": "*",
+            "default": ["adhoc", "summarization", "scheduled", "realtime", "dashboard"],
+            "valuePrefix": "searchtype=",
+            "value": "$form.searchtype$",
+            "el": $('#input16')
+        }, {tokens: true}).render();
+
+        input16.on("change", function(newValue) {
+            FormUtils.handleValueChange(input16);
+        });
+
+    
+        var input17 = new DropdownInput({
+            "id": "input17",
+            "choices": [
+                {"value": "*", "label": "Any"}
+            ],
+            "prefix": "searchcommands=",
+            "valueField": "searchcommands",
+            "selectFirstChoice": false,
+            "labelField": "searchcommands",
+            "showClearButton": true,
+            "default": "*",
+            "value": "$form.searchcommands$",
+            "managerid": "search6",
+            "el": $('#input17')
+        }, {tokens: true}).render();
+
+        input17.on("change", function(newValue) {
+            FormUtils.handleValueChange(input17);
+        });
+
+    
+        var input18 = new TextInput({
+            "id": "input18",
+            "prefix": "user=",
+            "default": "*",
+            "value": "$form.user$",
+            "el": $('#input18')
+        }, {tokens: true}).render();
+
+        input18.on("change", function(newValue) {
+            FormUtils.handleValueChange(input18);
+        });
+
+    
+        var input19 = new RadioGroupInput({
+            "id": "input19",
+            "choices": [
+                {"value": "*", "label": "Either"},
+                {"value": "ShouldInvestigate>0", "label": "Yes"},
+                {"value": "ShouldInvestigate=0", "label": "No"}
+            ],
+            "default": "*",
+            "selectFirstChoice": false,
+            "value": "$form.shouldinvestigate$",
+            "el": $('#input19')
+        }, {tokens: true}).render();
+
+        input19.on("change", function(newValue) {
+            FormUtils.handleValueChange(input19);
+        });
+
+    
+        var input20 = new MultiSelectInput({
+            "id": "input20",
+            "choices": [
+                {"value": "*", "label": "Any"}
+            ],
+            "delimiter": " OR ",
+            "default": ["*"],
+            "valuePrefix": "SearchHead=",
+            "value": "$form.sh_clause$",
+            "el": $('#input20')
+        }, {tokens: true}).render();
+
+        input20.on("change", function(newValue) {
+            FormUtils.handleValueChange(input20);
+        });
+
+    
+        var input21 = new TextInput({
+            "id": "input21",
+            "prefix": "actualsearch=\"*",
+            "default": "*",
+            "suffix": "*\"",
+            "value": "$form.searchString$",
+            "el": $('#input21')
+        }, {tokens: true}).render();
+
+        input21.on("change", function(newValue) {
+            FormUtils.handleValueChange(input21);
+        });
+
+    
+
+
+        // 
+        // SUBMIT FORM DATA
+        //
+
+        var submit = new SubmitButton({
+            id: 'submit',
+            el: $('#search_btn')
+        }, {tokens: true}).render();
+
+        submit.on("submit", function() {
+            submitTokens();
+        });
+
+        // Initialize time tokens to default
+        if (!defaultTokenModel.has('earliest') && !defaultTokenModel.has('latest')) {
+            defaultTokenModel.set({ earliest: '0', latest: '' });
+        }
+
+        if (!_.isEmpty(urlTokenModel.toJSON())){
+            submitTokens();
+        }
+
+
+        //
+        // DASHBOARD READY
+        //
+
+        DashboardController.ready();
+        pageLoading = false;
+
+    }
+);
+</script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/app/search_activity/check_data_availability.js" type="text/javascript"></script>
+</body>
+</html>

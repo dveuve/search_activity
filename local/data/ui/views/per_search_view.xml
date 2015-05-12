@@ -13,6 +13,7 @@
     </input>
   </fieldset>
   <row>
+    <panel>
       <table>
         <title>User Details</title>
         <searchString>|inputlookup LDAPSearch | search [search `auditindex` `auditsourcetype` searchid="$searchid$" user!="splunk-system-user" | stats values(user) as sAMAccountName] | fields - _time | transpose | rename column as Field "row 1" as Value</searchString>
@@ -24,9 +25,11 @@
         <option name="drilldown">cell</option>
         <option name="count">30</option>
       </table>
+    </panel>
+    <panel>
       <table>
         <title>Search Details</title>
-        <searchString>| tstats local=t values(NumExports) as NumExports values(WasShared) as WasShared values(searchspan_s) as searchspan_s values(searchspan_m) as searchspan_m values(searchspan_h) as searchspan_h values(searchspan_d) as searchspan_d values(total_run_time) as total_run_time values(result_count) as result_count values(scan_count) as scan_count values(searchtype) as searchtype values(search_status) as search_status values(savedsearch_name) as savedsearch_name values(searchcommands) as searchcommands values(user) as user values(ManagerDN) as ManagerDN values(email) as email values(distinguishedName) as distinguishedName values(name) as name values(description) as description values(city) as city values(location) as location values(organization) as organization values(state) as state values(title) as title values(ManagementChain) as ManagementChain values(ManagerName) as ManagerName from `SA_SearchHistory` where searchid="$searchid$"| makemv user | transpose | rename column as "Field" "row 1" as Value</searchString>
+        <searchString>| tstats local=t values(NumExports) as NumExports values(WasShared) as WasShared values(searchspan_s) as searchspan_s values(searchspan_m) as searchspan_m values(searchspan_h) as searchspan_h values(searchspan_d) as searchspan_d values(total_run_time) as total_run_time values(result_count) as result_count values(scan_count) as scan_count values(searchtype) as searchtype values(search_status) as search_status values(savedsearch_name) as savedsearch_name values(searchcommands) as searchcommands values(user) as user values(ManagerDN) as ManagerDN values(email) as email values(distinguishedName) as distinguishedName values(name) as name values(description) as description values(city) as city values(location) as location values(organization) as organization values(state) as state values(title) as title values(ManagementChain) as ManagementChain values(ManagerName) as ManagerName values(SearchHead) as SearchHead from `SA_SearchHistory` where searchid="$searchid$"| makemv user | transpose | rename column as "Field" "row 1" as Value</searchString>
         <earliestTime>1217105920.000</earliestTime>
         <latestTime/>
         <option name="wrap">true</option>
@@ -35,8 +38,10 @@
         <option name="drilldown">cell</option>
         <option name="count">30</option>
       </table>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <title>Audit Details (Only Accessible With Audit Access)</title>
         <searchString>`auditindex` `auditsourcetype` searchid="$searchid$" | stats values(user) as user values(actualsearch) as actualsearch values(savedsearch_name) as savedsearch_name | transpose | rename column as Field "row 1" as Value</searchString>
@@ -48,5 +53,6 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
 </form>

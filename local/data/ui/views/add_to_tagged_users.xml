@@ -22,6 +22,7 @@
     </html>
   </row>
   <row>
+    <panel>
       <table>
         <title>Results of Adding Users</title>
         <searchString>| `SA_Add_Tagged_Users("$user$","$category$")`</searchString>
@@ -32,5 +33,6 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
       </table>
+    </panel>
   </row>
 </form>

@@ -23,6 +23,7 @@
     </input>
   </fieldset>
   <row>
+    <panel>
       <html>
       <table style="width:400px">
         <tr>
@@ -53,6 +54,8 @@
       </table>
         
     </html>
+    </panel>
+    <panel>
       <chart>
         <title>Events in TSIDX (all time)</title>
         <searchString>| tstats local=t count as Searches from `SA_SearchHistory` groupby _time span=1d  | join type=outer _time [| tstats local=t count as Events from `SA_Events` groupby _time span=1d]</searchString>
@@ -77,13 +80,17 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
       </chart>
+    </panel>
   </row>
   <row>
+    <panel>
       <html>
       <div id="AnalysisPlaceholder"> </div>
     </html>
+    </panel>
   </row>
   <row>
+    <panel>
       <event depends="$id$">
         <title>Summary Drilldown -- shows the runtime logs from the event you most recently expanded ($id$)</title>
         <searchString>source="SA-*-ParseData" id=$id$ sourcetype="sa" $backfilltypes$</searchString>
@@ -100,8 +107,10 @@
         <option name="type">list</option>
         <fields>[]</fields>
       </event>
+    </panel>
   </row>
   <row>
+    <panel>
       <event depends="$searchid$">
         <title>Drilldown Status -- shows the audit logs from the run you most recently expanded ($searchid$)</title>
         <searchString>index=_audit OR index=_internal  $searchid$</searchString>
@@ -118,8 +127,10 @@
         <option name="type">list</option>
         <fields>[]</fields>
       </event>
+    </panel>
   </row>
   <row>
+    <panel>
       <event>
         <title>Logs Created by Script</title>
         <searchString>source="SA-*-ParseData" sourcetype="sa" $backfilltypes$</searchString>
@@ -136,8 +147,10 @@
         <option name="type">list</option>
         <fields>[]</fields>
       </event>
+    </panel>
   </row>
   <row>
+    <panel>
       <event>
         <title>Internal Logs From Population Script</title>
         <searchString>index=_internal sourcetype=splunkd CheckDataStats $backfilltypes$</searchString>
@@ -154,8 +167,10 @@
         <option name="type">list</option>
         <fields>[]</fields>
       </event>
+    </panel>
   </row>
   <row>
+    <panel>
       <table>
         <searchString>index=_internal sourcetype=splunkd_access $backfilltypes$ (backfill_search_window OR backfill_search_internal OR clearoldbackfilljobs OR updatemacro) | table _time clientip user uri status</searchString>
         <earliestTime>$field1.earliest$</earliestTime>
@@ -166,5 +181,6 @@
         <option name="drilldown">cell</option>
         <option name="count">10</option>
       </table>
+    </panel>
   </row>
 </form>

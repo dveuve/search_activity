@@ -10,7 +10,7 @@ var questionlist = "<h2>Questions To Ask</h2>\
                 <li><a href=\"javascript:SetToken('Visibility_SearchTimespan');\">Over what timespan are users searching?</a></li>\
                 <li><a href=\"javascript:SetToken('Visibility_UserPerformance');\">Are the users search behavior changing over time (with regard to performance metrics)?</a></li>\
                 <li><a href=\"javascript:SetToken('Visibility_SystemPerformance');\">Is the system's performance behavior changing over time?</a></li>\
-</ul>"
+</ul><p><a href\"javascript:SetToken('ALL');\">Show All (2.0 and prior view)</a></p>"
 
 document.getElementById("ProvideQuestions").innerHTML = questionlist
 
@@ -18,14 +18,28 @@ document.getElementById("ProvideQuestions").innerHTML = questionlist
 
 function SetToken(tokenname){
 console.log("Testing...")
-require(['splunkjs/mvc','splunkjs/mvc/utils','splunkjs/mvc/simplexml/ready!'], function(mvc, utils){
+    if(tokenname == "ALL"){
+        SetToken('Visibility_CountByUser');
+        SetToken('Visibility_ActivityBySearchType');
+        SetToken('Visibility_ActivityBySearchHead');
+        SetToken('Visibility_ExportedSearch');
+        SetToken('Visibility_SharedSearches');
+        SetToken('Visibility_ExpensiveCommands');
+        SetToken('Visibility_SearchTimespan');
+        SetToken('Visibility_UserPerformance');
+        SetToken('Visibility_SystemPerformance');
+
+    }else{
+        require(['splunkjs/mvc','splunkjs/mvc/utils','splunkjs/mvc/simplexml/ready!'], function(mvc, utils){
                             var unsubmittedTokens = mvc.Components.getInstance('default');
                             var submittedTokens = mvc.Components.getInstance('submitted');
                             console.log("About to set token...")
                                 console.log("token name", tokenname);
                              unsubmittedTokens.set(tokenname,"I have a token!");
                             submittedTokens.set(unsubmittedTokens.toJSON());
-});
+        });
    
+    }
+
 return false;
 }
